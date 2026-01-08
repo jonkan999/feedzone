@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS orders (
   stripe_payment_intent_id TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'shipped', 'delivered', 'cancelled')),
   total_amount DECIMAL(10, 2) NOT NULL,
+  discount_code TEXT,
+  discount_amount DECIMAL(10, 2) DEFAULT 0,
   shipping_address JSONB NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -33,6 +35,7 @@ CREATE TABLE IF NOT EXISTS order_items (
 CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_customer_email ON orders(customer_email);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_discount_code ON orders(discount_code);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
 
 -- Enable Row Level Security (RLS)
@@ -90,6 +93,22 @@ DROP POLICY IF EXISTS "Service role can create order items" ON order_items;
 CREATE POLICY "Service role can create order items"
   ON order_items FOR INSERT
   WITH CHECK (true);
+
+-- Discount codes table
+CREATE TABLE IF NOT EXISTS discount_codes (
+  code TEXT PRIMARY KEY,
+  type TEXT NOT NULL CHECK (type IN ('percent', 'free_shipping', 'fixed_amount')),
+  value DECIMAL(10, 2) DEFAULT 0, -- percent for 'percent', amount for 'fixed_amount', unused for free_shipping
+  active BOOLEAN DEFAULT true,
+  max_uses INTEGER,
+  current_uses INTEGER DEFAULT 0,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_discount_codes_active ON discount_codes(active);
+
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

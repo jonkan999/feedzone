@@ -44,13 +44,16 @@ export const POST: APIRoute = async ({ request }) => {
 
       // Get the session details to retrieve line items
       const sessionWithLineItems = await stripe.checkout.sessions.retrieve(session.id, {
-        expand: ['line_items'],
+        expand: ['line_items.data.price.product'],
       });
 
       const lineItems = sessionWithLineItems.line_items?.data || [];
       const shippingAddress = JSON.parse(session.metadata?.shipping_address || '{}');
       const userId = session.metadata?.user_id;
       const customerEmail = session.customer_email || shippingAddress.email;
+      const discountCode = session.metadata?.discount_code || null;
+      const discountValue = session.metadata?.discount_value ? Number(session.metadata.discount_value) : 0;
+      const discountAmountApplied = session.metadata?.discount_amount_applied ? Number(session.metadata.discount_amount_applied) : 0;
 
       // Validate that we have either user_id or email
       if (!userId && !customerEmail) {
@@ -66,12 +69,36 @@ export const POST: APIRoute = async ({ request }) => {
       // Create order
       const orderItems = lineItems
         .filter((item: any) => !item.description?.includes('Frakt')) // Exclude shipping line item
-        .map((item: any) => ({
-        product_id: item.price?.product as string || 'unknown',
-        product_name: item.description || 'Unknown Product',
-        quantity: item.quantity || 1,
-        price: (item.price?.unit_amount || 0) / 100,
-      }));
+        .map((item: any) => {
+          const productMeta = (item.price?.product as any)?.metadata || {};
+          const configStr = productMeta.config as string | undefined;
+          let configSummary = '';
+          if (configStr) {
+            try {
+              const cfg = JSON.parse(configStr);
+              configSummary = Object.entries(cfg)
+                .filter(([, v]) => v !== undefined && v !== null && v !== '')
+                .map(([k, v]) => `${k}:${v}`)
+                .join(' | ');
+            } catch (e) {
+              configSummary = '';
+            }
+          }
+
+          const productId =
+            (productMeta.product_id as string | undefined) ||
+            (item.price?.product as string | undefined) ||
+            'unknown';
+
+          return {
+            product_id: productId,
+            product_name: configSummary
+              ? `${item.description || 'Unknown Product'} | ${configSummary}`
+              : item.description || 'Unknown Product',
+            quantity: item.quantity || 1,
+            price: (item.price?.unit_amount || 0) / 100,
+          };
+        });
 
       const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -81,6 +108,8 @@ export const POST: APIRoute = async ({ request }) => {
           stripe_payment_intent_id: session.payment_intent as string,
           status: 'paid',
           total_amount,
+          discount_code: discountCode,
+          discount_amount: discountAmountApplied || discountValue || 0,
           shipping_address: shippingAddress,
         })
         .select()

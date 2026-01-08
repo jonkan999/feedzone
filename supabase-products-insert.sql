@@ -283,3 +283,16 @@ ON CONFLICT (id) DO UPDATE SET
   image_url = EXCLUDED.image_url,
   additional_images = EXCLUDED.additional_images;
 
+-- Discount codes seed
+INSERT INTO discount_codes (code, type, value, active)
+VALUES
+  ('TEST10', 'percent', 10, true),
+  ('TEST20', 'percent', 20, true),
+  ('TEST30', 'percent', 30, true),
+  ('FREESHIP', 'free_shipping', 0, true),
+  ('TESTF100', 'fixed_amount', 100, true)
+ON CONFLICT (code) DO UPDATE SET
+  type = EXCLUDED.type,
+  value = EXCLUDED.value,
+  active = EXCLUDED.active;
+

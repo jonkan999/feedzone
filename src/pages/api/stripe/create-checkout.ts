@@ -33,7 +33,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     const body = await request.json();
-    const { items, shipping_address, shipping_method } = body;
+    const { items, shipping_address, shipping_method, discount_code } = body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: 'Items required' }), {
@@ -60,15 +60,61 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return sum + (itemPrice * item.quantity);
     }, 0);
 
+    // Validate discount code (optional)
+    let discount: { code: string; type: 'percent' | 'free_shipping' | 'fixed_amount'; value: number } | null = null;
+    if (discount_code) {
+      const { data: discountRow, error: discountError } = await supabase
+        .from('discount_codes')
+        .select('*')
+        .eq('code', discount_code.toUpperCase())
+        .eq('active', true)
+        .maybeSingle();
+
+      if (discountError) {
+        return new Response(JSON.stringify({ error: 'Kunde inte validera rabattkod' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (!discountRow) {
+        return new Response(JSON.stringify({ error: 'Ogiltig rabattkod' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (discountRow.expires_at && new Date(discountRow.expires_at) < new Date()) {
+        return new Response(JSON.stringify({ error: 'Rabattkoden har gått ut' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      discount = {
+        code: discountRow.code,
+        type: discountRow.type,
+        value: Number(discountRow.value || 0),
+      };
+    }
+
     // Calculate shipping costs
     // Check if this is a test product (free shipping)
     const isTestProduct = items.some((item: any) => item.product_id === 'test-product-1sek');
     const shippingCost = 59; // PostNord shipping cost in SEK
     const freeShippingThreshold = 400;
-    const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct;
+    const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct || discount?.type === 'free_shipping';
     const finalShippingCost = qualifiesForFreeShipping ? 0 : shippingCost;
+
+    // Compute discount impact on items only
+    const rawSubtotal = subtotal;
+    const appliedPercent = discount?.type === 'percent' ? Math.min(Math.max(discount.value, 0), 100) / 100 : 0;
+    const appliedFixed = discount?.type === 'fixed_amount' ? Math.max(discount.value, 0) : 0;
+    const percentSubtotal = rawSubtotal * (1 - appliedPercent);
+    const fixedDiscount = discount?.type === 'fixed_amount' ? Math.min(appliedFixed, rawSubtotal - percentSubtotal) : 0;
+    const discountedSubtotal = rawSubtotal - (rawSubtotal * appliedPercent) - fixedDiscount;
     const stripeMinimum = 3; // Stripe minimum in SEK
-    const totalForStripe = subtotal + finalShippingCost;
+    const totalForStripe = discountedSubtotal + finalShippingCost;
 
     if (totalForStripe < stripeMinimum) {
       return new Response(JSON.stringify({ error: `Stripe kräver minst ${stripeMinimum} SEK för betalning. Lägg till fler varor för att fortsätta.` }), {
@@ -83,15 +129,51 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const lineItems = items.map((item: any, index: number) => {
       const productData = productDataArray[index];
       const itemPrice = productData?.price ?? item.price;
+      let discountedPrice = itemPrice;
+
+      // Apply percent
+      if (appliedPercent > 0) {
+        discountedPrice = itemPrice * (1 - appliedPercent);
+      }
+      // Apply fixed amount proportionally by item contribution
+      if (fixedDiscount > 0 && rawSubtotal > 0) {
+        const itemShare = (itemPrice * item.quantity) / rawSubtotal;
+        const itemFixed = fixedDiscount * itemShare;
+        const perUnitFixed = itemFixed / item.quantity;
+        discountedPrice = Math.max(0, discountedPrice - perUnitFixed);
+      }
+
+      // Pass any custom config (e.g., custom gel) through metadata for order capture
+      const config = {
+        ratio: item.ratio,
+        electrolytes: item.electrolytes,
+        caffeine: item.caffeine,
+        hydrogel: item.hydrogel,
+        flavor: item.flavor,
+        signature: item.signature,
+      };
+      const hasConfig = Object.values(config).some((v) => v !== undefined && v !== null);
+      const configSummary = hasConfig
+        ? Object.entries(config)
+            .filter(([, v]) => v !== undefined && v !== null)
+            .map(([k, v]) => `${k}:${v}`)
+            .join(' | ')
+        : '';
+
       return {
-      price_data: {
+        price_data: {
           currency: 'sek',
-        product_data: {
-          name: item.product_name,
+          product_data: {
+            name: item.product_name,
+            description: configSummary || undefined,
+            metadata: {
+              product_id: item.product_id,
+              ...(hasConfig ? { config: JSON.stringify(config) } : {}),
+            },
+          },
+          unit_amount: Math.round(discountedPrice * 100), // Convert to öre (Swedish cents)
         },
-          unit_amount: Math.round(itemPrice * 100), // Convert to öre (Swedish cents)
-      },
-      quantity: item.quantity,
+        quantity: item.quantity,
       };
     });
 
@@ -116,6 +198,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     if (user) {
       sessionMetadata.user_id = user.id;
+    }
+
+    if (discount) {
+      sessionMetadata.discount_code = discount.code;
+      sessionMetadata.discount_type = discount.type;
+      sessionMetadata.discount_value = discount.value.toString();
+      sessionMetadata.discount_amount_applied = (rawSubtotal - discountedSubtotal).toFixed(2);
     }
 
     const session = await stripe.checkout.sessions.create({

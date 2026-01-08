@@ -53,24 +53,45 @@ import Layout from '../layouts/Layout.astro';
       const productDataPromises = cart.map((item: any) => fetchProductData(item.product_id));
       const productDataArray = await Promise.all(productDataPromises);
 
-      // Calculate total using product prices where available, fallback to cart item price
-      const subtotal = cart.reduce((sum: number, item: any, index: number) => {
-        const productData = productDataArray[index];
-        const itemPrice = productData?.price ?? item.price;
-        return sum + (itemPrice * item.quantity);
-      }, 0);
+      // Discount state
+      let discount: { code: string; type: 'percent' | 'free_shipping'; value: number } | null = null;
 
-      // Shipping + free shipping logic (keep in sync with /api/stripe/create-checkout)
-      const isTestProduct = cart.some((item: any) => item.product_id === 'test-product-1sek');
       const shippingCost = 59; // PostNord shipping cost
       const freeShippingThreshold = 400;
-      const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct;
-      const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-      const total = subtotal + (qualifiesForFreeShipping ? 0 : shippingCost);
+      const stripeMinimum = 3; // Stripe minimum SEK
 
-      // Stripe minimum amount (SEK has a 3 SEK minimum)
-      const stripeMinimum = 3;
-      const belowStripeMinimum = total < stripeMinimum;
+      function calcSubtotal() {
+        return cart.reduce((sum: number, item: any, index: number) => {
+          const productData = productDataArray[index];
+          const itemPrice = productData?.price ?? item.price;
+          const discountFactor = discount?.type === 'percent' ? (1 - (discount.value / 100)) : 1;
+          return sum + (itemPrice * discountFactor * item.quantity);
+        }, 0);
+      }
+
+      function calcShipping(subtotal: number) {
+        const isTestProduct = cart.some((item: any) => item.product_id === 'test-product-1sek');
+        const qualifies = subtotal >= freeShippingThreshold || isTestProduct || discount?.type === 'free_shipping';
+        return qualifies ? 0 : shippingCost;
+      }
+
+      function calcTotals() {
+        const rawSubtotal = cart.reduce((sum: number, item: any, index: number) => {
+          const productData = productDataArray[index];
+          const itemPrice = productData?.price ?? item.price;
+          return sum + (itemPrice * item.quantity);
+        }, 0);
+        const subtotal = calcSubtotal();
+        const shipping = calcShipping(subtotal);
+        const total = subtotal + shipping;
+        const discountAmount = Math.max(0, rawSubtotal - subtotal);
+        const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+        const qualifiesForFreeShipping = shipping === 0;
+        const belowStripeMinimum = total < stripeMinimum;
+        return { rawSubtotal, subtotal, shipping, total, discountAmount, remainingForFreeShipping, qualifiesForFreeShipping, belowStripeMinimum };
+      }
+
+      const totals = calcTotals();
 
       container.innerHTML = `
         ${!isLoggedIn ? `
@@ -125,7 +146,7 @@ import Layout from '../layouts/Layout.astro';
                         <div class="font-semibold">PostNord</div>
                         <div class="text-sm text-gray-600">3 - 4 vardagar</div>
                       </div>
-                      <div class="ml-auto font-bold">${qualifiesForFreeShipping ? '0 SEK' : `${shippingCost} SEK`}</div>
+                      <div class="ml-auto font-bold" id="shipping-price-label">${totals.qualifiesForFreeShipping ? '0 SEK' : `${shippingCost} SEK`}</div>
                     </div>
                     <p class="text-sm text-gray-600">Skickas till din brevlåda/dörr, eller till: Närmaste Serviceställe</p>
                   </div>
@@ -136,14 +157,14 @@ import Layout from '../layouts/Layout.astro';
           <div>
             <div class="bg-surface p-6 sticky top-4">
               <h2 class="text-2xl font-bold mb-4">Ordersammanfattning</h2>
-              ${!qualifiesForFreeShipping ? `
+              ${!totals.qualifiesForFreeShipping ? `
                 <div class="!mb-4 !p-2 bg-blue-50 border border-blue-200 rounded-lg">
                   <div class="flex items-center justify-between !mb-2">
                     <span class="text-sm font-semibold text-blue-800">Fri frakt vid köp över ${freeShippingThreshold} SEK</span>
-                    <span class="text-sm font-bold text-blue-800">${remainingForFreeShipping.toFixed(0)} SEK kvar</span>
+                    <span class="text-sm font-bold text-blue-800" id="remaining-free-shipping">${totals.remainingForFreeShipping.toFixed(0)} SEK kvar</span>
                   </div>
                   <div class="w-full bg-blue-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${Math.min(100, ((subtotal / freeShippingThreshold) * 100))}%"></div>
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="free-shipping-progress" style="width: ${Math.min(100, ((totals.subtotal / freeShippingThreshold) * 100))}%"></div>
                   </div>
                 </div>
               ` : `
@@ -164,21 +185,44 @@ import Layout from '../layouts/Layout.astro';
                 }).join('')}
                 <div class="border-t pt-2 flex justify-between">
                   <span>Delsumma:</span>
-                  <span>${subtotal.toFixed(2)} SEK</span>
+                  <span id="summary-subtotal">${totals.subtotal.toFixed(2)} SEK</span>
+                </div>
+                <div class="flex justify-between ${totals.discountAmount > 0 ? '' : 'hidden'}" id="discount-row">
+                  <span>Rabatt <span id="discount-code-label"></span></span>
+                  <span id="discount-amount">- ${totals.discountAmount.toFixed(2)} SEK</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Frakt:</span>
-                  <span>${qualifiesForFreeShipping ? 'Fri frakt' : `${shippingCost} SEK`}</span>
+                  <span id="summary-shipping">${totals.qualifiesForFreeShipping ? 'Fri frakt' : `${shippingCost} SEK`}</span>
                   </div>
                 <div class="border-t pt-2 flex justify-between font-bold text-xl">
                   <span>Totalt:</span>
-                  <span>${total.toFixed(2)} SEK</span>
+                  <span id="summary-total">${totals.total.toFixed(2)} SEK</span>
                 </div>
-                ${belowStripeMinimum ? `
+                ${totals.belowStripeMinimum ? `
                   <div class="mt-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">
                     Stripe kräver minst ${stripeMinimum} SEK för betalning. Lägg till fler varor för att fortsätta.
                   </div>
                 ` : ''}
+                <div class="!mt-2 !mb-4">
+                  <button 
+                    type="button"
+                    id="toggle-discount"
+                    class="text-sm font-semibold text-primary hover:text-accent flex items-center gap-2"
+                  >
+                    Lägg till kod
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </button>
+                  <div id="discount-form" class="hidden !mt-2 space-y-2">
+                    <div class="flex gap-2">
+                      <input id="discount-input" type="text" placeholder="Rabattkod" class="flex-1 border border-gray-300 rounded !px-2 !py-1" />
+                      <button id="apply-discount" type="button" class="bg-primary text-white px-4 py-2 rounded hover:opacity-90 transition">Använd</button>
+                    </div>
+                    <p id="discount-message" class="text-sm text-red-600 hidden"></p>
+                  </div>
+                </div>
               </div>
               <button 
                 id="checkout-button"
@@ -193,8 +237,99 @@ import Layout from '../layouts/Layout.astro';
       `;
 
       // Handle checkout
+      const discountRow = document.getElementById('discount-row');
+      const discountAmountEl = document.getElementById('discount-amount');
+      const discountCodeLabel = document.getElementById('discount-code-label');
+      const shippingLabel = document.getElementById('summary-shipping');
+      const subtotalEl = document.getElementById('summary-subtotal');
+      const totalEl = document.getElementById('summary-total');
+      const remainingFreeShippingEl = document.getElementById('remaining-free-shipping');
+      const freeShippingProgress = document.getElementById('free-shipping-progress') as HTMLElement | null;
+      const toggleDiscountBtn = document.getElementById('toggle-discount');
+      const discountForm = document.getElementById('discount-form');
+      const applyDiscountBtn = document.getElementById('apply-discount');
+      const discountInput = document.getElementById('discount-input') as HTMLInputElement | null;
+      const discountMessage = document.getElementById('discount-message');
+      const shippingPriceLabel = document.getElementById('shipping-price-label');
+
+      function refreshSummary() {
+        const next = calcTotals();
+        if (subtotalEl) subtotalEl.textContent = `${next.subtotal.toFixed(2)} SEK`;
+        if (shippingLabel) shippingLabel.textContent = next.qualifiesForFreeShipping ? 'Fri frakt' : `${shippingCost} SEK`;
+        if (totalEl) totalEl.textContent = `${next.total.toFixed(2)} SEK`;
+        if (remainingFreeShippingEl) remainingFreeShippingEl.textContent = `${next.remainingForFreeShipping.toFixed(0)} SEK kvar`;
+        if (freeShippingProgress) {
+          freeShippingProgress.style.width = `${Math.min(100, ((next.subtotal / freeShippingThreshold) * 100))}%`;
+        }
+        if (discountRow && discountAmountEl && discountCodeLabel) {
+          if (next.discountAmount > 0 && discount) {
+            discountRow.classList.remove('hidden');
+            discountAmountEl.textContent = `- ${next.discountAmount.toFixed(2)} SEK`;
+            discountCodeLabel.textContent = `(${discount.code})`;
+          } else {
+            discountRow.classList.add('hidden');
+          }
+        }
+        const stripeNotice = container.querySelector('.text-red-700.bg-red-50');
+        if (stripeNotice) {
+          if (next.belowStripeMinimum) {
+            stripeNotice.classList.remove('hidden');
+          } else {
+            stripeNotice.classList.add('hidden');
+          }
+        }
+        if (shippingPriceLabel) {
+          shippingPriceLabel.textContent = next.qualifiesForFreeShipping ? '0 SEK' : `${shippingCost} SEK`;
+        }
+        const checkoutButton = document.getElementById('checkout-button') as HTMLButtonElement | null;
+        if (checkoutButton) {
+          checkoutButton.disabled = next.belowStripeMinimum;
+        }
+      }
+
+      toggleDiscountBtn?.addEventListener('click', () => {
+        discountForm?.classList.toggle('hidden');
+        discountMessage?.classList.add('hidden');
+      });
+
+      applyDiscountBtn?.addEventListener('click', async () => {
+        const code = discountInput?.value.trim() || '';
+        if (!code) {
+          if (discountMessage) {
+            discountMessage.textContent = 'Ange en kod';
+            discountMessage.classList.remove('hidden');
+            discountMessage.classList.remove('text-green-700');
+            discountMessage.classList.add('text-red-600');
+          }
+          return;
+        }
+        try {
+          const res = await fetch(`/api/discount-code?code=${encodeURIComponent(code)}`);
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Ogiltig kod');
+          }
+          discount = data;
+          if (discountMessage) {
+            discountMessage.textContent = `Koden ${discount.code} är aktiverad.`;
+            discountMessage.classList.remove('hidden');
+            discountMessage.classList.remove('text-red-600');
+            discountMessage.classList.add('text-green-700');
+          }
+          refreshSummary();
+        } catch (err: any) {
+          if (discountMessage) {
+            discountMessage.textContent = err.message || 'Ogiltig kod';
+            discountMessage.classList.remove('hidden');
+            discountMessage.classList.remove('text-green-700');
+            discountMessage.classList.add('text-red-600');
+          }
+        }
+      });
+
       document.getElementById('checkout-button')?.addEventListener('click', async () => {
-        if (belowStripeMinimum) {
+        const totalsNow = calcTotals();
+        if (totalsNow.belowStripeMinimum) {
           alert(`Stripe kräver minst ${stripeMinimum} SEK för betalning. Lägg till fler varor för att fortsätta.`);
           return;
         }
@@ -225,7 +360,8 @@ import Layout from '../layouts/Layout.astro';
             body: JSON.stringify({
               items: cart,
               shipping_address: shippingAddress,
-            shipping_method: shippingMethod,
+              shipping_method: shippingMethod,
+              discount_code: discount?.code,
             }),
           });
 
