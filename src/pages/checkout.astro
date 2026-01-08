@@ -54,40 +54,39 @@ import Layout from '../layouts/Layout.astro';
       const productDataArray = await Promise.all(productDataPromises);
 
       // Discount state
-      let discount: { code: string; type: 'percent' | 'free_shipping'; value: number } | null = null;
+      let discount: { code: string; type: 'percent' | 'free_shipping' | 'fixed_amount'; value: number } | null = null;
 
       const shippingCost = 59; // PostNord shipping cost
       const freeShippingThreshold = 400;
       const stripeMinimum = 3; // Stripe minimum SEK
-
-      function calcSubtotal() {
-        return cart.reduce((sum: number, item: any, index: number) => {
-          const productData = productDataArray[index];
-          const itemPrice = productData?.price ?? item.price;
-          const discountFactor = discount?.type === 'percent' ? (1 - (discount.value / 100)) : 1;
-          return sum + (itemPrice * discountFactor * item.quantity);
-        }, 0);
-      }
-
-      function calcShipping(subtotal: number) {
-        const isTestProduct = cart.some((item: any) => item.product_id === 'test-product-1sek');
-        const qualifies = subtotal >= freeShippingThreshold || isTestProduct || discount?.type === 'free_shipping';
-        return qualifies ? 0 : shippingCost;
-      }
-
       function calcTotals() {
         const rawSubtotal = cart.reduce((sum: number, item: any, index: number) => {
           const productData = productDataArray[index];
           const itemPrice = productData?.price ?? item.price;
           return sum + (itemPrice * item.quantity);
         }, 0);
-        const subtotal = calcSubtotal();
-        const shipping = calcShipping(subtotal);
+
+        const percentDiscount = discount?.type === 'percent'
+          ? rawSubtotal * Math.min(Math.max(discount.value, 0), 100) / 100
+          : 0;
+
+        const remainingAfterPercent = rawSubtotal - percentDiscount;
+
+        const fixedDiscount = discount?.type === 'fixed_amount'
+          ? Math.min(Math.max(discount.value, 0), Math.max(0, remainingAfterPercent))
+          : 0;
+
+        const subtotal = Math.max(0, remainingAfterPercent - fixedDiscount);
+
+        const isTestProduct = cart.some((item: any) => item.product_id === 'test-product-1sek');
+        const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct || discount?.type === 'free_shipping';
+        const shipping = qualifiesForFreeShipping ? 0 : shippingCost;
+
         const total = subtotal + shipping;
-        const discountAmount = Math.max(0, rawSubtotal - subtotal);
+        const discountAmount = percentDiscount + fixedDiscount;
         const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-        const qualifiesForFreeShipping = shipping === 0;
         const belowStripeMinimum = total < stripeMinimum;
+
         return { rawSubtotal, subtotal, shipping, total, discountAmount, remainingForFreeShipping, qualifiesForFreeShipping, belowStripeMinimum };
       }
 
@@ -218,7 +217,7 @@ import Layout from '../layouts/Layout.astro';
                   <div id="discount-form" class="hidden !mt-2 space-y-2">
                     <div class="flex gap-2">
                       <input id="discount-input" type="text" placeholder="Rabattkod" class="flex-1 border border-gray-300 rounded !px-2 !py-1" />
-                      <button id="apply-discount" type="button" class="bg-primary text-white px-4 py-2 rounded hover:opacity-90 transition">Använd</button>
+                      <button id="apply-discount" type="button" class="bg-primary bg-indigo-950 text-white !px-3 !py-1 rounded hover:opacity-90 transition">Använd</button>
                     </div>
                     <p id="discount-message" class="text-sm text-red-600 hidden"></p>
                   </div>
@@ -253,6 +252,7 @@ import Layout from '../layouts/Layout.astro';
       const shippingPriceLabel = document.getElementById('shipping-price-label');
 
       function refreshSummary() {
+        if (!container) return;
         const next = calcTotals();
         if (subtotalEl) subtotalEl.textContent = `${next.subtotal.toFixed(2)} SEK`;
         if (shippingLabel) shippingLabel.textContent = next.qualifiesForFreeShipping ? 'Fri frakt' : `${shippingCost} SEK`;
@@ -265,7 +265,7 @@ import Layout from '../layouts/Layout.astro';
           if (next.discountAmount > 0 && discount) {
             discountRow.classList.remove('hidden');
             discountAmountEl.textContent = `- ${next.discountAmount.toFixed(2)} SEK`;
-            discountCodeLabel.textContent = `(${discount.code})`;
+            discountCodeLabel.textContent = `(${discount?.code ?? ''})`;
           } else {
             discountRow.classList.add('hidden');
           }
@@ -311,7 +311,7 @@ import Layout from '../layouts/Layout.astro';
           }
           discount = data;
           if (discountMessage) {
-            discountMessage.textContent = `Koden ${discount.code} är aktiverad.`;
+            discountMessage.textContent = `Koden ${discount?.code ?? ''} är aktiverad.`;
             discountMessage.classList.remove('hidden');
             discountMessage.classList.remove('text-red-600');
             discountMessage.classList.add('text-green-700');

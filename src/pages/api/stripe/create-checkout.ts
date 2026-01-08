@@ -110,9 +110,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const rawSubtotal = subtotal;
     const appliedPercent = discount?.type === 'percent' ? Math.min(Math.max(discount.value, 0), 100) / 100 : 0;
     const appliedFixed = discount?.type === 'fixed_amount' ? Math.max(discount.value, 0) : 0;
-    const percentSubtotal = rawSubtotal * (1 - appliedPercent);
-    const fixedDiscount = discount?.type === 'fixed_amount' ? Math.min(appliedFixed, rawSubtotal - percentSubtotal) : 0;
-    const discountedSubtotal = rawSubtotal - (rawSubtotal * appliedPercent) - fixedDiscount;
+    const percentDiscount = rawSubtotal * appliedPercent;
+    const remainingAfterPercent = rawSubtotal - percentDiscount;
+    const fixedDiscount = discount?.type === 'fixed_amount' ? Math.min(appliedFixed, remainingAfterPercent) : 0;
+    const discountedSubtotal = Math.max(0, remainingAfterPercent - fixedDiscount);
     const stripeMinimum = 3; // Stripe minimum in SEK
     const totalForStripe = discountedSubtotal + finalShippingCost;
 
