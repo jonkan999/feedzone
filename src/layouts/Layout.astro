@@ -20,12 +20,12 @@ const { title = 'Feed Zone - Näringstillskott för uthållighetsidrottare', des
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class="flex flex-col min-h-screen">
     <Navigation />
-    <main class="flex-grow px-4 md:px-6 lg:px-8 py-6 main-padded">
+    <main class="flex-1 px-4 md:px-6 lg:px-8 py-6 main-padded" style="min-height: 50vh;">
       <slot />
     </main>
-    <footer class="bg-gray-900 text-white mt-16 pt-12 pb-10 !pb-10">
+    <footer class="bg-gray-900 text-white mt-16 pt-12 !pb-10">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-10 text-center md:text-center lg:text-left">
           <div class="space-y-4 flex flex-col items-center md:items-center lg:items-start !mt-2">

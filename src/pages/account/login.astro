@@ -36,7 +36,9 @@ import Layout from '../../layouts/Layout.astro';
           </div>
           <button 
             type="submit"
-            class="w-full bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+            id="login-submit-btn"
+            class="w-full bg-indigo-950 hover:bg-indigo-900 text-white text-center rounded-lg font-semibold transition-all uppercase text-sm cursor-pointer"
+            style="padding: 0.875rem 1.5rem !important; color: white !important;"
           >
             Logga in
           </button>
@@ -111,6 +113,13 @@ import Layout from '../../layouts/Layout.astro';
   .container {
     max-width: 1200px;
     margin: 0 auto;
+  }
+  
+  #login-form button[type="submit"],
+  #login-submit-btn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 </style>
 
