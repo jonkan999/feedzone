@@ -113,15 +113,25 @@ if (response.ok) {
 
 ### Email Confirmation Redirect URL
 
+**⚠️ CRITICAL:** Supabase uses the **Site URL** from the dashboard as the base for email redirects. The `emailRedirectTo` parameter in code only works if the URL is in the allowed redirect URLs list.
+
 In Supabase Dashboard:
 
 1. Go to **Authentication** → **URL Configuration**
 2. Set **Site URL** to: `https://feedzone.se`
-   - ⚠️ **Important:** Use your production domain here, NOT `localhost`
-   - The code automatically uses `PUBLIC_SITE_URL` from your `.env` for redirects
-3. Set **Redirect URLs** to include:
-   - `https://feedzone.se/**` (production)
+   - ⚠️ **MUST be your production domain**, NOT `localhost` or `localhost:3000`
+   - This is the base URL Supabase uses for all email links
+3. Set **Redirect URLs** to include (these allow the `emailRedirectTo` parameter to work):
+   - `https://feedzone.se/**` (production - REQUIRED)
    - `http://localhost:4321/**` (only if you need to test locally)
+   - Make sure `https://feedzone.se/account/confirm` is covered by the wildcard pattern
+
+**Important Notes:**
+
+- The Site URL should ALWAYS be your production domain (`https://feedzone.se`)
+- The code will use `PUBLIC_SITE_URL` from your environment variables
+- In production, set `PUBLIC_SITE_URL=https://feedzone.se` in your Vercel/environment settings
+- The redirect URLs list controls which URLs are allowed for the `emailRedirectTo` parameter
 
 **For Local Development:**
 

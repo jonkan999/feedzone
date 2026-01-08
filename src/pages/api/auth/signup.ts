@@ -30,8 +30,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const supabase = createServerClient();
 
-    // Get site URL from environment or use default
-    const siteUrl = import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321";
+    // Get site URL from environment - use production URL in production, localhost in dev
+    // In production, this should be https://feedzone.se
+    const siteUrl =
+      import.meta.env.PUBLIC_SITE_URL ||
+      (import.meta.env.PROD ? "https://feedzone.se" : "http://localhost:4321");
     // Redirect to confirmation handler page after email confirmation
     const redirectTo = `${siteUrl}/account/confirm`;
 
