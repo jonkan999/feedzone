@@ -93,10 +93,18 @@ Go to **Authentication → Emails** in your Supabase dashboard and enable:
 
 Go to **Authentication → URL Configuration**:
 
-- **Site URL:** `https://feedzone.se` (or `http://localhost:4321` for dev)
+- **Site URL:** Set this to your production URL: `https://feedzone.se`
+  - ⚠️ **Important:** Don't use `localhost` here! Use your production domain.
+  - The code will automatically handle local development redirects
 - **Redirect URLs:** Add:
-  - `https://feedzone.se/**`
-  - `http://localhost:4321/**`
+  - `https://feedzone.se/**` (production)
+  - `http://localhost:4321/**` (for local testing - only add if you need to test locally)
+
+**For Local Development:**
+
+- Make sure your dev server is running (`npm run dev`) before clicking confirmation links
+- Or use a tool like [ngrok](https://ngrok.com) to create a public URL for local testing
+- The confirmation email will redirect to `PUBLIC_SITE_URL` from your `.env` file
 
 #### 3. Set Up Custom SMTP (Production)
 
@@ -224,6 +232,7 @@ The site includes the following authentication pages:
 
 - `/account/login` - User login
 - `/account/signup` - User registration
+- `/account/confirm` - Email confirmation handler (accessed via email link)
 - `/account/forgot-password` - Request password reset
 - `/account/reset-password` - Reset password (accessed via email link)
 - `/account` - User account dashboard

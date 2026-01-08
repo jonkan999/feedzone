@@ -1,0 +1,99 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Bekräftar e-postadress - Feed Zone">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto">
+      <h1 class="text-4xl font-bold text-primary mb-8 text-center">Bekräftar e-postadress</h1>
+      
+      <div class="bg-surface p-6">
+        <div id="confirming-message" class="text-center">
+          <p class="text-text-muted mb-4">Bekräftar din e-postadress...</p>
+        </div>
+
+        <div id="success-message" class="hidden text-center">
+          <p class="text-green-600 mb-4 font-semibold">Din e-postadress har bekräftats!</p>
+          <p class="text-text-muted mb-6">Du kan nu logga in med ditt konto.</p>
+          <a 
+            href="/account/login" 
+            class="inline-block bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+          >
+            Logga in
+          </a>
+        </div>
+
+        <div id="error-message" class="hidden text-center">
+          <p class="text-red-600 mb-4 font-semibold">Kunde inte bekräfta e-postadress</p>
+          <p class="text-text-muted mb-4" id="error-text"></p>
+          <a 
+            href="/account/login" 
+            class="inline-block bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+          >
+            Tillbaka till inloggning
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../../lib/supabase-client';
+  
+  if (typeof window !== 'undefined') {
+    async function handleEmailConfirmation() {
+      const confirmingMessage = document.getElementById('confirming-message');
+      const successMessage = document.getElementById('success-message');
+      const errorMessage = document.getElementById('error-message');
+      const errorText = document.getElementById('error-text');
+
+      try {
+        // Supabase redirects with hash fragments: #access_token=...&type=signup
+        // The Supabase client automatically processes these on page load
+        // Wait a moment for Supabase to process the hash
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          throw error;
+        }
+
+        if (session) {
+          // Success - email confirmed and user is now logged in
+          if (confirmingMessage) confirmingMessage.classList.add('hidden');
+          if (successMessage) successMessage.classList.remove('hidden');
+          
+          // Optionally redirect to account page after 2 seconds
+          setTimeout(() => {
+            window.location.href = '/account';
+          }, 2000);
+        } else {
+          // No session - might be expired or invalid token
+          throw new Error('Bekräftelselänken är ogiltig eller har gått ut. Begär en ny bekräftelselänk.');
+        }
+      } catch (error: any) {
+        if (confirmingMessage) confirmingMessage.classList.add('hidden');
+        if (errorMessage) errorMessage.classList.remove('hidden');
+        if (errorText) {
+          errorText.textContent = error.message || 'Ett fel uppstod vid bekräftelse av e-postadress.';
+        }
+      }
+    }
+
+    // Handle confirmation on page load
+    handleEmailConfirmation();
+    
+    // Also listen for hash changes (in case Supabase redirects after page load)
+    window.addEventListener('hashchange', handleEmailConfirmation);
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>
+

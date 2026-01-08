@@ -116,10 +116,21 @@ if (response.ok) {
 In Supabase Dashboard:
 
 1. Go to **Authentication** → **URL Configuration**
-2. Set **Site URL** to: `https://feedzone.se` (or `http://localhost:4321` for local dev)
+2. Set **Site URL** to: `https://feedzone.se`
+   - ⚠️ **Important:** Use your production domain here, NOT `localhost`
+   - The code automatically uses `PUBLIC_SITE_URL` from your `.env` for redirects
 3. Set **Redirect URLs** to include:
    - `https://feedzone.se/**` (production)
-   - `http://localhost:4321/**` (local development)
+   - `http://localhost:4321/**` (only if you need to test locally)
+
+**For Local Development:**
+
+- Make sure your dev server is running (`npm run dev`) before clicking confirmation links
+- The confirmation email will redirect to the URL specified in your `.env` file's `PUBLIC_SITE_URL`
+- If you get "connection refused" errors, ensure:
+  1. Your dev server is running on port 4321
+  2. Your `.env` file has `PUBLIC_SITE_URL=http://localhost:4321`
+  3. Or use [ngrok](https://ngrok.com) for a public URL during testing
 
 This ensures confirmation links redirect back to your site.
 
