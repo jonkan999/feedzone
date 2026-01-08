@@ -39,7 +39,7 @@ import Layout from '../../layouts/Layout.astro';
       container.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="md:col-span-2">
-            <div class="bg-surface rounded-lg shadow-md p-6 mb-6">
+            <div class="bg-surface !p-6 !mb-6">
               <h2 class="text-2xl font-bold mb-4">Kontoinformation</h2>
               <div class="space-y-3">
                 <div>
@@ -53,8 +53,8 @@ import Layout from '../../layouts/Layout.astro';
               </div>
             </div>
 
-            <div class="bg-surface rounded-lg shadow-md p-6">
-              <h2 class="text-2xl font-bold mb-4">Senaste ordrar</h2>
+            <div class="bg-surface !p-6">
+              <h2 class="text-2xl font-bold !mb-4">Senaste ordrar</h2>
               <div id="recent-orders">
                 <p class="text-text-muted">Laddar ordrar...</p>
               </div>
@@ -65,18 +65,18 @@ import Layout from '../../layouts/Layout.astro';
           </div>
           
           <div>
-            <div class="bg-surface rounded-lg shadow-md p-6">
-              <h3 class="text-xl font-bold mb-4">Snabbåtgärder</h3>
+            <div class="bg-surface !p-6">
+              <h3 class="text-xl font-bold !mb-4">Snabbåtgärder</h3>
               <div class="space-y-3">
-                <a href="/account/orders" class="block bg-primary text-white px-4 py-2 rounded hover:opacity-90 transition-opacity text-center">
+                <a href="/account/orders" class="block bg-primary text-white px-4 py-2 hover:opacity-90 transition-opacity text-center">
                   Visa ordrar
                 </a>
-                <a href="/products" class="block bg-accent text-white px-4 py-2 rounded hover:opacity-90 transition-opacity text-center">
+                <a href="/products" class="block bg-accent text-white px-4 py-2 hover:opacity-90 transition-opacity text-center">
                   Handla produkter
                 </a>
                 <button 
                   id="sign-out"
-                  class="w-full bg-gray-200 text-text px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+                  class="w-full bg-gray-200 text-text px-4 py-2 hover:bg-gray-300 transition-colors"
                 >
                   Logga ut
                 </button>

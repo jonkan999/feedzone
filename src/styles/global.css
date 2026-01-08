@@ -6,6 +6,7 @@
   --color-primary: #2f8f85; /* retro teal (matches FEED ZONE text + ring) */
   --color-secondary: #9cc96b; /* soft avocado green (dino-friendly, not neon) */
   --color-accent: #f28c38; /* warm orange (snack / retro pop accent) */
+  --color-accent-secondary: #8f2c79; /* deep plum accent for logged-in icon */
 
   /* Backgrounds */
   --color-background: #f6ecd8; /* warm eggshell paper tone */
