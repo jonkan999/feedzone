@@ -152,7 +152,7 @@ Configure DNS using Vercel DNS:
 1. In Vercel Dashboard → **Domains** → Click on `feedzone.se`
 2. Look for **"DNS Records"** section
 3. Vercel will show you the required DNS records:
-   - **For root domain (`feedzone.se`)**: 
+   - **For root domain (`feedzone.se`)**:
      - Type: `A`
      - Name: `@` (or leave blank)
      - Value: `216.198.79.1` (or the IP Vercel shows)
@@ -183,6 +183,7 @@ To send emails from `noreply@feedzone.se`, you need to add DNS records for Resen
 2. You'll see DNS records that need to be added. Add these records at your DNS provider:
 
 #### Domain Verification
+
 - **Type**: `TXT`
 - **Name**: `@` (or root/blank)
 - **Content**: (Get the exact value from Resend Dashboard - it will be unique for your domain)
@@ -191,25 +192,33 @@ To send emails from `noreply@feedzone.se`, you need to add DNS records for Resen
 **Note**: The domain verification TXT record content will be shown in your Resend Dashboard. Copy it exactly as shown.
 
 #### DKIM (DomainKeys Identified Mail)
+
 - **Type**: `TXT`
 - **Name**: `resend._domainkey`
 - **Content**: `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCx54PWasBQVVuo4TiBJ2pQYl/pCXeGDQTwUL5bvb8CzzQhuRCpYyt/zcSNpsns92OTpMmOZKKiLLlFic1I1bX0QaI/2b+yGUOVype2u5pGGm3dvYDQx5Efhr81xLgqHbnvqdlz6MmRP+NPVYhrO85hm+7C4gKucmMpbIZJ6qxU1wIDAQAB`
 - **TTL**: Auto (or 3600)
 
+**⚠️ Note**: When adding this record in Vercel DNS, you may see a warning about "Wildcard Domain Override". This is **normal and safe to proceed** - it's just informing you that this specific record will take precedence over any wildcard records (like `*._domainkey.feedzone.se`). Since you're setting up Resend for the first time and don't have other services using wildcard DKIM records, you can safely click **"Continue"** or **"Add Record"**.
+
 #### SPF (Sender Policy Framework) - Enable Sending
+
 - **Type**: `TXT`
 - **Name**: `send`
 - **Content**: `v=spf1 include:amazonses.com ~all`
 - **TTL**: Auto (or 3600)
 
 #### MX Record - Enable Receiving (Optional, if you want to receive emails)
+
 - **Type**: `MX`
 - **Name**: `send`
 - **Content**: `feedback-smtp.eu-west-1.amazonses.com`
-- **Priority**: `10`
+- **Priority** (or **MX Priority**): `10`
 - **TTL**: Auto (or 3600)
 
+**Note**: In Vercel DNS, make sure to fill in the **Priority** field (sometimes labeled as **MX Priority**). If you see an error about "missing required property `mxPriority`", ensure the Priority field is set to `10`.
+
 **Important Notes:**
+
 - Add these records in **Vercel Dashboard** → **Domains** → `feedzone.se` → **DNS Records**
 - After adding records, go back to Resend Dashboard and click **"Verify"** or **"Refresh"**
 - Verification usually takes a few minutes to a few hours

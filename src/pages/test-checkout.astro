@@ -1,0 +1,209 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { createServerClient } from '../lib/supabase';
+
+export const prerender = false;
+
+const supabase = createServerClient();
+const { data: product } = await supabase
+  .from('products')
+  .select('*')
+  .eq('id', 'test-product-1sek')
+  .single();
+---
+
+<Layout title="Test Checkout - Feed Zone">
+  <div class="container mx-auto px-4 py-12 max-w-4xl">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <p class="text-sm text-yellow-800">
+        <strong>Test Mode:</strong> This is a test product for Stripe integration testing. Price: 1 SEK with free shipping.
+      </p>
+    </div>
+
+    {product ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Product Image -->
+        <div>
+          <img
+            src={product.image_url || '/images/placeholder.jpg'}
+            alt={product.name}
+            class="w-full rounded-lg"
+          />
+        </div>
+
+        <!-- Product Info -->
+        <div>
+          <h1 class="text-4xl font-bold text-primary mb-4">{product.name}</h1>
+          <p class="text-2xl font-bold text-accent mb-4">{product.price.toFixed(2)} SEK</p>
+          <div class="text-text-muted mb-6" set:html={product.description || 'Test product description.'}></div>
+
+          {product.in_stock ? (
+            <div>
+              <div class="quantity-controls w-full flex justify-center" data-product-id={product.id} data-product-name={product.name} data-product-price={product.price}>
+                <div id="quantity-controls-container" class="w-full flex justify-center">
+                  <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm cursor-pointer" style="min-width: 300px;">KÖP</button>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 mt-4 text-center">✓ Free shipping included for test product</p>
+            </div>
+          ) : (
+            <p class="text-red-600 font-semibold">Slut i lager</p>
+          )}
+        </div>
+      </div>
+    ) : (
+      <div class="text-center py-12">
+        <p class="text-gray-600">Test product not found. Make sure it's added to the database.</p>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<script>
+  if (typeof window !== 'undefined') {
+    // Function to update quantity controls display
+    function updateQuantityControls() {
+      const controlsDiv = document.querySelector('.quantity-controls');
+      if (!controlsDiv) return;
+      
+      const productId = controlsDiv.getAttribute('data-product-id');
+      const productName = controlsDiv.getAttribute('data-product-name');
+      const productPrice = controlsDiv.getAttribute('data-product-price');
+      const container = document.getElementById('quantity-controls-container');
+      
+      if (!container || !productId) return;
+      
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const cartItem = cart.find((item: any) => item.product_id === productId);
+      const initialQuantity = cartItem ? cartItem.quantity : 0;
+      const isInCart = initialQuantity > 0;
+      
+      if (isInCart) {
+        container.innerHTML = `
+          <div class="flex items-center gap-2 quantity-buttons justify-center">
+            <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg cursor-pointer" data-action="decrease">−</button>
+            <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${productId}">
+            <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg cursor-pointer" data-action="increase">+</button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm cursor-pointer" style="min-width: 300px;">KÖP</button>`;
+      }
+    }
+
+    // Update quantity controls on page load
+    updateQuantityControls();
+    
+    // Listen for cart updates
+    window.addEventListener('cart-updated', () => {
+      updateQuantityControls();
+      setupQuantityListeners();
+    });
+
+    // Function to update cart quantity
+    function updateCartQuantity(productId: string, quantity: number) {
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const itemIndex = cart.findIndex((item: any) => item.product_id === productId);
+      
+      if (itemIndex >= 0) {
+        if (quantity <= 0) {
+          cart.splice(itemIndex, 1);
+        } else {
+          cart[itemIndex].quantity = quantity;
+        }
+        localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+      }
+    }
+
+    // Setup quantity control listeners
+    function setupQuantityListeners() {
+      const controlsDiv = document.querySelector('.quantity-controls');
+      if (!controlsDiv) return;
+      
+      const productId = controlsDiv.getAttribute('data-product-id');
+      const productName = controlsDiv.getAttribute('data-product-name');
+      const productPrice = parseFloat(controlsDiv.getAttribute('data-product-price') || '0');
+      
+      // Handle KÖP button
+      const kopBtn = controlsDiv.querySelector('.kop-btn');
+      if (kopBtn) {
+        kopBtn.addEventListener('click', () => {
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          cart.push({
+            product_id: productId,
+            product_name: productName,
+            price: productPrice,
+            quantity: 1,
+          });
+          localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cart-updated'));
+        });
+      }
+      
+      // Handle quantity buttons
+      const quantityBtns = controlsDiv.querySelectorAll('.quantity-btn');
+      quantityBtns.forEach((btn: any) => {
+        btn.addEventListener('click', () => {
+          const action = btn.getAttribute('data-action');
+          const input = controlsDiv.querySelector('.quantity-input') as HTMLInputElement;
+          if (!input) return;
+          
+          let quantity = parseInt(input.value) || 0;
+          if (action === 'increase') {
+            quantity += 1;
+          } else if (action === 'decrease' && quantity > 0) {
+            quantity -= 1;
+          }
+          input.value = quantity.toString();
+          if (productId) {
+            updateCartQuantity(productId, quantity);
+          }
+        });
+      });
+      
+      // Handle quantity input changes
+      const quantityInput = controlsDiv.querySelector('.quantity-input');
+      if (quantityInput) {
+        quantityInput.addEventListener('change', () => {
+          const input = quantityInput as HTMLInputElement;
+          const quantity = parseInt(input.value) || 0;
+          if (productId) {
+            updateCartQuantity(productId, Math.max(0, quantity));
+          }
+        });
+      }
+    }
+
+    // Initial setup
+    setupQuantityListeners();
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .quantity-input {
+    -moz-appearance: textfield;
+  }
+  
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  #quantity-controls-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .kop-btn {
+    min-width: 300px !important;
+  }
+</style>
+

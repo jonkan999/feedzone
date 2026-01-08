@@ -212,7 +212,7 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
 (
   'kqm-recovery-mix',
   'KQM Recovery Mix',
-  'KQM:s standardformel för återhämtning med högt fruktosinnehåll och chokladsmak. Denna unika mix kombinerar kolhydrater för snabb återhämtning med prestationsstödjande ingredienser inklusive torkad svampmix. Perfekt för efter träning när du behöver snabb återhämtning och som också smakar gott.',
+  'KQM:s standardformel för återhämtning med högt fruktosinnehåll och chokladsmak. Denna unika mix kombinerar kolhydrater och protein för snabb återhämtning med en mix av fyra prestationshöjande svampar: <strong>cordyceps</strong> (stöttar arbetskapacitet och tolerans för hård belastning), <strong>reishi</strong> (stöd för att varva ned när nervsystemet står på högvarv), <strong>lion''s mane</strong> (kognitivt stöd) och <strong>chaga</strong> (stöttar immunförsvaret). Perfekt för efter träning när du behöver både fysisk återhämtning och mental återställning. Läs mer om funktionella svampar för löpare i vår artikel: <a href="/zone-news/mushrooms-run-faster-jeremy-miller">Svamp som verktyg för löpare</a>.',
   249.00,
   'recovery',
   true,
@@ -242,6 +242,32 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   'carbs',
   true,
   true,
+  NULL,
+  '/images/products/custom-gel/primary.jpg',
+  '[]'::jsonb
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images;
+
+-- Test Product: Hidden 1 SEK product for Stripe testing
+-- Accessible at /test-checkout (not shown in product listings)
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+(
+  'test-product-1sek',
+  'Test Product - 1 SEK',
+  'This is a test product for Stripe integration testing. Free shipping included.',
+  1.00,
+  'test',
+  true,
+  false,
   NULL,
   '/images/products/custom-gel/primary.jpg',
   '[]'::jsonb

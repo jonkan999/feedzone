@@ -67,11 +67,11 @@ export const POST: APIRoute = async ({ request }) => {
       const orderItems = lineItems
         .filter((item: any) => !item.description?.includes('Frakt')) // Exclude shipping line item
         .map((item: any) => ({
-          product_id: item.price?.product as string || 'unknown',
-          product_name: item.description || 'Unknown Product',
-          quantity: item.quantity || 1,
-          price: (item.price?.unit_amount || 0) / 100,
-        }));
+        product_id: item.price?.product as string || 'unknown',
+        product_name: item.description || 'Unknown Product',
+        quantity: item.quantity || 1,
+        price: (item.price?.unit_amount || 0) / 100,
+      }));
 
       const { data: order, error: orderError } = await supabase
         .from('orders')

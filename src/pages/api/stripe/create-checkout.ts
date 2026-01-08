@@ -61,9 +61,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }, 0);
 
     // Calculate shipping costs
+    // Check if this is a test product (free shipping)
+    const isTestProduct = items.some((item: any) => item.product_id === 'test-product-1sek');
     const shippingCost = 59; // PostNord shipping cost in SEK
     const freeShippingThreshold = 400;
-    const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
+    const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct;
     const finalShippingCost = qualifiesForFreeShipping ? 0 : shippingCost;
 
     const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321';

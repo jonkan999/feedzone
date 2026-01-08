@@ -61,7 +61,7 @@ if (id) {
         <div>
           <h1 class="text-4xl font-bold text-primary" style="margin-bottom: 1rem;">{product.name}</h1>
           <p class="text-2xl font-bold text-accent" style="margin-bottom: 1rem;">{product.price.toFixed(2)} SEK</p>
-          <p class="text-text-muted" style="margin-bottom: 1.5rem;">{product.description || 'Ingen beskrivning tillgänglig.'}</p>
+          <div class="text-text-muted product-description" style="margin-bottom: 1.5rem;" set:html={product.description || 'Ingen beskrivning tillgänglig.'}></div>
           
           {product.in_stock ? (
             <div>
@@ -272,7 +272,7 @@ if (id) {
                 <div>
                   <h1 class="text-4xl font-bold text-primary" style="margin-bottom: 1rem;">${product.name}</h1>
                   <p class="text-2xl font-bold text-accent" style="margin-bottom: 1rem;">${product.price.toFixed(2)} SEK</p>
-                  <p class="text-text-muted" style="margin-bottom: 1.5rem;">${product.description || 'Ingen beskrivning tillgänglig.'}</p>
+                  <div class="text-text-muted product-description" style="margin-bottom: 1.5rem;">${product.description || 'Ingen beskrivning tillgänglig.'}</div>
                   ${product.in_stock ? `
                     <div>
                       ${hasVariants ? `
@@ -349,6 +349,27 @@ if (id) {
   
   .kop-btn {
     min-width: 300px !important;
+  }
+
+  /* Product description styling for HTML content */
+  :global(.product-description) {
+    line-height: 1.6;
+  }
+
+  :global(.product-description strong) {
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  :global(.product-description a) {
+    color: #7fc4c3;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+  }
+
+  :global(.product-description a:hover) {
+    color: #5fa5a4;
   }
 </style>
 
