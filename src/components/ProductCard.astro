@@ -37,7 +37,12 @@ const { productId, productName, productDescription = '', productPrice, productIm
         }
         const productId = card.getAttribute('data-product-id');
         if (productId) {
-          window.location.href = `/products/${productId}`;
+          // Custom gel product goes to custom page
+          if (productId === 'custom-gel') {
+            window.location.href = '/kqm-custom-energy-gel';
+          } else {
+            window.location.href = `/products/${productId}`;
+          }
         }
       }
     });

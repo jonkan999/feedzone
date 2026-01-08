@@ -214,7 +214,12 @@ import Layout from '../layouts/Layout.astro';
         }
         const productId = productCard.getAttribute('data-product-id');
         if (productId) {
-          window.location.href = `/products/${productId}`;
+          // Custom gel product goes to custom page
+          if (productId === 'custom-gel') {
+            window.location.href = '/kqm-custom-energy-gel';
+          } else {
+            window.location.href = `/products/${productId}`;
+          }
         }
       }
     });
@@ -251,6 +256,31 @@ import Layout from '../layouts/Layout.astro';
 
     loadFeaturedProducts();
     
+    // Helper function to get YouTube thumbnail URL
+    function getYouTubeThumbnailUrl(url: string): string | null {
+      if (!url) return null;
+      
+      // Extract video ID from various YouTube URL formats
+      let videoId: string | null = null;
+      
+      // youtube.com/watch?v=VIDEO_ID
+      const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
+      if (watchMatch) videoId = watchMatch[1];
+      
+      // youtu.be/VIDEO_ID
+      const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+      if (shortMatch) videoId = shortMatch[1];
+      
+      // youtube.com/embed/VIDEO_ID
+      const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/);
+      if (embedMatch) videoId = embedMatch[1];
+      
+      if (!videoId) return null;
+      
+      // Return high-quality thumbnail (maxresdefault falls back to hqdefault if not available)
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+
     // Load inspiration items (products + news)
     async function loadInspirationItems() {
       try {
@@ -262,30 +292,33 @@ import Layout from '../layouts/Layout.astro';
           if (items.length === 0) {
             container.innerHTML = '<div class="flex gap-6 min-w-max"><p class="text-gray-600 py-8">Inget innehåll tillgängligt ännu.</p></div>';
           } else {
-            let productCount = 0;
             const itemsHTML = items.map((item: any) => {
-              const imageUrl = item.image_url || '/images/placeholder.jpg';
-              let displayTitle = item.title;
-              let displayCategory = item.category;
-              let badgeType = 'news'; // 'new-product', 'selected-product', 'news'
-              let badgeText = '';
+              // Convert YouTube URLs to thumbnails, otherwise use image_url
+              const youtubeThumbnail = getYouTubeThumbnailUrl(item.image_url || '');
+              const imageUrl = youtubeThumbnail || item.image_url || '/images/placeholder.jpg';
               
-              // Handle product display titles and badge types
+              // Use actual product/news title (don't replace with generic text)
+              const displayTitle = item.title || '';
+              const displayCategory = item.category || (item.type === 'product' ? 'Produkt' : 'Nyhet');
+              
+              // Clean excerpt - ensure no HTML and proper escaping
+              let cleanExcerpt = item.excerpt || '';
+              // Strip any remaining HTML tags
+              cleanExcerpt = cleanExcerpt.replace(/<[^>]*>/g, '');
+              // Escape HTML entities
+              cleanExcerpt = cleanExcerpt
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+              
+              // Determine badge text
+              let badgeText = '';
               if (item.type === 'product') {
-                productCount++;
-                if (productCount === 1) {
-                  displayTitle = 'Ny produkt';
-                  badgeType = 'new-product';
-                  badgeText = 'Ny produkt';
-                } else {
-                  displayTitle = 'Utvald produkt';
-                  badgeType = 'selected-product';
-                  badgeText = 'Utvald produkt';
-                }
-                displayCategory = 'Produkt';
+                badgeText = 'Produkt';
               } else {
                 // News article - use badge_text from database
-                badgeType = 'news';
                 badgeText = item.badge_text || item.category || 'Nyhet';
               }
               
@@ -294,25 +327,42 @@ import Layout from '../layouts/Layout.astro';
                 badgeText = displayCategory || 'Nyhet';
               }
               
+              // Escape title and category for HTML
+              const escapedTitle = displayTitle
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+              const escapedCategory = displayCategory
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+              const escapedBadge = badgeText
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+              
               return `
-                <a href="${item.link}" class="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-lg overflow-hidden transition-all cursor-pointer card-hover relative">
-                  <div class="relative w-full h-48 overflow-hidden">
-                    ${item.image_url ? `
-                      <img src="${imageUrl}" alt="${item.title}" class="w-full h-full object-cover">
+                <a href="${item.link}" class="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-lg overflow-hidden transition-all cursor-pointer card-hover relative flex flex-col">
+                  <div class="relative w-full h-48 overflow-hidden flex-shrink-0">
+                    ${imageUrl ? `
+                      <img src="${imageUrl}" alt="${escapedTitle}" class="w-full h-full object-cover">
                     ` : `
                       <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-400">${displayCategory}</span>
+                        <span class="text-gray-400">${escapedCategory}</span>
                       </div>
                     `}
                     <!-- Overlay Badge -->
-                    <div class="badge-overlay badge-${badgeType}" style="position: absolute !important; top: 1rem !important; left: 1rem !important; z-index: 20 !important;">
-                      <span class="badge-text" style="background: white !important; padding: 0.2rem 0.4rem !important; display: inline-block !important; font-size: 0.75rem !important; font-weight: 700 !important; text-transform: uppercase !important;">${badgeText}</span>
+                    <div class="badge-overlay badge-news" style="position: absolute !important; top: 1rem !important; left: 1rem !important; z-index: 20 !important;">
+                      <span class="badge-text" style="background: white !important; padding: 0.2rem 0.4rem !important; display: inline-block !important; font-size: 0.75rem !important; font-weight: 700 !important; text-transform: uppercase !important;">${escapedBadge}</span>
                     </div>
                   </div>
-                  <div class="p-6">
-                    <div class="text-xs font-semibold text-accent mb-2 uppercase tracking-wide">${displayCategory}</div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${displayTitle}</h3>
-                    <p class="text-sm text-gray-600 line-clamp-2">${item.excerpt || ''}</p>
+                  <div class="p-6 flex flex-col flex-grow">
+                    <div class="text-xs font-semibold text-accent mb-2 uppercase tracking-wide">${escapedCategory}</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${escapedTitle}</h3>
+                    <p class="text-sm text-gray-600 line-clamp-3 flex-grow">${cleanExcerpt}</p>
                   </div>
                 </a>
               `;

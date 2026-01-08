@@ -43,12 +43,21 @@ export const GET: APIRoute = async ({ request }) => {
     // Add products as "Produkt" type items
     if (products) {
       products.forEach((product) => {
+        // Create a clean excerpt from description (strip HTML and truncate)
+        let excerpt = product.description || '';
+        // Strip HTML tags
+        excerpt = excerpt.replace(/<[^>]*>/g, '');
+        // Truncate to ~150 characters
+        if (excerpt.length > 150) {
+          excerpt = excerpt.substring(0, 150).trim() + '...';
+        }
+        
         productItems.push({
           id: product.id,
           type: 'product',
           category: 'Produkt',
           title: product.name,
-          excerpt: product.description || '',
+          excerpt: excerpt,
           image_url: product.image_url,
           link: `/products/${product.id}`,
           created_at: product.created_at,
