@@ -1,0 +1,233 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createServerClient } from '../../lib/supabase';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const articlePath = id ? `/zone-news/${id}` : null;
+
+function getYouTubeEmbedUrl(url: string): string | null {
+  if (!url) return null;
+  
+  // Already an embed URL
+  if (url.includes('youtube.com/embed/')) return url;
+  
+  // Extract video ID from various YouTube URL formats
+  let videoId: string | null = null;
+  
+  // youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
+  if (watchMatch) videoId = watchMatch[1];
+  
+  // youtu.be/VIDEO_ID
+  const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+  if (shortMatch) videoId = shortMatch[1];
+  
+  // youtube.com/embed/VIDEO_ID (already handled above, but just in case)
+  const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/);
+  if (embedMatch) videoId = embedMatch[1];
+  
+  if (!videoId) return null;
+  
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
+let article: any = null;
+let relatedProducts: any[] = [];
+
+if (id) {
+  try {
+    const supabase = createServerClient();
+    const nowISO = new Date().toISOString();
+    const filters = [`id.eq.${id}`];
+    if (articlePath) filters.push(`article_url.eq.${articlePath}`);
+
+    const { data } = await supabase
+      .from('news')
+      .select('*')
+      .or(filters.join(','))
+      .lte('published_at', nowISO)
+      .maybeSingle();
+    article = data || null;
+
+    // fetch related products from article.related_products (array of product ids)
+    const relatedIds = Array.isArray(article?.related_products) ? article.related_products : [];
+    if (relatedIds.length > 0) {
+      const { data: prodData } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', relatedIds);
+      relatedProducts = prodData || [];
+      relatedProducts.sort((a, b) => relatedIds.indexOf(a.id) - relatedIds.indexOf(b.id));
+    }
+  } catch (error) {
+    // handled below
+  }
+}
+---
+
+<Layout title={article ? `${article.title} - Feed Zone` : 'Artikel - Feed Zone'}>
+  <div class="container mx-auto px-4 py-12 max-w-5xl">
+    {article ? (
+      <>
+        <div class="mb-8">
+          <a href="/zone-news" class="text-primary font-semibold text-sm hover:text-accent transition-colors inline-flex items-center gap-2">
+            ← Tillbaka till In the Zone
+          </a>
+        </div>
+
+        <header class="space-y-4 mb-8">
+          <div class="text-xs font-semibold uppercase tracking-wide inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full">
+            {article.badge_text || article.category || 'Nyhet'}
+            {article.published_at ? (
+              <span class="text-gray-600">· {new Date(article.published_at).toLocaleDateString('sv-SE', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+            ) : null}
+          </div>
+          <h1 class="text-4xl md:text-5xl font-black text-gray-900 leading-tight">{article.title}</h1>
+          {article.excerpt ? <p class="text-lg text-gray-700 max-w-3xl">{article.excerpt}</p> : null}
+        </header>
+
+        {article.image_url ? (
+          (() => {
+            const youtubeEmbedUrl = getYouTubeEmbedUrl(article.image_url);
+            if (youtubeEmbedUrl) {
+              return (
+                <div class="relative overflow-hidden mb-10" style="padding-bottom: 56.25%; height: 0;">
+                  <iframe
+                    src={youtubeEmbedUrl}
+                    title={article.title}
+                    class="absolute top-0 left-0 w-full h-full"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              );
+            }
+            return (
+              <div class="relative overflow-hidden mb-10">
+                <img
+                  src={article.image_url}
+                  alt={article.title}
+                  class={`w-full h-[320px] md:h-[420px] object-cover ${article.grayscale ? 'grayscale-img' : ''}`}
+                  style={article.grayscale ? 'filter: grayscale(100%) saturate(0%); -webkit-filter: grayscale(100%) saturate(0%);' : ''}
+                />
+                {article.grayscale ? <div class="absolute inset-0 bg-gradient-to-tr from-black/25 via-black/10 to-transparent"></div> : null}
+              </div>
+            );
+          })()
+        ) : null}
+
+        <article class="article-body prose prose-lg max-w-none text-gray-800">
+          {article.body ? (
+            <div class="space-y-4" set:html={article.body}></div>
+          ) : (
+            <p>Artikeln saknar innehåll.</p>
+          )}
+        </article>
+
+        {relatedProducts.length > 0 ? (
+          <div class="bg-gray-50 border border-gray-200 p-5 space-y-4 mt-10">
+            <div class="flex items-center justify-between !mx-1">
+              <h2 class="text-xl font-semibold text-gray-900">Relaterade produkter</h2>
+              <span class="text-xs font-semibold text-primary uppercase tracking-wide">Rekommenderat</span>
+            </div>
+            <p class="text-sm text-gray-700 !mx-1">
+              Produkter som passar artikeln. Klicka för att läsa mer eller köp direkt.
+            </p>
+            <div class="-mx-2 sm:mx-0">
+              <div class="overflow-x-auto scrollbar-container">
+                <div class="flex gap-6 px-2 pb-2 min-w-max">
+                  {relatedProducts.map((product) => (
+                    <a href={`/products/${product.id}`} class="product-card relative flex-shrink-0 w-72 md:w-80 bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer">
+                      <img src={product.image_url || '/images/placeholder.jpg'} alt={product.name} class="w-full h-64 object-cover" />
+                      <div style="padding: 1.25rem 1.5rem; class="px-6 py-5 flex flex-col">
+                        <h3 class="font-bold text-base mb-3 text-gray-900 line-clamp-2">{product.name}</h3>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">{product.description || ''}</p>
+                        <div class="flex flex-col gap-2">
+                          <span class="text-xl font-bold text-gray-900">{product.price?.toFixed ? product.price.toFixed(2) : product.price} SEK</span>
+                          <span class="text-xs font-semibold text-primary uppercase tracking-wide">Klicka för produkt</span>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </>
+    ) : (
+      <div class="text-center py-16">
+        <p class="text-gray-600 text-lg mb-4">Artikeln kunde inte hittas eller är ännu inte publicerad.</p>
+        <a href="/zone-news" class="text-primary font-semibold hover:text-accent transition-colors">Tillbaka till In the Zone</a>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  :global(.article-body p) {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  :global(.article-body img) {
+    object-fit: cover;
+    height: auto;
+    width: 100%;
+  }
+  .grayscale-img {
+    filter: grayscale(100%) saturate(0%) !important;
+    -webkit-filter: grayscale(100%) saturate(0%) !important;
+  }
+
+  /* Scrollbar styling - hidden on mobile, visible on desktop */
+  .scrollbar-container {
+    /* Hide scrollbar on mobile */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .scrollbar-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera - hide on mobile */
+  }
+  
+  /* Show scrollbar on desktop */
+  @media (min-width: 768px) {
+    .scrollbar-container {
+      -ms-overflow-style: auto !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #94a3b8 #f1f5f9 !important;
+    }
+  
+    .scrollbar-container::-webkit-scrollbar {
+      display: block !important;
+      height: 12px !important;
+    }
+  
+    .scrollbar-container::-webkit-scrollbar:horizontal {
+      height: 12px !important;
+    }
+  
+    .scrollbar-container::-webkit-scrollbar-track {
+      background: #f1f5f9 !important;
+      border-radius: 5px !important;
+    }
+  
+    .scrollbar-container::-webkit-scrollbar-thumb {
+      background: #94a3b8 !important;
+      border-radius: 5px !important;
+      border: 2px solid #f1f5f9;
+    }
+  
+    .scrollbar-container::-webkit-scrollbar-thumb:hover {
+      background: #64748b !important;
+    }
+  }
+</style>
+

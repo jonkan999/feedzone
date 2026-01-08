@@ -1,0 +1,842 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="KQM Custom Energy Gel" description="Bygg din egen energigel i återfyllningsbar påse.">
+  <section class="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-start">
+      <div class="space-y-4">
+        <img
+          src="/images/products/custom-gel/primary.jpg"
+          alt="KQM Custom Energy Gel"
+          class="w-full"
+        />
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <p class="text-sm uppercase tracking-wide text-primary font-semibold mb-2">KQM Custom</p>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Custom Energy Gel Solution</h1>
+          <p class="text-lg text-gray-700 leading-relaxed">
+            Bygg din egen energigel. Anpassa kolhydratförhållande, elektrolyter, koffein och smak för att passa just dig och ditt pass eller lopp. Gelen är 1000ml och anpassad för att användas som refill tillsammans med våra mjuka gel-flaskor
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 bg-white p-5 !mt-5">
+          <div class="relative space-y-2">
+            <div class="flex items-center gap-2">
+              <label class="block text-sm font-semibold text-gray-800">Kolhydratratio</label>
+              <button type="button" class="info-btn" data-info-target="ratio-info" aria-label="Mer info om kolhydratratio">
+                <span>i</span>
+              </button>
+            </div>
+            <div id="ratio-info" class="info-popup" hidden>
+              För >90g kolhydrater/timme funkar mer fruktos bättre för upptag, men kan vara sötare och tuffare för magen.
+            </div>
+            <div id="ratio-scroller" class="option-scroller">
+              <button class="option-card" data-value="1:2">
+                <span class="text-sm font-semibold text-gray-900">1:2</span>
+                <span class="text-xs text-gray-600">Klassisk</span>
+              </button>
+              <button class="option-card" data-value="0.8:1">
+                <span class="text-sm font-semibold text-gray-900">0.8:1</span>
+                <span class="text-xs text-gray-600">Balanserad</span>
+              </button>
+              <button class="option-card" data-value="1:1">
+                <span class="text-sm font-semibold text-gray-900">1:1</span>
+                <span class="text-xs text-gray-600">Hög fruktos</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="relative space-y-2">
+            <div class="flex items-center gap-2">
+              <label class="block text-sm font-semibold text-gray-800">Elektrolyter</label>
+              <button type="button" class="info-btn" data-info-target="electrolyte-info" aria-label="Mer info om elektrolyter">
+                <span>i</span>
+              </button>
+            </div>
+            <div id="electrolyte-info" class="info-popup" hidden>
+              Tunga/salta svettare behöver mer. Vi visar Na-nivåer, men gelerna innehåller komplett och optimerad mineralprofil.
+            </div>
+            <div id="electrolyte-scroller" class="option-scroller">
+              <button class="option-card" data-value="none">
+                <span class="text-sm font-semibold text-gray-900">Ingen</span>
+                <span class="text-xs text-gray-600">För kortare pass</span>
+              </button>
+              <button class="option-card" data-value="low">
+                <span class="text-sm font-semibold text-gray-900">Låg (250mg Na / 100ml)</span>
+                <span class="text-xs text-gray-600">Daglig träning</span>
+              </button>
+              <button class="option-card" data-value="moderate">
+                <span class="text-sm font-semibold text-gray-900">Måttlig (500mg Na / 100ml)</span>
+                <span class="text-xs text-gray-600">Varmare klimat</span>
+              </button>
+              <button class="option-card" data-value="high">
+                <span class="text-sm font-semibold text-gray-900">Hög (750mg Na / 100ml)</span>
+                <span class="text-xs text-gray-600">”Heavy sweaters”</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <input id="caffeine" type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary" />
+            <label for="caffeine" class="text-sm font-semibold text-gray-800">Med koffein</label>
+          </div>
+
+          <div class="relative">
+            <div class="flex items-center gap-2">
+              <input id="hydrogel" type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary" />
+              <label for="hydrogel" class="text-sm font-semibold text-gray-800">Hydrogel</label>
+              <button type="button" class="info-btn" data-info-target="hydrogel-info" aria-label="Mer info om hydrogel">
+                <span>i</span>
+              </button>
+            </div>
+            <div id="hydrogel-info" class="info-popup" hidden>
+              Hydrogel-teknologi inkapslar kolhydrater i en gelmatris som förbättrar absorptionen och minskar risken för magbesvär. Perfekt för intensiva pass där snabb energiupptag är viktigt.
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Smak</label>
+            <select id="flavor-select" class="w-full px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary bg-white border border-gray-300 ">
+              <option value="neutral">Neutral</option>
+              <option value="orange">Apelsin</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <button id="add-custom-gel" class="kop-btn bg-indigo-950 text-white px-8 h-12 rounded-lg font-semibold hover:bg-indigo-900 transition-all uppercase text-sm cursor-pointer">
+              Köp din personanpassade gel
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 space-y-4  !mt-5">
+          <div class="flex items-center justify-between !mx-1">
+            <h2 class="text-xl font-semibold text-gray-900">Svårt att välja?</h2>
+            <span class="text-xs font-semibold text-primary uppercase tracking-wide">Bra val</span>
+          </div>
+          <p class="text-sm text-gray-700 !mx-1">
+            Vår standardformula fungerar riktigt bra för de flesta. Perfekt balans av kolhydrater och elektrolyter.
+          </p>
+          <div class="-mx-2 sm:mx-0">
+            <div id="standard-recommendation-wrapper" class="overflow-x-auto scrollbar-container">
+              <div id="standard-recommendation" class="flex gap-6 px-2 pb-2 min-w-max">
+                <p class="text-sm text-gray-600 py-3">Laddar produkt...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 !mt-5">
+          Denna lösning är tänkt att användas med våra mjuka gel-flaskor. Fyll upp precis så mycket du behöver
+          för ditt pass och återfyll efter behov.
+        </p>
+        <div class="bg-gray-50 border border-gray-200 p-5 space-y-4 !mt-2">
+          <div class="flex items-center justify-between !mx-1">
+            <h2 class="text-xl font-semibold text-gray-900">Komplettera ditt köp</h2>
+            <span class="text-xs font-semibold text-primary uppercase tracking-wide">Rekommenderat</span>
+          </div>
+          <p class="text-sm text-gray-700 !m-1">
+            Lägg till gelflaskor som passar refill-gelen.
+          </p>
+          <div class="-mx-2 sm:mx-0">
+            <div id="complementary-products-wrapper" class="overflow-x-auto scrollbar-container">
+              <div id="complementary-products" class="flex gap-6 px-2 pb-2 min-w-max">
+                <p class="text-sm text-gray-600 py-3">Laddar produkter...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prose prose-sm md:prose-base max-w-none text-gray-700  !mt-5">
+          <h2 class="text-2xl font-semibold text-gray-900">Produktbeskrivning</h2>
+          <p class="!mt-2">
+            KQM Custom Energy Gel är utformad för uthållighetsidrottare som vill styra exakt hur
+            mycket energi och elektrolyter de får i sig. Välj kolhydratförhållande (1:2, 0.8:1 eller 1:1),
+            elektrolytnivå (ingen, måttlig eller hög), lägg till koffein om du önskar och välj smak.
+          </p>
+          <p class="!mt-2">Används tillsammans med våra mjuka gel-flaskor som <a href="/products/hydrapak-gel-soft-flask-250ml">HydraPak Gel Soft Flask 250ml</a> eller <a href="/products/hydrapak-gel-soft-flask-150ml">HydraPak Gel Soft Flask 150ml</a>. Där en fylld 150ml flask ger ca 100 g kolhydrater och 60 ml vatten och en fylld 250ml flask ger ca 180 g kolhydrater och 100 ml vatten.
+          </p>
+          <p class="!mt-2">Gelen är packeterad i återvinningsbar och återförslutningsbar mjuk PET-påse. Öppnad påse förvaras kyld och kan användas upp till 4 veckor efter öppnnande.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  if (typeof window !== 'undefined') {
+    const customProductId = 'custom-gel';
+    const customProductName = 'KQM Custom Energy Gel';
+    let customProductPrice = 199.00; // Default price, will be fetched from product data
+
+    // Fetch product price
+    async function fetchCustomGelPrice() {
+      try {
+        const response = await fetch(`/api/products/${customProductId}`);
+        const product = await response.json();
+        if (product && !product.error && product.price) {
+          customProductPrice = product.price;
+        }
+      } catch (error) {
+        console.error('Error fetching custom gel price:', error);
+      }
+    }
+    fetchCustomGelPrice();
+
+    const ratioScroller = document.getElementById('ratio-scroller');
+    const electrolyteScroller = document.getElementById('electrolyte-scroller');
+    const caffeineCheckbox = document.getElementById('caffeine') as HTMLInputElement | null;
+    const hydrogelCheckbox = document.getElementById('hydrogel') as HTMLInputElement | null;
+    const flavorSelect = document.getElementById('flavor-select') as HTMLSelectElement | null;
+    const addButton = document.getElementById('add-custom-gel');
+
+    const selectionState = {
+      ratio: '1:2',
+      electrolytes: 'none',
+      flavor: flavorSelect?.value || 'neutral',
+      hydrogel: 'no-hydrogel',
+    };
+
+    function setActiveOption(scroller: HTMLElement, value: string, stateKey: keyof typeof selectionState) {
+      const buttons = Array.from(scroller.querySelectorAll('[data-value]'));
+      selectionState[stateKey] = value;
+      for (const el of buttons) {
+        const btn = el as HTMLButtonElement;
+        btn.classList.toggle('active', btn.getAttribute('data-value') === value);
+      }
+    }
+
+    function setupOptionScroller(scroller: HTMLElement | null, stateKey: keyof typeof selectionState) {
+      if (!scroller) return;
+      const buttons = Array.from(scroller.querySelectorAll('[data-value]'));
+      const initial = (buttons[0] as HTMLElement | undefined)?.getAttribute('data-value') || '';
+      if (initial) {
+        setActiveOption(scroller, initial, stateKey);
+      }
+
+      for (const el of buttons) {
+        const btn = el as HTMLButtonElement;
+        btn.addEventListener('click', () => {
+          const value = btn.getAttribute('data-value') || '';
+          if (!value) return;
+          setActiveOption(scroller, value, stateKey);
+          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        });
+      }
+
+      let scrollTimeout: number | undefined;
+      scroller.addEventListener('scroll', () => {
+        if (scrollTimeout) {
+          window.clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = window.setTimeout(() => {
+          const center = scroller.scrollLeft + scroller.clientWidth / 2;
+          let closestBtn: HTMLButtonElement | null = null;
+          let closestDistance = Number.POSITIVE_INFINITY;
+
+          for (const el of buttons) {
+            const btn = el as HTMLButtonElement;
+            const btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
+            const distance = Math.abs(btnCenter - center);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestBtn = btn;
+            }
+          }
+
+          const value = closestBtn?.getAttribute('data-value') || '';
+          if (closestBtn && value) {
+            setActiveOption(scroller, value, stateKey);
+          }
+        }, 80);
+      });
+    }
+
+    setupOptionScroller(ratioScroller, 'ratio');
+    setupOptionScroller(electrolyteScroller, 'electrolytes');
+
+    function bindInfoPopups() {
+      const infoButtons = Array.from(document.querySelectorAll('[data-info-target]')) as HTMLButtonElement[];
+      const popups = Array.from(document.querySelectorAll('.info-popup')) as HTMLElement[];
+
+      function closeAll() {
+        popups.forEach((p) => p.setAttribute('hidden', 'true'));
+      }
+
+      infoButtons.forEach((btn) => {
+        const targetId = btn.getAttribute('data-info-target');
+        if (!targetId) return;
+        const popup = document.getElementById(targetId);
+        if (!popup) return;
+
+        let holdTimer: number | undefined;
+
+        const show = () => {
+          closeAll();
+          popup.removeAttribute('hidden');
+        };
+
+        const hide = () => {
+          popup.setAttribute('hidden', 'true');
+        };
+
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (popup.hasAttribute('hidden')) {
+            show();
+          } else {
+            hide();
+          }
+        });
+
+        btn.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'touch') {
+            holdTimer = window.setTimeout(show, 180);
+          }
+        });
+
+        btn.addEventListener('pointerup', (e) => {
+          if (e.pointerType === 'touch') {
+            if (holdTimer) {
+              window.clearTimeout(holdTimer);
+              holdTimer = undefined;
+            }
+            window.setTimeout(hide, 120);
+          }
+        });
+
+        popup.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.info-popup') && !target.closest('[data-info-target]')) {
+          closeAll();
+        }
+      });
+    }
+
+    bindInfoPopups();
+
+    flavorSelect?.addEventListener('change', () => {
+      selectionState.flavor = flavorSelect.value;
+    });
+
+    hydrogelCheckbox?.addEventListener('change', () => {
+      selectionState.hydrogel = hydrogelCheckbox.checked ? 'hydrogel' : 'no-hydrogel';
+    });
+
+    function buildSignature() {
+      const caffeine = caffeineCheckbox?.checked ? 'caffeine' : 'no-caffeine';
+      const hydrogel = hydrogelCheckbox?.checked ? 'hydrogel' : 'no-hydrogel';
+      const flavor = flavorSelect?.value || selectionState.flavor;
+      const ratio = selectionState.ratio;
+      const electrolytes = selectionState.electrolytes;
+      return {
+        ratio,
+        electrolytes,
+        caffeine,
+        hydrogel,
+        flavor,
+        signature: `${ratio}|${electrolytes}|${caffeine}|${hydrogel}|${flavor}`,
+      };
+    }
+
+    function addCustomToCart() {
+      const { ratio, electrolytes, caffeine, hydrogel, flavor, signature } = buildSignature();
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const existing = cart.find((item: any) => item.product_id === customProductId && item.signature === signature);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({
+          product_id: customProductId,
+          product_name: customProductName,
+          price: customProductPrice,
+          quantity: 1,
+          ratio,
+          electrolytes,
+          caffeine,
+          hydrogel,
+          flavor,
+          signature,
+        });
+      }
+
+      localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
+    }
+
+    addButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      addCustomToCart();
+    });
+
+    // --- Standard recommendation ---
+    const standardRecommendationContainer = document.getElementById('standard-recommendation');
+
+    // --- Complementary products ---
+    const complementaryContainer = document.getElementById('complementary-products');
+
+    function renderProductCard(product: any, badge?: string, fixedDescription?: string) {
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const cartItem = cart.find((item: any) => item.product_id === product.id);
+      const initialQuantity = cartItem ? cartItem.quantity : 0;
+      const isInCart = initialQuantity > 0;
+      const description = fixedDescription || product.description || '';
+
+      return `
+        <div class="product-card relative flex-shrink-0 w-72 md:w-80 bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer" data-product-id="${product.id}" data-product-link>
+          ${badge ? `<div class="absolute top-2 left-2 bg-primary text-white text-xs font-semibold px-2 py-1 rounded">${badge}</div>` : ''}
+          <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}" class="w-full h-64 object-cover">
+          <div style="padding: 1.25rem 1.5rem;" class="px-6 py-5 flex flex-col">
+            <h3 class="font-bold text-base mb-3 text-gray-900 line-clamp-2">${product.name}</h3>
+            <p class="text-sm text-gray-600 mb-6 line-clamp-2 flex-grow">${description}</p>
+            <div class="flex flex-col gap-3">
+              <span class="text-xl font-bold text-gray-900">${product.price.toFixed(2)} SEK</span>
+              <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
+                ${isInCart ? `
+                  <div class="flex items-center gap-2 quantity-buttons justify-center">
+                    <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+                    <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${product.id}">
+                    <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+                  </div>
+                ` : `
+                  <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
+                `}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateCartQuantity(productId: string, quantity: number) {
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const itemIndex = cart.findIndex((item: any) => item.product_id === productId);
+      
+      if (itemIndex >= 0) {
+        if (quantity <= 0) {
+          cart.splice(itemIndex, 1);
+          const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+          if (productCard) {
+            const controlsDiv = productCard.querySelector('.quantity-controls');
+            if (controlsDiv) {
+              const quantityButtons = controlsDiv.querySelector('.quantity-buttons');
+              if (quantityButtons) {
+                (quantityButtons as HTMLElement).style.opacity = '0';
+                
+                setTimeout(() => {
+                  controlsDiv.innerHTML = `<button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>`;
+                  
+                  const newKopBtn = controlsDiv.querySelector('.kop-btn') as HTMLElement | null;
+                  if (newKopBtn) {
+                    newKopBtn.style.opacity = '0';
+                    setTimeout(() => {
+                      newKopBtn.style.transition = 'opacity 0.3s ease';
+                      newKopBtn.style.opacity = '1';
+                    }, 10);
+                  }
+                }, 150);
+              }
+            }
+          }
+        } else {
+          cart[itemIndex].quantity = quantity;
+        }
+        localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+      }
+    }
+
+    function setupProductCardListeners(container: HTMLElement) {
+      container.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const kopBtn = target.closest('.kop-btn');
+        
+        if (kopBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const controlsDiv = kopBtn.closest('.quantity-controls');
+          if (!controlsDiv) return;
+          const productId = controlsDiv.getAttribute('data-product-id');
+          const productName = controlsDiv.getAttribute('data-product-name');
+          const productPrice = parseFloat(controlsDiv.getAttribute('data-product-price') || '0');
+          
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          cart.push({
+            product_id: productId,
+            product_name: productName,
+            price: productPrice,
+            quantity: 1,
+          });
+          localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cart-updated'));
+          
+          (kopBtn as HTMLElement).style.opacity = '0';
+          
+          setTimeout(() => {
+            controlsDiv.innerHTML = `
+              <div class="flex items-center gap-2 quantity-buttons justify-center">
+                <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+                <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="1" min="0" data-product-id="${productId}">
+                <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+              </div>
+            `;
+            
+            const quantityButtons = controlsDiv.querySelector('.quantity-buttons') as HTMLElement | null;
+            if (quantityButtons) {
+              quantityButtons.style.opacity = '0';
+              setTimeout(() => {
+                quantityButtons.style.transition = 'opacity 0.3s ease';
+                quantityButtons.style.opacity = '1';
+              }, 10);
+            }
+          }, 150);
+          
+          return;
+        }
+        
+        const quantityBtn = target.closest('.quantity-btn');
+        if (quantityBtn) {
+          const controlsDiv = quantityBtn.closest('.quantity-controls');
+          if (!controlsDiv) return;
+          const productId = controlsDiv.getAttribute('data-product-id');
+          const input = controlsDiv.querySelector('.quantity-input') as HTMLInputElement | null;
+          if (!productId || !input) return;
+          
+          let quantity = parseInt(input.value) || 0;
+          const action = quantityBtn.getAttribute('data-action');
+          if (action === 'increase') {
+            quantity += 1;
+          } else if (action === 'decrease') {
+            quantity = Math.max(0, quantity - 1);
+          }
+          input.value = quantity.toString();
+          updateCartQuantity(productId, quantity);
+          return;
+        }
+        
+        // Navigation
+        const productCard = target.closest('[data-product-link]');
+        if (productCard) {
+          if (target.closest('.quantity-controls') || target.closest('button') || target.closest('input')) {
+            return;
+          }
+          const productId = productCard.getAttribute('data-product-id');
+          if (productId) {
+            window.location.href = `/products/${productId}`;
+          }
+        }
+      });
+
+      container.addEventListener('change', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('quantity-input')) {
+          const input = target as HTMLInputElement;
+          const productId = input.getAttribute('data-product-id');
+          const quantity = parseInt(input.value) || 0;
+          if (productId) {
+            updateCartQuantity(productId, Math.max(0, quantity));
+          }
+        }
+      });
+    }
+
+    async function loadComplementaryProducts() {
+      if (!complementaryContainer) return;
+      try {
+        const response = await fetch('/api/products');
+        const products = await response.json();
+
+        const findProduct = (terms: string[]) =>
+          products.find((p: any) =>
+            terms.every((term) => (p.name || '').toLowerCase().includes(term))
+          );
+
+        const standard = findProduct(['standard']) || null;
+        const soft150 = findProduct(['soft', '150']) || null;
+        const soft250 = findProduct(['soft', '250']) || null;
+
+        const cards: string[] = [];
+
+        if (standard) {
+          cards.push(
+            renderProductCard(
+              standard,
+              'Standard',
+              'Vill du inte anpassa? Testa vår standardformula – färdig att använda direkt.'
+            )
+          );
+        }
+        if (soft150) {
+          cards.push(renderProductCard(soft150));
+        }
+        if (soft250) {
+          cards.push(renderProductCard(soft250));
+        }
+
+        if (cards.length > 0) {
+          complementaryContainer.innerHTML = cards.join('');
+          setupProductCardListeners(complementaryContainer);
+        } else {
+          complementaryContainer.innerHTML = '<p class="text-sm text-gray-600 py-3">Inga rekommendationer hittades.</p>';
+        }
+      } catch (error) {
+        console.error('Error loading complementary products:', error);
+        complementaryContainer.innerHTML = '<p class="text-sm text-gray-600 py-3">Kunde inte ladda rekommendationer.</p>';
+      }
+    }
+
+    async function loadStandardRecommendation() {
+      if (!standardRecommendationContainer) return;
+      try {
+        const response = await fetch('/api/products');
+        const products = await response.json();
+
+        const findProduct = (terms: string[]) =>
+          products.find((p: any) =>
+            terms.every((term) => (p.name || '').toLowerCase().includes(term))
+          );
+
+        const refill = findProduct(['refill', '1000']) || findProduct(['refill']) || null;
+
+        if (refill) {
+          standardRecommendationContainer.innerHTML = renderProductCard(
+            refill,
+            'Bra val',
+            'Vår standardformula fungerar riktigt bra för de flesta. Perfekt balans av kolhydrater och elektrolyter.'
+          );
+          setupProductCardListeners(standardRecommendationContainer);
+        } else {
+          standardRecommendationContainer.innerHTML = '<p class="text-sm text-gray-600 py-3">Produkt hittades inte.</p>';
+        }
+      } catch (error) {
+        console.error('Error loading standard recommendation:', error);
+        standardRecommendationContainer.innerHTML = '<p class="text-sm text-gray-600 py-3">Kunde inte ladda produkt.</p>';
+      }
+    }
+
+    loadStandardRecommendation();
+    loadComplementaryProducts();
+  }
+</script>
+
+<style>
+  .product-card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+  }
+
+  .option-scroller {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem 0.35rem;
+    scroll-snap-type: x mandatory;
+    /* Hide scrollbar on mobile */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .option-scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Show scrollbar on desktop */
+  @media (min-width: 768px) {
+    .option-scroller {
+      -ms-overflow-style: auto !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #94a3b8 #f1f5f9 !important;
+    }
+
+    .option-scroller::-webkit-scrollbar {
+      display: block !important;
+      height: 12px !important;
+    }
+
+    .option-scroller::-webkit-scrollbar:horizontal {
+      height: 12px !important;
+    }
+
+    .option-scroller::-webkit-scrollbar-track {
+      background: #f1f5f9 !important;
+      border-radius: 5px !important;
+    }
+
+    .option-scroller::-webkit-scrollbar-thumb {
+      background: #94a3b8 !important;
+      border-radius: 5px !important;
+      border: 2px solid #f1f5f9;
+    }
+
+    .option-scroller::-webkit-scrollbar-thumb:hover {
+      background: #64748b !important;
+    }
+  }
+
+  .option-card {
+    scroll-snap-align: center;
+    min-width: 10.75rem;
+    background: linear-gradient(145deg, #f8fafc 0%, #e2f6f3 50%, #f8fafc 100%);
+    border-radius: 0.25rem;
+    padding: 0.85rem 1.05rem;
+    text-align: left;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    color: #0f172a;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .option-card:hover {
+    background: linear-gradient(145deg, #e8f2ff 0%, #d7f3ed 50%, #eef7ff 100%);
+    border-color: #7fc4c3;
+  }
+
+  .option-card.active {
+    background: linear-gradient(145deg, #d7f3ed 0%, #c2e9ff 50%, #dff9f4 100%);
+    border: 2px solid #0f172a;
+    border-color: #7fc4c3;
+  }
+
+  .option-card:focus-visible {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+  }
+
+  .option-card span.text-sm {
+    letter-spacing: 0.01em;
+  }
+
+  .option-card span.text-xs {
+    letter-spacing: 0.02em;
+  }
+
+  .info-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 999px;
+    border: 1px solid #0f172a;
+    background: linear-gradient(145deg, #f8fafc 0%, #e2f6f3 60%, #f8fafc 100%);
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .info-btn:hover {
+    transform: translateY(-1px) scale(1.03);
+    background: linear-gradient(145deg, #e8f2ff 0%, #d7f3ed 60%, #eef7ff 100%);
+  }
+
+  .info-btn:focus-visible {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+  }
+
+  .info-popup {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 2.6rem;
+    z-index: 30;
+    background: #0f172a;
+    color: #e2f6f3;
+    padding: 0.85rem 1rem;
+    border-radius: 0.9rem;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.22),
+      0 0 0 6px rgba(127, 196, 195, 0.16);
+    max-width: 28rem;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    border: 1px solid #7fc4c3;
+  }
+
+  @media (max-width: 640px) {
+    .info-popup {
+      inset-inline-start: 0;
+      right: 0;
+      max-width: none;
+    }
+  }
+
+  .product-card:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+  }
+
+  .quantity-input {
+    -moz-appearance: textfield;
+  }
+
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .kop-btn {
+    transition: all 0.3s ease;
+  }
+
+  .quantity-buttons {
+    transition: all 0.3s ease;
+  }
+
+  /* Scrollbar styling - hidden on mobile, visible on desktop */
+  .scrollbar-container {
+    /* Hide scrollbar on mobile */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Show scrollbar on desktop */
+  @media (min-width: 768px) {
+    .scrollbar-container {
+      -ms-overflow-style: auto !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #94a3b8 #f1f5f9 !important;
+    }
+
+    .scrollbar-container::-webkit-scrollbar {
+      display: block !important;
+      height: 12px !important;
+    }
+
+    .scrollbar-container::-webkit-scrollbar:horizontal {
+      height: 12px !important;
+    }
+
+    .scrollbar-container::-webkit-scrollbar-track {
+      background: #f1f5f9 !important;
+      border-radius: 5px !important;
+    }
+
+    .scrollbar-container::-webkit-scrollbar-thumb {
+      background: #94a3b8 !important;
+      border-radius: 5px !important;
+      border: 2px solid #f1f5f9;
+    }
+
+    .scrollbar-container::-webkit-scrollbar-thumb:hover {
+      background: #64748b !important;
+    }
+  }
+</style>
+

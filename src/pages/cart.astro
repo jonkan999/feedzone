@@ -1,0 +1,376 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Shopping Cart - Feed Zone">
+  <div class="container mx-auto px-4" style="padding-top: 3rem; padding-bottom: 3rem;">
+    <h1 class="text-4xl font-bold text-primary mb-4">Varukorg</h1>
+    
+    <div id="cart-container" class="pb-32 lg:pb-0">
+      <p class="text-text-muted">Laddar varukorg...</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  if (typeof window !== 'undefined') {
+    async function fetchProductData(productId: string) {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        const product = await response.json();
+        return product.error ? null : product;
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        return null;
+      }
+    }
+
+    function formatCustomFormula(item: any): string {
+      if (item.product_id !== 'custom-gel') return '';
+      
+      const parts: string[] = [];
+      
+      // Ratio
+      if (item.ratio) {
+        const ratioLabels: { [key: string]: string } = {
+          '1:2': '1:2 (Klassisk)',
+          '0.8:1': '0.8:1 (Balanserad)',
+          '1:1': '1:1 (Hög fruktos)'
+        };
+        parts.push(`Kolhydratratio: ${ratioLabels[item.ratio] || item.ratio}`);
+      }
+      
+      // Electrolytes
+      if (item.electrolytes) {
+        const electrolyteLabels: { [key: string]: string } = {
+          'none': 'Inga elektrolyter',
+          'low': 'Låg (250mg Na / 100ml)',
+          'moderate': 'Måttlig (500mg Na / 100ml)',
+          'high': 'Hög (750mg Na / 100ml)'
+        };
+        parts.push(`Elektrolyter: ${electrolyteLabels[item.electrolytes] || item.electrolytes}`);
+      }
+      
+      // Caffeine
+      if (item.caffeine === 'caffeine') {
+        parts.push('Med koffein');
+      }
+      
+      // Hydrogel
+      if (item.hydrogel === 'hydrogel') {
+        parts.push('Hydrogel');
+      }
+      
+      // Flavor
+      if (item.flavor) {
+        const flavorLabels: { [key: string]: string } = {
+          'neutral': 'Neutral',
+          'orange': 'Apelsin'
+        };
+        parts.push(`Smak: ${flavorLabels[item.flavor] || item.flavor}`);
+      }
+      
+      return parts.join(' • ');
+    }
+
+    async function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const container = document.getElementById('cart-container');
+      
+      if (!container) return;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <p class="text-text-muted text-xl mb-4">Din varukorg är tom</p>
+            <a href="/products" class="inline-block bg-accent text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
+              Bläddra produkter
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Fetch product data for all cart items
+      const productDataPromises = cart.map((item: any) => fetchProductData(item.product_id));
+      const productDataArray = await Promise.all(productDataPromises);
+
+      // Calculate total using product prices where available, fallback to cart item price
+      const total = cart.reduce((sum: number, item: any, index: number) => {
+        const productData = productDataArray[index];
+        const itemPrice = productData?.price ?? item.price;
+        return sum + (itemPrice * item.quantity);
+      }, 0);
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2 order-1">
+            <h2 class="text-2xl font-bold mb-6" style="margin-top: 2rem;">Varukorgsartiklar</h2>
+            <div id="cart-items" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              ${cart.map((item: any, index: number) => {
+                const productData = productDataArray[index];
+                const isCustomGel = item.product_id === 'custom-gel';
+                // Use custom image if it's a custom gel with signature, otherwise use product image
+                const productImage = (isCustomGel && item.signature)
+                  ? '/images/products/custom-gel/primary.jpg' 
+                  : (productData?.image_url || '/images/placeholder.jpg');
+                const productDescription = productData?.description || '';
+                const formulaText = formatCustomFormula(item);
+                // Use product price if available, otherwise use cart item price
+                const displayPrice = productData?.price ?? item.price;
+                
+                return `
+                  <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:bg-gray-50 transition-all flex flex-col" data-index="${index}">
+                    ${isCustomGel ? '' : `<a href="/products/${item.product_id}" class="block">`}
+                      <img src="${productImage}" alt="${item.product_name}" class="w-full h-80 object-cover">
+                    ${isCustomGel ? '' : '</a>'}
+                    <div style="padding: 1.25rem 1.5rem;" class="px-6 py-5 flex flex-col flex-grow">
+                      ${isCustomGel ? '' : `<a href="/products/${item.product_id}" class="block mb-3">`}
+                        <h3 class="font-bold text-base mb-3 text-gray-900 line-clamp-2">${item.product_name}</h3>
+                        ${formulaText ? `
+                          <div class="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                            <p class="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Din formel</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">${formulaText}</p>
+                          </div>
+                        ` : ''}
+                        ${productDescription ? `<p class="text-sm text-gray-600 mb-6 line-clamp-2 flex-grow">${productDescription}</p>` : ''}
+                      ${isCustomGel ? '' : '</a>'}
+                      <div class="flex flex-col gap-3 mb-4">
+                        <span class="text-xl font-bold text-gray-900">${displayPrice.toFixed(2)} SEK</span>
+                        <span class="text-sm text-gray-600" style="margin-bottom: 1rem;">${(displayPrice * item.quantity).toFixed(2)} SEK totalt</span>
+                      </div>
+                      <div class="flex items-center gap-2 justify-center" style="margin-bottom: 1.25rem;">
+                        <button 
+                          class="update-quantity bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg cursor-pointer"
+                          data-index="${index}"
+                          data-action="decrease"
+                        >−</button>
+                        <input 
+                          type="number" 
+                          class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" 
+                          value="${item.quantity}" 
+                          min="0" 
+                          data-index="${index}"
+                          readonly
+                        >
+                        <button 
+                          class="update-quantity bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg cursor-pointer"
+                          data-index="${index}"
+                          data-action="increase"
+                        >+</button>
+                      </div>
+                      <button 
+                        class="remove-item w-full bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded font-semibold transition-colors cursor-pointer flex items-center justify-center gap-2 mt-auto"
+                        data-index="${index}"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Ta bort</span>
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+          <div class="order-2 lg:order-2 lg:mt-20">
+            <!-- Placeholder for order summary - reserves space -->
+            <div id="order-summary-placeholder" class="invisible pointer-events-none"></div>
+            <div id="order-summary" class="order-summary-sticky bg-white border-t border-gray-200 lg:border lg:rounded-lg fixed bottom-0 left-0 right-0 z-50 lg:sticky lg:top-4 lg:relative lg:z-auto flex flex-col shadow-lg lg:shadow-none rounded-t-lg lg:rounded-lg" style="padding: 1.5rem !important;">
+              <h2 class="text-2xl font-bold mb-4">Ordersammanfattning</h2>
+              <div class="space-y-2 mb-4">
+                <div class="hidden lg:flex justify-between">
+                  <span>Delsumma:</span>
+                  <span>${total.toFixed(2)} SEK</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Frakt:</span>
+                  <span>Beräknas vid kassan</span>
+                </div>
+                <div class="border-t pt-2 flex justify-between font-bold text-xl" style="margin-bottom: 1.5rem !important;">
+                  <span>Totalt:</span>
+                  <span>${total.toFixed(2)} SEK</span>
+                </div>
+              </div>
+              <a 
+                href="/checkout" 
+                class="block w-full bg-indigo-950 hover:bg-indigo-900 text-white text-center rounded-lg font-semibold transition-all uppercase text-sm cursor-pointer mt-auto" 
+                style="padding: 0.875rem 1.5rem !important; color: white !important;"
+              >
+                Fortsätt till kassan
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Setup sticky order summary behavior
+      setupStickyOrderSummary();
+
+      // Add event listeners
+      document.querySelectorAll('.update-quantity').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const index = parseInt(target.getAttribute('data-index') || '0');
+          const action = target.getAttribute('data-action');
+          
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          if (action === 'increase') {
+            cart[index].quantity += 1;
+          } else if (action === 'decrease') {
+            cart[index].quantity -= 1;
+            // Remove item if quantity reaches 0
+            if (cart[index].quantity <= 0) {
+              cart.splice(index, 1);
+            }
+          }
+          
+          localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cart-updated'));
+          renderCart();
+        });
+      });
+
+      document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const target = e.target as HTMLInputElement;
+          const index = parseInt(target.getAttribute('data-index') || '0');
+          const quantity = parseInt(target.value) || 0;
+          
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          if (quantity <= 0) {
+            cart.splice(index, 1);
+          } else {
+            cart[index].quantity = quantity;
+          }
+          
+          localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cart-updated'));
+          renderCart();
+        });
+      });
+
+      document.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const index = parseInt(target.getAttribute('data-index') || '0');
+          
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          cart.splice(index, 1);
+          
+          localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cart-updated'));
+          renderCart();
+        });
+      });
+    }
+
+    function setupStickyOrderSummary() {
+      const orderSummary = document.getElementById('order-summary');
+      const placeholder = document.getElementById('order-summary-placeholder');
+      const cartItems = document.getElementById('cart-items');
+      
+      if (!orderSummary || !placeholder || !cartItems) return;
+
+      // Calculate placeholder height based on order summary height
+      const updatePlaceholderHeight = () => {
+        const summaryHeight = orderSummary.offsetHeight;
+        placeholder.style.height = `${summaryHeight}px`;
+      };
+
+      // Initial height calculation (wait for layout)
+      setTimeout(() => {
+        updatePlaceholderHeight();
+      }, 100);
+
+      // Update on resize
+      let resizeTimeout: number;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = window.setTimeout(() => {
+          updatePlaceholderHeight();
+          handleScroll(); // Recheck scroll position
+        }, 150);
+      });
+
+      // Handle scroll behavior
+      const handleScroll = () => {
+        const isDesktop = window.innerWidth >= 1024;
+        const placeholderRect = placeholder.getBoundingClientRect();
+        const summaryRect = orderSummary.getBoundingClientRect();
+        
+        if (isDesktop) {
+          // Desktop: check if sticky element has reached placeholder position
+          // When placeholder top reaches the sticky top position (top-4 = 1rem = 16px), switch to static
+          const stickyTop = 16; // lg:top-4 = 1rem = 16px
+          
+          if (placeholderRect.top <= stickyTop + 20) {
+            // Reached placeholder position - make it static and hide placeholder
+            orderSummary.classList.remove('lg:sticky', 'lg:top-4');
+            orderSummary.classList.add('lg:relative');
+            orderSummary.style.position = 'relative';
+            placeholder.style.display = 'none';
+          } else {
+            // Still sticky - show placeholder
+            orderSummary.classList.add('lg:sticky', 'lg:top-4');
+            orderSummary.classList.remove('lg:relative');
+            orderSummary.style.position = '';
+            placeholder.style.display = 'block';
+          }
+        } else {
+          // Mobile/Tablet: check if we've scrolled past the cart items
+          const cartItemsRect = cartItems.getBoundingClientRect();
+          const viewportBottom = window.innerHeight;
+          
+          // If cart items bottom is above viewport bottom, make summary static
+          if (cartItemsRect.bottom < viewportBottom - 100) {
+            // Scrolled past products - make it static and hide placeholder
+            orderSummary.classList.remove('fixed', 'bottom-0', 'left-0', 'right-0');
+            orderSummary.classList.add('relative');
+            orderSummary.style.position = 'relative';
+            orderSummary.style.zIndex = 'auto';
+            orderSummary.style.bottom = '';
+            orderSummary.style.left = '';
+            orderSummary.style.right = '';
+            placeholder.style.display = 'none';
+          } else {
+            // Still scrolling products - keep it fixed and show placeholder
+            orderSummary.classList.add('fixed', 'bottom-0', 'left-0', 'right-0');
+            orderSummary.classList.remove('relative');
+            orderSummary.style.position = 'fixed';
+            orderSummary.style.zIndex = '50';
+            orderSummary.style.bottom = '0';
+            orderSummary.style.left = '0';
+            orderSummary.style.right = '0';
+            placeholder.style.display = 'block';
+          }
+        }
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll(); // Initial check
+    }
+
+    renderCart();
+    window.addEventListener('cart-updated', renderCart);
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .quantity-input {
+    -moz-appearance: textfield;
+  }
+  
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+</style>
+

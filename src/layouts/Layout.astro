@@ -1,0 +1,162 @@
+---
+import '../styles/global.css';
+import Navigation from '../components/Navigation.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Feed Zone - Näringstillskott för uthållighetsidrottare', description = 'Premium näringstillskott och bränsleprodukter för löpare och uthållighetsidrottare' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png+xml" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Navigation />
+    <main class="px-4 md:px-6 lg:px-8 py-6 main-padded">
+      <slot />
+    </main>
+    <footer class="bg-gray-900 text-white mt-16 pt-12 pb-10">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-10 text-center md:text-center lg:text-left">
+          <div class="space-y-4 flex flex-col items-center md:items-center lg:items-start !mt-2">
+            <img src="/images/logo-icon.png" alt="Feed Zone Icon" class="h-12 brightness-0 invert" />
+            <img src="/images/logo-text.png" alt="Feed Zone" class="h-6 brightness-0 invert" />
+            <p class="text-sm text-gray-300 leading-relaxed">
+              Premium näringstillskott för uthållighetsidrottare. Bränsle före, under och efter dina största pass.
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center md:items-center lg:items-start">
+            <h4 class="font-semibold mb-4 text-white text-sm tracking-wide uppercase">Snabb länkar</h4>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li><a href="/" class="hover:text-white transition-colors">Hem</a></li>
+              <li><a href="/products" class="hover:text-white transition-colors">Produkter</a></li>
+              <li><a href="/brands" class="hover:text-white transition-colors">Brands</a></li>
+              <li><a href="/zone-news" class="hover:text-white transition-colors">In the Zone</a></li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col items-center md:items-center lg:items-start">
+            <h4 class="font-semibold mb-4 text-white text-sm tracking-wide uppercase">Kundservice</h4>
+            <ul class="space-y-2 text-sm text-gray-300">
+              <li><a href="/account/orders" class="hover:text-white transition-colors">Mina ordrar</a></li>
+              <li><a href="/account" class="hover:text-white transition-colors">Konto</a></li>
+              <li><a href="mailto:support@feedzone.se" class="hover:text-white transition-colors">support@feedzone.se</a></li>
+              <li class="text-gray-400 text-xs">Svar inom 24h helgfria dagar</li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col items-center md:items-center lg:items-start">
+            <h4 class="font-semibold mb-3 text-white text-sm tracking-wide uppercase">Nyheter & tips</h4>
+            <p class="text-sm text-gray-300 mb-3">Följ våra guider och nyheter för bättre energi under pass.</p>
+            <a href="/zone-news" class="inline-flex items-center gap-2 bg-white text-gray-900 px-4 py-2 font-semibold text-sm hover:bg-gray-100 transition-colors !p-1 !m-1">
+              Läs In the Zone
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="border-t border-white/10 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400 text-center md:text-center lg:text-left">
+          <p>&copy; {new Date().getFullYear()} Feed Zone. Alla rättigheter förbehållna.</p>
+          <div class="flex items-center gap-4 justify-center">
+            <a href="/products?category=carbs" class="hover:text-white transition-colors">Kolhydrater</a>
+            <a href="/products?category=recovery" class="hover:text-white transition-colors">Återhämtning</a>
+            <a href="/products?category=gear" class="hover:text-white transition-colors">Utrustning</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+    <!-- Floating Cart Button -->
+    <div id="floating-cart-button" class="hidden fixed bottom-16 left-1/2 transform -translate-x-1/2 z-50">
+      <a href="/cart" class="bg-indigo-950 hover:bg-indigo-900 text-white rounded-lg font-semibold shadow-lg transition-all text-lg inline-block" style="padding: 0.875rem 2rem !important;">
+        <span id="floating-cart-text" class="text-white">Gå till varukorg</span>
+      </a>
+    </div>
+  </body>
+</html>
+
+<script>
+  if (typeof window !== 'undefined') {
+    function updateFloatingCartButton() {
+      const pathname = window.location.pathname;
+      
+      // Hide floating button on non-shopping pages
+      const hideOnPages = [
+        '/cart',
+        '/checkout',
+        '/account/login',
+        '/account/signup',
+        '/zone-news'
+      ];
+      
+      // Check if current path starts with any of the hide pages
+      const shouldHide = hideOnPages.some(page => pathname === page || pathname.startsWith(page + '/'));
+      
+      if (shouldHide) {
+        const floatingButton = document.getElementById('floating-cart-button');
+        if (floatingButton) {
+          floatingButton.classList.add('hidden');
+        }
+        return;
+      }
+      
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      const floatingButton = document.getElementById('floating-cart-button');
+      
+      if (floatingButton) {
+        if (count > 0) {
+          floatingButton.classList.remove('hidden');
+        } else {
+          floatingButton.classList.add('hidden');
+        }
+      }
+    }
+
+    updateFloatingCartButton();
+    window.addEventListener('cart-updated', updateFloatingCartButton);
+    window.addEventListener('storage', updateFloatingCartButton);
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>
+
+<style>
+  /* Enforce padding on main */
+  .main-padded {
+    padding: 1rem 0.75rem !important;
+  }
+
+  @media (min-width: 768px) {
+    .main-padded {
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .main-padded {
+      padding-left: 1.5rem !important;
+      padding-right: 1.5rem !important;
+    }
+  }
+</style>
+

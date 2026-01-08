@@ -1,0 +1,242 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Checkout - Feed Zone">
+  <div class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold text-primary mb-8">Kassa</h1>
+    
+    <div id="checkout-container">
+      <p class="text-text-muted">Laddar...</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase-client';
+  
+  if (typeof window !== 'undefined') {
+    async function fetchProductData(productId: string) {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        const product = await response.json();
+        return product.error ? null : product;
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        return null;
+      }
+    }
+
+    async function renderCheckout() {
+      const container = document.getElementById('checkout-container');
+      if (!container) return;
+
+      // Check if user is logged in
+      const { data: { session } } = await supabase.auth.getSession();
+      const isLoggedIn = !!session;
+
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <p class="text-text-muted text-xl mb-4">Din varukorg är tom</p>
+            <a href="/products" class="inline-block bg-accent text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
+              Bläddra produkter
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Fetch product data for all cart items
+      const productDataPromises = cart.map((item: any) => fetchProductData(item.product_id));
+      const productDataArray = await Promise.all(productDataPromises);
+
+      // Calculate total using product prices where available, fallback to cart item price
+      const subtotal = cart.reduce((sum: number, item: any, index: number) => {
+        const productData = productDataArray[index];
+        const itemPrice = productData?.price ?? item.price;
+        return sum + (itemPrice * item.quantity);
+      }, 0);
+
+      const shippingCost = 59; // PostNord shipping cost
+      const freeShippingThreshold = 400;
+      const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
+      const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+      const total = subtotal + (qualifiesForFreeShipping ? 0 : shippingCost);
+
+      container.innerHTML = `
+        ${!isLoggedIn ? `
+          <div class="bg-blue-50 border border-blue-200 rounded-lg !p-2 !mt-2 !mb-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-blue-800 font-semibold mb-1">Logga in för en smidigare upplevelse</p>
+                <p class="text-blue-600 text-sm">Spara din orderhistorik och få snabbare checkout nästa gång</p>
+              </div>
+              <a href="/account/login?redirect=/checkout" class="text-blue-600 hover:text-blue-800 font-semibold underline whitespace-nowrap ml-4">
+                Logga in
+              </a>
+            </div>
+          </div>
+        ` : ''}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <div class="bg-surface p-6 mb-6">
+              <h2 class="text-2xl font-bold mb-4">Fraktinformation</h2>
+              <form id="shipping-form" class="space-y-4">
+                <div>
+                  <label for="email" class="block mb-2 font-semibold">Email</label>
+                  <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded px-4 py-2" value="${isLoggedIn && session?.user?.email ? session.user.email : ''}">
+                </div>
+                <div>
+                  <label for="name" class="block mb-2 font-semibold">Fullständigt namn</label>
+                  <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded px-4 py-2">
+                </div>
+                <div>
+                  <label for="street" class="block mb-2 font-semibold">Gatuadress</label>
+                  <input type="text" id="street" name="street" required class="w-full border border-gray-300 rounded px-4 py-2">
+                </div>
+                <div>
+                  <label for="zip" class="block mb-2 font-semibold">Postnummer</label>
+                  <input type="text" id="zip" name="zip" required class="w-full border border-gray-300 rounded px-4 py-2">
+                </div>
+                <div>
+                  <label for="city" class="block mb-2 font-semibold">Stad</label>
+                  <input type="text" id="city" name="city" required class="w-full border border-gray-300 rounded px-4 py-2">
+                </div>
+              </form>
+            </div>
+            <div class="bg-surface p-6 mb-6">
+              <h2 class="text-2xl font-bold mb-4">Fraktalternativ</h2>
+              <div class="space-y-3">
+                <label class="flex items-start p-4 border-2 border-gray-300 cursor-pointer hover:border-accent transition-colors">
+                  <input type="radio" name="shipping" value="postnord" checked class="!mt-1 !ml-1 !mr-2" id="shipping-postnord">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                      <img src="/images/postnord-icon.webp" alt="PostNord" class="w-8 h-8">
+                      <div>
+                        <div class="font-semibold">PostNord</div>
+                        <div class="text-sm text-gray-600">3 - 4 vardagar</div>
+                      </div>
+                      <div class="ml-auto font-bold">${shippingCost} SEK</div>
+                    </div>
+                    <p class="text-sm text-gray-600">Skickas till din brevlåda/dörr, eller till: Närmaste Serviceställe</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="bg-surface p-6 sticky top-4">
+              <h2 class="text-2xl font-bold mb-4">Ordersammanfattning</h2>
+              ${!qualifiesForFreeShipping ? `
+                <div class="!mb-4 !p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div class="flex items-center justify-between !mb-2">
+                    <span class="text-sm font-semibold text-blue-800">Fri frakt vid köp över ${freeShippingThreshold} SEK</span>
+                    <span class="text-sm font-bold text-blue-800">${remainingForFreeShipping.toFixed(0)} SEK kvar</span>
+                  </div>
+                  <div class="w-full bg-blue-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${Math.min(100, ((subtotal / freeShippingThreshold) * 100))}%"></div>
+                  </div>
+                </div>
+              ` : `
+                <div class="!mb-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p class="text-sm font-semibold text-green-800">🎉 Du kvalificerar för fri frakt!</p>
+                </div>
+              `}
+              <div class="space-y-2 mb-4">
+                ${cart.map((item: any, index: number) => {
+                  const productData = productDataArray[index];
+                  const itemPrice = productData?.price ?? item.price;
+                  return `
+                  <div class="flex justify-between">
+                    <span>${item.product_name} x${item.quantity}</span>
+                      <span>${(itemPrice * item.quantity).toFixed(2)} SEK</span>
+                    </div>
+                  `;
+                }).join('')}
+                <div class="border-t pt-2 flex justify-between">
+                  <span>Delsumma:</span>
+                  <span>${subtotal.toFixed(2)} SEK</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Frakt:</span>
+                  <span>${qualifiesForFreeShipping ? 'Fri frakt' : `${shippingCost} SEK`}</span>
+                  </div>
+                <div class="border-t pt-2 flex justify-between font-bold text-xl">
+                  <span>Totalt:</span>
+                  <span>${total.toFixed(2)} SEK</span>
+                </div>
+              </div>
+              <button 
+                id="checkout-button"
+                class="w-full bg-indigo-950 hover:bg-indigo-900 text-white rounded-lg font-semibold shadow-lg transition-all text-lg"
+                style="padding: 0.875rem 2rem !important;"
+              >
+                Fortsätt till betalning
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Handle checkout
+      document.getElementById('checkout-button')?.addEventListener('click', async () => {
+        const form = document.getElementById('shipping-form') as HTMLFormElement;
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const formData = new FormData(form);
+        const shippingMethod = (document.querySelector('input[name="shipping"]:checked') as HTMLInputElement)?.value || 'postnord';
+        const shippingAddress = {
+          email: formData.get('email'),
+          name: formData.get('name'),
+          street: formData.get('street'),
+          city: formData.get('city'),
+          zip: formData.get('zip'),
+        };
+
+        const checkoutButton = document.getElementById('checkout-button') as HTMLButtonElement;
+        checkoutButton.disabled = true;
+        checkoutButton.textContent = 'Bearbetar...';
+
+        try {
+          const response = await fetch('/api/stripe/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: cart,
+              shipping_address: shippingAddress,
+            shipping_method: shippingMethod,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            throw new Error(data.error || 'Failed to create checkout session');
+          }
+        } catch (error: any) {
+          alert('Fel: ' + error.message);
+          checkoutButton.disabled = false;
+          checkoutButton.textContent = 'Fortsätt till betalning';
+        }
+      });
+    }
+
+    renderCheckout();
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>
+

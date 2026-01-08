@@ -1,0 +1,354 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createServerClient } from '../../lib/supabase';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+let product = null;
+if (id) {
+  try {
+    const supabase = createServerClient();
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+    product = data;
+  } catch (error) {
+    // Will handle in client-side fallback
+  }
+}
+---
+
+<Layout title={product ? `${product.name} - Feed Zone` : 'Product - Feed Zone'}>
+  <div class="container mx-auto px-4" style="padding-top: 4rem; padding-bottom: 4rem;">
+    {product ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Product Images -->
+        <div>
+          <div id="main-image-container" class="mb-4">
+            <img 
+              id="main-product-image"
+              src={product.image_url || '/images/placeholder.jpg'} 
+              alt={product.name}
+              class="w-full rounded-lg cursor-pointer"
+            />
+          </div>
+          {(product.additional_images && Array.isArray(product.additional_images) && product.additional_images.length > 0) || product.image_url ? (
+            <div class="grid grid-cols-4 gap-2">
+              <img 
+                src={product.image_url || '/images/placeholder.jpg'} 
+                alt={product.name}
+                class="w-full h-20 object-cover rounded border-2 border-primary cursor-pointer hover:opacity-75 transition-opacity thumbnail-image"
+                data-image-url={product.image_url || '/images/placeholder.jpg'}
+              />
+              {product.additional_images && Array.isArray(product.additional_images) && product.additional_images.map((imgUrl: string, index: number) => (
+                <img 
+                  key={index}
+                  src={imgUrl} 
+                  alt={`${product.name} - Bild ${index + 2}`}
+                  class="w-full h-20 object-cover rounded border-2 border-transparent cursor-pointer hover:opacity-75 transition-opacity thumbnail-image"
+                  data-image-url={imgUrl}
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
+        
+        <!-- Product Info -->
+        <div>
+          <h1 class="text-4xl font-bold text-primary" style="margin-bottom: 1rem;">{product.name}</h1>
+          <p class="text-2xl font-bold text-accent" style="margin-bottom: 1rem;">{product.price.toFixed(2)} SEK</p>
+          <p class="text-text-muted" style="margin-bottom: 1.5rem;">{product.description || 'Ingen beskrivning tillgänglig.'}</p>
+          
+          {product.in_stock ? (
+            <div>
+              {/* Variant Selection (for flavors, sizes, etc.) */}
+              {product.variants && product.variants.type === 'flavor' && (
+                <div class="mb-6">
+                  <label for="variant-select" class="block mb-2 font-semibold">Välj smak:</label>
+                  <select 
+                    id="variant-select" 
+                    class="w-full border border-gray-300 rounded px-4 py-2 mb-2"
+                  >
+                    {product.variants.options.map((option: any) => (
+                      <option value={option.id}>{option.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
+              <div class="quantity-controls w-full flex justify-center" data-product-id={product.id} data-product-name={product.name} data-product-price={product.price}>
+                <div id="quantity-controls-container" class="w-full flex justify-center">
+                  <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm cursor-pointer" style="min-width: 300px;">KÖP</button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p class="text-red-600 font-semibold">Slut i lager</p>
+          )}
+        </div>
+      </div>
+    ) : (
+      <div id="product-container">
+        <p class="text-text-muted">Laddar produkt...</p>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<script>
+  if (typeof window !== 'undefined') {
+    // Image gallery functionality
+    const thumbnailImages = document.querySelectorAll('.thumbnail-image');
+    const mainImage = document.getElementById('main-product-image');
+    
+    thumbnailImages.forEach((thumb: any) => {
+      thumb.addEventListener('click', () => {
+        const imageUrl = thumb.getAttribute('data-image-url');
+        if (mainImage && imageUrl) {
+          mainImage.src = imageUrl;
+          // Update active thumbnail
+          thumbnailImages.forEach((t: any) => {
+            t.classList.remove('border-primary');
+            t.classList.add('border-transparent');
+          });
+          thumb.classList.remove('border-transparent');
+          thumb.classList.add('border-primary');
+        }
+      });
+    });
+
+    // Function to update quantity controls display
+    function updateQuantityControls() {
+      const controlsDiv = document.querySelector('.quantity-controls');
+      if (!controlsDiv) return;
+      
+      const productId = controlsDiv.getAttribute('data-product-id');
+      const productName = controlsDiv.getAttribute('data-product-name');
+      const productPrice = controlsDiv.getAttribute('data-product-price');
+      const container = document.getElementById('quantity-controls-container');
+      
+      if (!container || !productId) return;
+      
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const cartItem = cart.find((item: any) => item.product_id === productId);
+      const initialQuantity = cartItem ? cartItem.quantity : 0;
+      const isInCart = initialQuantity > 0;
+      
+      if (isInCart) {
+        container.innerHTML = `
+          <div class="flex items-center gap-2 quantity-buttons justify-center">
+            <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg cursor-pointer" data-action="decrease">−</button>
+            <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${productId}">
+            <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg cursor-pointer" data-action="increase">+</button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm cursor-pointer" style="min-width: 300px;">KÖP</button>`;
+      }
+    }
+
+    // Update quantity controls on page load
+    updateQuantityControls();
+    
+    // Listen for cart updates
+    window.addEventListener('cart-updated', () => {
+      updateQuantityControls();
+      setupQuantityListeners();
+    });
+
+    // Function to update cart quantity
+    function updateCartQuantity(productId: string, quantity: number) {
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const itemIndex = cart.findIndex((item: any) => item.product_id === productId);
+      
+      if (itemIndex >= 0) {
+        if (quantity <= 0) {
+          cart.splice(itemIndex, 1);
+        } else {
+          cart[itemIndex].quantity = quantity;
+        }
+        localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+      }
+    }
+
+    // Setup quantity control listeners
+    function setupQuantityListeners() {
+      const controlsDiv = document.querySelector('.quantity-controls');
+      if (!controlsDiv) return;
+      
+      const productId = controlsDiv.getAttribute('data-product-id');
+      const productName = controlsDiv.getAttribute('data-product-name');
+      const productPrice = parseFloat(controlsDiv.getAttribute('data-product-price') || '0');
+      
+      // Handle KÖP button
+      const kopBtn = controlsDiv.querySelector('.kop-btn');
+      if (kopBtn) {
+        kopBtn.addEventListener('click', () => {
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          cart.push({
+            product_id: productId,
+            product_name: productName,
+            price: productPrice,
+            quantity: 1,
+          });
+          localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+          window.dispatchEvent(new Event('cart-updated'));
+        });
+      }
+      
+      // Handle quantity buttons
+      const quantityBtns = controlsDiv.querySelectorAll('.quantity-btn');
+      quantityBtns.forEach((btn: any) => {
+        btn.addEventListener('click', () => {
+          const action = btn.getAttribute('data-action');
+          const input = controlsDiv.querySelector('.quantity-input') as HTMLInputElement;
+          if (!input) return;
+          
+          let quantity = parseInt(input.value) || 0;
+          if (action === 'increase') {
+            quantity += 1;
+          } else if (action === 'decrease' && quantity > 0) {
+            quantity -= 1;
+          }
+          input.value = quantity.toString();
+          if (productId) {
+            updateCartQuantity(productId, quantity);
+          }
+        });
+      });
+      
+      // Handle quantity input changes
+      const quantityInput = controlsDiv.querySelector('.quantity-input');
+      if (quantityInput) {
+        quantityInput.addEventListener('change', () => {
+          const input = quantityInput as HTMLInputElement;
+          const quantity = parseInt(input.value) || 0;
+          if (productId) {
+            updateCartQuantity(productId, Math.max(0, quantity));
+          }
+        });
+      }
+    }
+
+    // Initial setup
+    setupQuantityListeners();
+
+    // Load product if not server-rendered
+    const productContainer = document.getElementById('product-container');
+    if (productContainer) {
+      const productId = window.location.pathname.split('/').pop();
+      fetch(`/api/products/${productId}`)
+        .then(res => res.json())
+        .then(product => {
+          if (product.error) {
+            productContainer.innerHTML = '<p class="text-red-500">Produkt hittades inte.</p>';
+          } else {
+            const additionalImages = product.additional_images && Array.isArray(product.additional_images) ? product.additional_images : [];
+            const hasVariants = product.variants && product.variants.type === 'flavor';
+            const variantOptions = hasVariants ? product.variants.options.map((opt: any) => 
+              `<option value="${opt.id}">${opt.name}</option>`
+            ).join('') : '';
+            
+            productContainer.innerHTML = `
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <div id="main-image-container" class="mb-4">
+                    <img id="main-product-image" src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}" class="w-full rounded-lg cursor-pointer">
+                  </div>
+                  ${additionalImages.length > 0 ? `
+                    <div class="grid grid-cols-4 gap-2">
+                      <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}" class="w-full h-20 object-cover rounded border-2 border-primary cursor-pointer hover:opacity-75 transition-opacity thumbnail-image" data-image-url="${product.image_url || '/images/placeholder.jpg'}">
+                      ${additionalImages.map((imgUrl: string, index: number) => 
+                        `<img src="${imgUrl}" alt="${product.name} - Bild ${index + 2}" class="w-full h-20 object-cover rounded border-2 border-transparent cursor-pointer hover:opacity-75 transition-opacity thumbnail-image" data-image-url="${imgUrl}">`
+                      ).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+                <div>
+                  <h1 class="text-4xl font-bold text-primary" style="margin-bottom: 1rem;">${product.name}</h1>
+                  <p class="text-2xl font-bold text-accent" style="margin-bottom: 1rem;">${product.price.toFixed(2)} SEK</p>
+                  <p class="text-text-muted" style="margin-bottom: 1.5rem;">${product.description || 'Ingen beskrivning tillgänglig.'}</p>
+                  ${product.in_stock ? `
+                    <div>
+                      ${hasVariants ? `
+                        <div class="mb-6">
+                          <label for="variant-select" class="block mb-2 font-semibold">Välj smak:</label>
+                          <select id="variant-select" class="w-full border border-gray-300 rounded px-4 py-2 mb-2">
+                            ${variantOptions}
+                          </select>
+                        </div>
+                      ` : ''}
+                      <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
+                        <div id="quantity-controls-container" class="w-full flex justify-center">
+                          <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm cursor-pointer" style="min-width: 300px;">KÖP</button>
+                        </div>
+                      </div>
+                    </div>
+                  ` : '<p class="text-red-600 font-semibold">Slut i lager</p>'}
+                </div>
+              </div>
+            `;
+            
+            // Re-attach event listeners for dynamically loaded content
+            const thumbnails = productContainer.querySelectorAll('.thumbnail-image');
+            const mainImg = productContainer.querySelector('#main-product-image') as HTMLImageElement;
+            
+            thumbnails.forEach((thumb: any) => {
+              thumb.addEventListener('click', () => {
+                const imageUrl = thumb.getAttribute('data-image-url');
+                if (mainImg && imageUrl) {
+                  mainImg.src = imageUrl;
+                  thumbnails.forEach((t: any) => {
+                    t.classList.remove('border-primary');
+                    t.classList.add('border-transparent');
+                  });
+                  thumb.classList.remove('border-transparent');
+                  thumb.classList.add('border-primary');
+                }
+              });
+            });
+            
+            // Update quantity controls for dynamically loaded product
+            updateQuantityControls();
+            setupQuantityListeners();
+          }
+        })
+        .catch(error => {
+          productContainer.innerHTML = '<p class="text-red-500">Fel vid laddning av produkt.</p>';
+        });
+    }
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .quantity-input {
+    -moz-appearance: textfield;
+  }
+  
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  #quantity-controls-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .kop-btn {
+    min-width: 300px !important;
+  }
+</style>
+

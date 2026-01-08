@@ -1,0 +1,58 @@
+---
+interface Props {
+  productId: string;
+  productName: string;
+  productDescription?: string;
+  productPrice: number;
+  productImage?: string;
+}
+
+const { productId, productName, productDescription = '', productPrice, productImage = '/images/placeholder.jpg' } = Astro.props;
+---
+
+<div class="product-card bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer" data-product-id={productId} data-product-link>
+  <img src={productImage} alt={productName} class="w-full h-48 object-cover" />
+  <div class="p-6">
+    <h3 class="font-bold text-sm mb-1 text-gray-900 line-clamp-2">{productName}</h3>
+    <p class="text-xs text-gray-600 mb-3 line-clamp-2">{productDescription}</p>
+    <div class="flex items-center justify-between">
+      <span class="text-lg font-bold text-gray-900">{productPrice.toFixed(2)} SEK</span>
+      <div class="quantity-controls" data-product-id={productId} data-product-name={productName} data-product-price={productPrice}>
+        <button class="kop-btn bg-primary text-white px-6 py-2 rounded font-semibold hover:bg-opacity-90 transition-all uppercase cursor-pointer">KÖP</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (typeof window !== 'undefined') {
+    // Add click handler to product cards
+    document.addEventListener('click', (e) => {
+      const card = (e.target as HTMLElement).closest('[data-product-link]');
+      if (card) {
+        // Don't navigate if clicking on buttons or quantity controls
+        const clickedElement = e.target as HTMLElement;
+        if (clickedElement.closest('.quantity-controls') || clickedElement.closest('button')) {
+          return;
+        }
+        const productId = card.getAttribute('data-product-id');
+        if (productId) {
+          window.location.href = `/products/${productId}`;
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .product-card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .product-card:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+  }
+</style>
+

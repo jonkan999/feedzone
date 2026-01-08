@@ -1,0 +1,273 @@
+
+<nav class="nav-shell fixed top-0 inset-x-0 z-50 bg-white border-b-2 border-gray-200 shadow-sm px-4 md:px-8 lg:px-12">
+  <div class="container mx-auto px-6 md:px-12">
+    <div class="flex items-center justify-between h-20 md:h-28">
+      <div class="flex items-center gap-3 md:gap-4">
+        <button
+          id="menu-toggle"
+          class="menu-toggle-btn md:hidden p-3 text-primary hover:text-primary transition-colors"
+          aria-label="Öppna navigation"
+          aria-expanded="false"
+        >
+          <svg class="menu-toggle-icon w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <a href="/" class="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
+          <div class="flex flex-row md:flex-row items-center gap-1 md:gap-2">
+            <img src="/images/logo-text.png" alt="Feed Zone" class="h-[3.5rem] md:h-11 w-auto order-2 md:order-1" />
+            <img src="/images/logo-icon.png" alt="Feed Zone Icon" class="h-12 md:h-11 w-auto order-1 md:order-2" />
+          </div>
+        </a>
+      </div>
+
+      <div class="hidden md:flex items-center gap-6">
+        <div class="relative group">
+          <button class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors flex items-center gap-1 uppercase tracking-wide">
+            Handla
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div class="absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-md py-2 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            <a href="/products?category=carbs" class="block px-4 py-2 hover:bg-gray-50 text-sm font-medium text-gray-700">Carbs</a>
+            <a href="/products?category=recovery" class="block px-4 py-2 hover:bg-gray-50 text-sm font-medium text-gray-700">Återhämtning</a>
+            <a href="/products?category=pre-workout" class="block px-4 py-2 hover:bg-gray-50 text-sm font-medium text-gray-700">Pre-Workout</a>
+            <a href="/products?category=gear" class="block px-4 py-2 hover:bg-gray-50 text-sm font-medium text-gray-700">Utrustning</a>
+          </div>
+        </div>
+
+        <a href="/brands" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors uppercase tracking-wide">Brands</a>
+        <a href="/zone-news" class="text-sm font-semibold text-gray-700 hover:text-primary transition-colors uppercase tracking-wide">In the Zone</a>
+      </div>
+
+      <div class="flex items-center gap-4 md:gap-6">
+        <div id="auth-buttons-mobile" class="md:hidden flex items-center"></div>
+
+        <a href="/cart" class="text-gray-800 hover:text-primary transition-colors relative p-2 md:hidden">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <span data-cart-count class="hidden absolute -top-2 -right-2 text-gray-900 text-sm font-bold">0</span>
+        </a>
+
+        <div id="auth-buttons-desktop" class="hidden md:flex gap-4"></div>
+
+        <a href="/cart" class="text-gray-700 hover:text-primary transition-colors relative p-2 hidden md:inline-flex">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <span data-cart-count class="hidden absolute -top-2 -right-2 text-gray-900 text-sm font-bold">0</span>
+        </a>
+      </div>
+    </div>
+
+    <div id="mobile-menu-overlay" class="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm hidden md:hidden">
+      <div id="mobile-menu-panel" class="mobile-menu-panel relative h-full w-[82%] max-w-sm bg-white shadow-2xl border-r border-gray-100 transform -translate-x-full transition-transform duration-300 rounded-r-2xl overflow-y-auto">
+        <div class="flex items-center justify-between px-5 py-5 border-b border-gray-200">
+          <span class="text-xl font-semibold text-gray-900 tracking-tight">Meny</span>
+          <button id="menu-close" class="p-2 text-gray-700 hover:text-primary transition-colors" aria-label="Stäng meny">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="py-4 space-y-2">
+          <details class="group">
+            <summary class="flex items-center justify-between px-5 py-4 text-base sm:text-lg font-semibold text-gray-900 hover:text-primary cursor-pointer">
+              <span>Handla</span>
+              <svg class="w-5 h-5 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+            <div class="pl-6 pb-3 space-y-1">
+              <a href="/products?category=carbs" class="subcategory block px-3 py-2 text-base font-medium text-gray-800 rounded-lg hover:bg-gray-50 hover:text-primary">Carbs</a>
+              <a href="/products?category=recovery" class="subcategory block px-3 py-2 text-base font-medium text-gray-800 rounded-lg hover:bg-gray-50 hover:text-primary">Återhämtning</a>
+              <a href="/products?category=pre-workout" class="subcategory block px-3 py-2 text-base font-medium text-gray-800 rounded-lg hover:bg-gray-50 hover:text-primary">Pre-Workout</a>
+              <a href="/products?category=gear" class="subcategory block px-3 py-2 text-base font-medium text-gray-800 rounded-lg hover:bg-gray-50 hover:text-primary">Utrustning</a>
+            </div>
+          </details>
+          <a href="/brands" class="block px-5 py-4 text-base sm:text-lg font-semibold text-gray-900 rounded-lg hover:bg-gray-50 hover:text-primary">Brands</a>
+          <a href="/zone-news" class="block px-5 py-4 text-base sm:text-lg font-semibold text-gray-900 rounded-lg hover:bg-gray-50 hover:text-primary">In the Zone</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="h-20 md:h-28"></div>
+
+<script>
+  import { supabase } from '../lib/supabase-client';
+  
+  if (typeof window !== 'undefined') {
+    const cartCountEls = Array.from(document.querySelectorAll('[data-cart-count]')) as HTMLElement[];
+    const authContainerIds = ['auth-buttons-desktop', 'auth-buttons-mobile'];
+    const mobileOverlay = document.getElementById('mobile-menu-overlay');
+    const mobilePanel = document.getElementById('mobile-menu-panel');
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuClose = document.getElementById('menu-close');
+
+    const loginIconMobile = `
+      <a href="/account/login" class="p-2 text-gray-800 hover:text-primary transition-colors" aria-label="Login">
+        <svg class="w-8 h-8" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M258.9,48C141.92,46.42,46.42,141.92,48,258.9,49.56,371.09,140.91,462.44,253.1,464c117,1.6,212.48-93.9,210.88-210.88C462.44,140.91,371.09,49.56,258.9,48ZM385.32,375.25a4,4,0,0,1-6.14-.32,124.27,124.27,0,0,0-32.35-29.59C321.37,329,289.11,320,256,320s-65.37,9-90.83,25.34a124.24,124.24,0,0,0-32.35,29.58,4,4,0,0,1-6.14.32A175.32,175.32,0,0,1,80,259C78.37,161.69,158.22,80.24,255.57,80S432,158.81,432,256A175.32,175.32,0,0,1,385.32,375.25Z"/>
+          <path d="M256,144c-19.72,0-37.55,7.39-50.22,20.82s-19,32-17.57,51.93C191.11,256,221.52,288,256,288s64.83-32,67.79-71.24c1.48-19.74-4.8-38.14-17.68-51.82C293.39,151.44,275.59,144,256,144Z"/>
+        </svg>
+      </a>
+    `;
+
+    const loginIconDesktop = `
+      <a href="/account/login" class="p-2 text-gray-700 hover:text-primary transition-colors" aria-label="Login">
+        <svg class="w-6 h-6" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M258.9,48C141.92,46.42,46.42,141.92,48,258.9,49.56,371.09,140.91,462.44,253.1,464c117,1.6,212.48-93.9,210.88-210.88C462.44,140.91,371.09,49.56,258.9,48ZM385.32,375.25a4,4,0,0,1-6.14-.32,124.27,124.27,0,0,0-32.35-29.59C321.37,329,289.11,320,256,320s-65.37,9-90.83,25.34a124.24,124.24,0,0,0-32.35,29.58,4,4,0,0,1-6.14.32A175.32,175.32,0,0,1,80,259C78.37,161.69,158.22,80.24,255.57,80S432,158.81,432,256A175.32,175.32,0,0,1,385.32,375.25Z"/>
+          <path d="M256,144c-19.72,0-37.55,7.39-50.22,20.82s-19,32-17.57,51.93C191.11,256,221.52,288,256,288s64.83-32,67.79-71.24c1.48-19.74-4.8-38.14-17.68-51.82C293.39,151.44,275.59,144,256,144Z"/>
+        </svg>
+      </a>
+    `;
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+      const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      cartCountEls.forEach((el) => {
+        el.textContent = count.toString();
+        el.classList.toggle('hidden', count === 0);
+      });
+    }
+
+    function bindSignOutButtons() {
+      document.querySelectorAll<HTMLButtonElement>('.sign-out-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          await supabase.auth.signOut();
+          window.location.href = '/';
+        });
+      });
+    }
+
+    async function checkAuth() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        authContainerIds.forEach((id) => {
+          const container = document.getElementById(id);
+          if (!container) return;
+
+          if (session) {
+            container.innerHTML = `
+              <a href="/account" class="font-bold text-text hover:text-accent transition-colors">Konto</a>
+              <button class="font-bold text-text hover:text-accent transition-colors sign-out-btn">Logga ut</button>
+            `;
+          } else {
+            container.innerHTML = id === 'auth-buttons-mobile' ? loginIconMobile : loginIconDesktop;
+          }
+        });
+
+        bindSignOutButtons();
+      } catch (error) {
+        console.error('Auth check error:', error);
+      }
+    }
+
+    function openMobileMenu() {
+      if (!mobileOverlay || !mobilePanel || !menuToggle) return;
+      mobileOverlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        mobilePanel.classList.remove('-translate-x-full');
+      });
+      menuToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMobileMenu() {
+      if (!mobileOverlay || !mobilePanel || !menuToggle) return;
+      mobilePanel.classList.add('-translate-x-full');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
+    }
+
+    menuToggle?.addEventListener('click', openMobileMenu);
+    menuClose?.addEventListener('click', closeMobileMenu);
+    mobileOverlay?.addEventListener('click', (event) => {
+      if (event.target === mobileOverlay) {
+        closeMobileMenu();
+      }
+    });
+
+    mobilePanel?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeMobileMenu();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        closeMobileMenu();
+      }
+    });
+
+    updateCartCount();
+    checkAuth();
+
+    // Listen for cart updates
+    window.addEventListener('storage', updateCartCount);
+    window.addEventListener('cart-updated', updateCartCount);
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Force horizontal breathing room */
+  .nav-shell {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  @media (min-width: 768px) {
+    .nav-shell {
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-shell {
+      padding-left: 3rem !important;
+      padding-right: 3rem !important;
+    }
+  }
+
+  /* Force panel padding/spacing if global styles override */
+  .mobile-menu-panel {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  .mobile-menu-panel summary,
+  .mobile-menu-panel a {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  /* Ensure the overlay sits above any floating CTAs */
+  #mobile-menu-overlay {
+    z-index: 999 !important;
+  }
+
+  /* Extra indent for subcategory links */
+  .mobile-menu-panel .subcategory {
+    margin-left: 0.5rem !important;
+  }
+
+  /* Force hamburger to use primary color */
+  .menu-toggle-btn,
+  .menu-toggle-icon {
+    color: var(--color-primary, #2C5F2D) !important;
+  }
+</style>
+

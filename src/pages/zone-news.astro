@@ -1,0 +1,173 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="In the Zone - Feed Zone">
+  <div class="container mx-auto px-4 py-12">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h1 class="text-5xl font-black text-primary mb-4 tracking-tight">In the Zone</h1>
+      <p class="text-lg md:text-xl text-text-muted">
+        Artiklar, guider och nyheter om energi, återhämtning och utrustning – kuraterat för uthållighetsidrottare.
+      </p>
+    </div>
+
+    <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p class="text-center text-text-muted col-span-full py-8">Laddar artiklar...</p>
+    </div>
+
+    <div class="flex justify-center mt-8">
+      <button id="load-more" class="px-6 py-3 bg-indigo-950 text-white rounded-lg font-semibold text-sm uppercase tracking-wide hover:bg-indigo-900 transition-colors hidden">
+        Visa fler
+      </button>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  if (typeof window !== 'undefined') {
+    const grid = document.getElementById('news-grid');
+    const loadMoreBtn = document.getElementById('load-more');
+    let articles: any[] = [];
+    let visibleCount = 0;
+    const PAGE_SIZE = 5;
+
+    function formatDate(dateStr: string) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('sv-SE', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function getYouTubeThumbnailUrl(url: string): string | null {
+      if (!url) return null;
+      
+      // Extract video ID from various YouTube URL formats
+      let videoId: string | null = null;
+      
+      // youtube.com/watch?v=VIDEO_ID
+      const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
+      if (watchMatch) videoId = watchMatch[1];
+      
+      // youtu.be/VIDEO_ID
+      const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+      if (shortMatch) videoId = shortMatch[1];
+      
+      // youtube.com/embed/VIDEO_ID
+      const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/);
+      if (embedMatch) videoId = embedMatch[1];
+      
+      if (!videoId) return null;
+      
+      // Return high-quality thumbnail (maxresdefault falls back to hqdefault if not available)
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+
+    function renderCards() {
+      if (!grid) return;
+      const slice = articles.slice(0, visibleCount);
+      if (slice.length === 0) {
+        grid.innerHTML = '<p class="text-center text-text-muted col-span-full py-8">Inga artiklar ännu.</p>';
+        loadMoreBtn?.classList.add('hidden');
+        return;
+      }
+
+      grid.innerHTML = slice
+        .map((article) => {
+          const badge = article.badge_text || article.category || 'Nyhet';
+          // Convert YouTube URLs to thumbnails, otherwise use image_url
+          const youtubeThumbnail = getYouTubeThumbnailUrl(article.image_url || '');
+          const image = youtubeThumbnail || article.image_url || '/images/placeholder.jpg';
+          const excerpt = article.excerpt || '';
+          const date = article.published_at ? formatDate(article.published_at) : (article.created_at ? formatDate(article.created_at) : '');
+          const grayStyle = article.grayscale
+            ? 'style="filter: grayscale(70%) saturate(0.3) !important; -webkit-filter: grayscale(70%) saturate(0.3) !important;"'
+            : '';
+          const overlay = article.grayscale
+            ? '<div class="absolute inset-0 bg-gradient-to-tr from-black/25 via-black/10 to-transparent"></div>'
+            : '';
+          return `
+            <article class="bg-white overflow-hidden hover:shadow-md transition-all flex flex-col">
+              <a href="${article.article_url || `/zone-news/${article.id}`}" class="block relative h-52 overflow-hidden group">
+                <div class="h-full w-full relative">
+                  <img src="${image}" alt="${article.title}" class="w-full h-full object-cover" ${grayStyle}>
+                  ${overlay}
+                </div>
+                <div class="absolute top-3 left-3 bg-white/95 text-gray-900 text-xs font-bold px-3 py-1 uppercase tracking-wide !p-1">${badge}</div>
+              </a>
+              <div class="p-6 flex flex-col gap-3 flex-grow">
+                <div class="text-xs font-semibold text-primary uppercase tracking-wide">${article.category || 'Nyhet'}${date ? ` · ${date}` : ''}</div>
+                <h3 class="text-xl font-bold text-gray-900 leading-tight">${article.title}</h3>
+                <p class="text-sm text-gray-600 line-clamp-3 flex-grow">${excerpt}</p>
+                <div class="flex items-center justify-between pt-1">
+                  <a href="${article.article_url || `/zone-news/${article.id}`}" class="text-primary font-semibold text-sm hover:text-accent transition-colors flex items-center gap-2">
+                    Läs mer
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      if (loadMoreBtn) {
+        if (visibleCount < articles.length) {
+          loadMoreBtn.classList.remove('hidden');
+        } else {
+          loadMoreBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    async function loadNews() {
+      try {
+        const response = await fetch('/api/news');
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          const now = new Date();
+          const filtered = data.filter((a) => {
+            const dateStr = a.published_at || a.created_at;
+            if (!dateStr) return false;
+            const d = new Date(dateStr);
+            return d <= now;
+          });
+          articles = filtered;
+          visibleCount = Math.min(PAGE_SIZE, articles.length);
+          renderCards();
+        } else {
+          throw new Error('Felaktigt svar');
+        }
+      } catch (error) {
+        console.error('Error loading news:', error);
+        if (grid) {
+          grid.innerHTML = '<p class="text-center text-text-muted col-span-full py-8">Kunde inte ladda artiklar.</p>';
+        }
+      }
+    }
+
+    loadMoreBtn?.addEventListener('click', () => {
+      visibleCount = Math.min(visibleCount + PAGE_SIZE, articles.length);
+      renderCards();
+    });
+
+    loadNews();
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ensure clamp works broadly */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* grayscale applied inline when needed */
+</style>
+
