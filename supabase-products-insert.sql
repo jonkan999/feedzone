@@ -257,14 +257,14 @@ ON CONFLICT (id) DO UPDATE SET
   image_url = EXCLUDED.image_url,
   additional_images = EXCLUDED.additional_images;
 
--- Test Product: Hidden 1 SEK product for Stripe testing
+-- Test Product: Hidden 3 SEK product for Stripe testing
 -- Accessible at /test-checkout (not shown in product listings)
 INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
 (
   'test-product-1sek',
-  'Test Product - 1 SEK',
+  'Test Product - 3 SEK',
   'This is a test product for Stripe integration testing. Free shipping included.',
-  1.00,
+  3.00,
   'test',
   true,
   false,

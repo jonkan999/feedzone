@@ -60,11 +60,17 @@ import Layout from '../layouts/Layout.astro';
         return sum + (itemPrice * item.quantity);
       }, 0);
 
+      // Shipping + free shipping logic (keep in sync with /api/stripe/create-checkout)
+      const isTestProduct = cart.some((item: any) => item.product_id === 'test-product-1sek');
       const shippingCost = 59; // PostNord shipping cost
       const freeShippingThreshold = 400;
-      const qualifiesForFreeShipping = subtotal >= freeShippingThreshold;
+      const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct;
       const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
       const total = subtotal + (qualifiesForFreeShipping ? 0 : shippingCost);
+
+      // Stripe minimum amount (SEK has a 3 SEK minimum)
+      const stripeMinimum = 3;
+      const belowStripeMinimum = total < stripeMinimum;
 
       container.innerHTML = `
         ${!isLoggedIn ? `
@@ -119,7 +125,7 @@ import Layout from '../layouts/Layout.astro';
                         <div class="font-semibold">PostNord</div>
                         <div class="text-sm text-gray-600">3 - 4 vardagar</div>
                       </div>
-                      <div class="ml-auto font-bold">${shippingCost} SEK</div>
+                      <div class="ml-auto font-bold">${qualifiesForFreeShipping ? '0 SEK' : `${shippingCost} SEK`}</div>
                     </div>
                     <p class="text-sm text-gray-600">Skickas till din brevlåda/dörr, eller till: Närmaste Serviceställe</p>
                   </div>
@@ -168,6 +174,11 @@ import Layout from '../layouts/Layout.astro';
                   <span>Totalt:</span>
                   <span>${total.toFixed(2)} SEK</span>
                 </div>
+                ${belowStripeMinimum ? `
+                  <div class="mt-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">
+                    Stripe kräver minst ${stripeMinimum} SEK för betalning. Lägg till fler varor för att fortsätta.
+                  </div>
+                ` : ''}
               </div>
               <button 
                 id="checkout-button"
@@ -183,6 +194,10 @@ import Layout from '../layouts/Layout.astro';
 
       // Handle checkout
       document.getElementById('checkout-button')?.addEventListener('click', async () => {
+        if (belowStripeMinimum) {
+          alert(`Stripe kräver minst ${stripeMinimum} SEK för betalning. Lägg till fler varor för att fortsätta.`);
+          return;
+        }
         const form = document.getElementById('shipping-form') as HTMLFormElement;
         if (!form.checkValidity()) {
           form.reportValidity();

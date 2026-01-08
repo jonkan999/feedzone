@@ -134,7 +134,8 @@
         <div class="relative">
           <button
             type="button"
-            class="user-menu-toggle ${paddingClasses} rounded-full text-accent-secondary hover:text-accent-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-secondary transition-colors"
+            class="user-menu-toggle ${paddingClasses} rounded-full text-accent-secondary hover:text-accent-secondary focus:outline-none leading-none flex items-center justify-center transition-colors"
+            style="color: var(--color-accent-secondary);"
             aria-expanded="false"
             aria-haspopup="true"
             aria-label="Konto och logga ut"
@@ -144,9 +145,9 @@
               <path d="M256,144c-19.72,0-37.55,7.39-50.22,20.82s-19,32-17.57,51.93C191.11,256,221.52,288,256,288s64.83-32,67.79-71.24c1.48-19.74-4.8-38.14-17.68-51.82C293.39,151.44,275.59,144,256,144Z"/>
             </svg>
           </button>
-          <div class="user-menu-dropdown absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg py-2 hidden">
-            <a href="/account" class="block px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50">Konto</a>
-            <button class="sign-out-btn block w-full text-left px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50">Logga ut</button>
+          <div class="user-menu-dropdown absolute right-0 !mt-2 w-40 bg-white border border-gray-200 !py-2 hidden">
+            <a href="/account" class="block px-4 py-2 text-sm font-semibold text-gray-800 !p-2 hover:bg-gray-50">Konto</a>
+            <button class="sign-out-btn block w-full text-left px-4 py-2 text-sm font-semibold text-gray-800 !p-2 hover:bg-gray-50">Logga ut</button>
           </div>
         </div>
       `;

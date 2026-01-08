@@ -67,6 +67,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const freeShippingThreshold = 400;
     const qualifiesForFreeShipping = subtotal >= freeShippingThreshold || isTestProduct;
     const finalShippingCost = qualifiesForFreeShipping ? 0 : shippingCost;
+    const stripeMinimum = 3; // Stripe minimum in SEK
+    const totalForStripe = subtotal + finalShippingCost;
+
+    if (totalForStripe < stripeMinimum) {
+      return new Response(JSON.stringify({ error: `Stripe kräver minst ${stripeMinimum} SEK för betalning. Lägg till fler varor för att fortsätta.` }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321';
 
