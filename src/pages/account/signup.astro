@@ -99,7 +99,22 @@ import Layout from '../../layouts/Layout.astro';
         const data = await response.json();
 
         if (response.ok) {
-          // Sign in with Supabase client-side
+          // Check if email confirmation is required
+          // If no session is returned, user needs to confirm email first
+          if (!data.user?.email_confirmed_at && !data.session) {
+            // Email confirmation required
+            if (errorMessage) {
+              errorMessage.classList.remove('hidden');
+              errorMessage.classList.remove('text-red-600');
+              errorMessage.classList.add('text-green-600');
+              errorMessage.textContent = 'Ett bekräftelsemail har skickats till din e-postadress. Klicka på länken i mailet för att aktivera ditt konto.';
+            }
+            submitButton.disabled = false;
+            submitButton.textContent = 'Skapa konto';
+            return;
+          }
+          
+          // If session exists, sign in immediately (email confirmation disabled)
           const { error } = await supabase.auth.signInWithPassword({ email, password });
           
           if (error) {
