@@ -16,19 +16,19 @@ import Layout from '../../layouts/Layout.astro';
               id="email" 
               name="email" 
               required 
-              class="w-full border border-gray-300 rounded px-4 py-2"
+              class="w-full border border-gray-300 rounded !px-4 !py-2"
             />
           </div>
           <div>
-            <label for="password" class="block mb-2 font-semibold">Lösenord</label>
+            <label for="password" class="block !mb-2 font-semibold">Lösenord</label>
             <input 
               type="password" 
               id="password" 
               name="password" 
               required 
-              class="w-full border border-gray-300 rounded px-4 py-2"
+              class="w-full border border-gray-300 rounded !px-4 !py-2"
             />
-            <div class="mt-2 text-right">
+            <div class="!mt-2 text-right">
               <a href="/account/forgot-password" class="text-sm text-primary hover:text-accent">
                 Glömt lösenord?
               </a>
@@ -38,13 +38,13 @@ import Layout from '../../layouts/Layout.astro';
             type="submit"
             id="login-submit-btn"
             class="w-full bg-indigo-950 hover:bg-indigo-900 text-white text-center rounded-lg font-semibold transition-all uppercase text-sm cursor-pointer"
-            style="padding: 0.875rem 1.5rem !important; color: white !important;"
+            style="padding: 0.75rem 1rem !important; color: white !important;"
           >
             Logga in
           </button>
         </form>
         
-        <div class="mt-4 text-center">
+        <div class="!mt-4 text-center">
           <p class="text-text-muted">
             Har du inget konto? 
             <a href="/account/signup" class="text-primary hover:text-accent">Registrera dig</a>
