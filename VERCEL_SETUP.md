@@ -39,10 +39,12 @@ git push origin main
 Vercel should auto-detect Astro, but verify these settings:
 
 ### Framework Preset
+
 - **Framework Preset**: `Astro` (should be auto-detected)
 - If not detected, select **"Other"** and we'll configure manually
 
 ### Build Settings
+
 - **Root Directory**: `./` (leave as default)
 - **Build Command**: `npm run build` (should be auto-filled)
 - **Output Directory**: `dist` (should be auto-filled)
@@ -55,6 +57,7 @@ Vercel should auto-detect Astro, but verify these settings:
 Click **"Environment Variables"** and add each one:
 
 #### Supabase Variables
+
 ```
 PUBLIC_SUPABASE_URL = your_supabase_project_url
 PUBLIC_SUPABASE_ANON_KEY = your_supabase_anon_key
@@ -62,6 +65,7 @@ SUPABASE_SERVICE_ROLE_KEY = your_supabase_service_role_key
 ```
 
 #### Stripe Variables (Use LIVE keys for production!)
+
 ```
 PUBLIC_STRIPE_PUBLISHABLE_KEY = pk_live_...
 STRIPE_SECRET_KEY = sk_live_...
@@ -69,17 +73,20 @@ STRIPE_WEBHOOK_SECRET = whsec_... (from production webhook)
 ```
 
 #### Resend Variables
+
 ```
 RESEND_API_KEY = re_...
 EMAIL_FROM = noreply@feedzone.se
 ```
 
 #### Site Configuration
+
 ```
 PUBLIC_SITE_URL = https://feedzone.se
 ```
 
 **Important Notes:**
+
 - ✅ Use **LIVE mode** Stripe keys (not test keys!)
 - ✅ Set `PUBLIC_SITE_URL` to `https://feedzone.se`
 - ✅ Make sure `EMAIL_FROM` uses your verified domain
@@ -88,6 +95,7 @@ PUBLIC_SITE_URL = https://feedzone.se
 ### Advanced Settings (Optional)
 
 Click **"Show Advanced Settings"** if you need to:
+
 - Change Node.js version (default is usually fine)
 - Add build environment variables
 - Configure headers/redirects
@@ -104,11 +112,13 @@ Click **"Show Advanced Settings"** if you need to:
 After deployment completes:
 
 1. **Check the deployment URL**:
+
    - Vercel provides a URL like `feedzone-abc123.vercel.app`
    - Click to visit your site
    - Test basic functionality
 
 2. **Check build logs**:
+
    - Look for any errors or warnings
    - Common issues:
      - Missing environment variables
@@ -131,6 +141,7 @@ After deployment completes:
 ### Option B: Add www Subdomain (Optional)
 
 If you want `www.feedzone.se`:
+
 1. Add `www.feedzone.se` as another domain
 2. Vercel will handle redirects automatically
 
@@ -138,22 +149,48 @@ If you want `www.feedzone.se`:
 
 Vercel will show you DNS records to add. You have two options:
 
-#### Option 1: CNAME Record (Recommended)
+#### Option 1: Use Vercel DNS (Recommended - Simplest)
 
-1. Go to your domain registrar (where you bought `feedzone.se`)
-2. Find DNS settings
-3. Add a CNAME record:
-   - **Name**: `@` (or root domain)
-   - **Value**: `cname.vercel-dns.com`
-   - **TTL**: 3600 (or default)
+This is the easiest approach - let Vercel manage your DNS:
 
-#### Option 2: A Record
+1. In Vercel Dashboard → **Domains** → Click on `feedzone.se`
+2. Look for **"DNS Records"** section
+3. Vercel will show you the required DNS records:
+   - **For root domain (`feedzone.se`)**:
+     - Type: `A`
+     - Name: `@` (or leave blank)
+     - Value: `216.198.79.1` (or the IP Vercel shows)
+   - **For www subdomain (`www.feedzone.se`)**:
+     - Type: `CNAME`
+     - Name: `www`
+     - Value: `5e64b2ef00c80ec0.vercel-dns-017.com.` (or the CNAME Vercel shows)
+4. Go to your domain registrar (where you bought `feedzone.se`)
+5. Find **Nameservers** settings
+6. Update nameservers to Vercel's nameservers (Vercel will show these in the DNS section, typically something like `ns1.vercel-dns.com`, `ns2.vercel-dns.com`)
+7. Save changes at your registrar
 
-If CNAME doesn't work, use A records:
-- Vercel will provide IP addresses
-- Add A records pointing to those IPs
+**Note**: Nameserver changes can take up to 48 hours to propagate, but usually complete within a few hours.
 
-**Note**: DNS changes can take up to 48 hours, but usually propagate within minutes to hours.
+#### Option 2: Keep Your Current DNS Provider
+
+If you prefer to keep managing DNS at your current provider (e.g., Inviso):
+
+1. Go to your DNS provider's control panel
+2. Add the DNS records that Vercel shows:
+   - **For root domain (`feedzone.se`)**:
+     - Type: `A`
+     - Name: `@` (or root/blank)
+     - Value: `216.198.79.1` (or the IP Vercel shows)
+     - TTL: 3600 (or default)
+   - **For www subdomain (`www.feedzone.se`)**:
+     - Type: `CNAME`
+     - Name: `www`
+     - Value: `5e64b2ef00c80ec0.vercel-dns-017.com.` (or the CNAME Vercel shows)
+     - TTL: 3600 (or default)
+3. Remove any conflicting records
+4. Save changes
+
+**Note**: DNS record changes usually propagate within minutes to a few hours.
 
 ### Verify Domain
 
@@ -180,6 +217,7 @@ Now that your site is live, update Stripe webhook:
 Run through this checklist:
 
 ### Basic Functionality
+
 - [ ] Homepage loads correctly
 - [ ] Products page loads
 - [ ] Product detail pages work
@@ -187,11 +225,13 @@ Run through this checklist:
 - [ ] Checkout page loads
 
 ### Authentication
+
 - [ ] Sign up works
 - [ ] Login works
 - [ ] Account page accessible
 
 ### Payments (Use Test Mode First!)
+
 - [ ] Add products to cart
 - [ ] Go to checkout
 - [ ] Fill in shipping info
@@ -201,11 +241,13 @@ Run through this checklist:
 - [ ] Verify email was sent (check Resend dashboard)
 
 ### API Routes
+
 - [ ] `/api/products` returns products
 - [ ] `/api/products/[id]` returns single product
 - [ ] Stripe webhook receives events (check Stripe dashboard)
 
 ### Email
+
 - [ ] Order confirmation emails are sending
 - [ ] Check Resend dashboard → Logs for delivery status
 - [ ] Verify emails aren't going to spam
@@ -215,6 +257,7 @@ Run through this checklist:
 ### Vercel Dashboard
 
 Monitor your deployment:
+
 - **Deployments**: See all deployments and their status
 - **Analytics**: View traffic, performance metrics (if enabled)
 - **Logs**: Check serverless function logs
@@ -233,6 +276,7 @@ Monitor your deployment:
 ### Set Up Monitoring
 
 Consider adding:
+
 - **Sentry** for error tracking
 - **Vercel Speed Insights** for performance monitoring
 - **Resend Dashboard** for email monitoring
@@ -243,9 +287,11 @@ Consider adding:
 ### Build Fails
 
 **Error: Missing environment variables**
+
 - Solution: Add all required env vars in Vercel Dashboard
 
 **Error: Build command failed**
+
 - Check build logs for specific errors
 - Common issues:
   - Missing dependencies
@@ -253,17 +299,20 @@ Consider adding:
   - Import errors
 
 **Error: Function timeout**
+
 - Increase timeout in Vercel settings (if needed)
 - Optimize slow API routes
 
 ### Domain Not Working
 
 **DNS not propagating**
+
 - Wait up to 48 hours
 - Check DNS propagation: https://dnschecker.org
 - Verify DNS records are correct
 
 **SSL certificate not issued**
+
 - Wait a few minutes after domain verification
 - Check Vercel dashboard for SSL status
 - Contact Vercel support if stuck
@@ -271,11 +320,13 @@ Consider adding:
 ### API Routes Not Working
 
 **404 on API routes**
+
 - Verify routes have `export const prerender = false;`
 - Check Vercel function logs
 - Ensure routes are in `src/pages/api/` directory
 
 **Webhook not receiving events**
+
 - Verify webhook URL is correct: `https://feedzone.se/api/stripe/webhook`
 - Check Stripe dashboard for webhook delivery logs
 - Check Vercel function logs for errors
@@ -283,11 +334,13 @@ Consider adding:
 ### Emails Not Sending
 
 **Check Resend Dashboard**
+
 - Go to Resend → Logs
 - Look for failed deliveries
 - Check error messages
 
 **Common issues:**
+
 - Invalid API key
 - Domain not verified
 - Rate limit exceeded (free tier: 100/day)
@@ -338,10 +391,12 @@ vercel --prod
 Vercel automatically deploys when you push to your main branch:
 
 1. **Automatic Deployments**:
+
    - Push to `main` → Production deployment
    - Push to other branches → Preview deployment
 
 2. **Preview Deployments**:
+
    - Every branch gets its own URL
    - Perfect for testing before merging
    - Share preview URLs with team
@@ -353,6 +408,7 @@ Vercel automatically deploys when you push to your main branch:
 ## Vercel Free Tier Limits
 
 **What's included:**
+
 - ✅ 100GB bandwidth/month
 - ✅ 100 serverless function invocations/day
 - ✅ Unlimited static assets
@@ -361,6 +417,7 @@ Vercel automatically deploys when you push to your main branch:
 - ✅ Preview deployments
 
 **When you might need to upgrade:**
+
 - More than 100 function invocations/day
 - More than 100GB bandwidth/month
 - Need team collaboration features
@@ -389,6 +446,7 @@ After deployment:
 ## Quick Checklist
 
 Before going live:
+
 - [ ] All environment variables set
 - [ ] Using LIVE Stripe keys (not test!)
 - [ ] Domain connected and SSL active
@@ -402,4 +460,3 @@ Before going live:
 ---
 
 **You're all set!** Your Feed Zone site should now be live at `https://feedzone.se` 🚀
-
