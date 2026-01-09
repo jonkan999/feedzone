@@ -8,7 +8,7 @@ import ProductCard from '../../components/ProductCard.astro';
     <h1 class="text-4xl font-bold text-gray-900" style="margin-bottom: 0.5rem;">Produkter</h1>
     
     <!-- Category Filter -->
-    <div class="flex flex-wrap gap-3" style="margin-bottom: 0.3rem;">
+    <div class="flex flex-wrap gap-5 !mb-2">
       <a href="/products" class="px-4 py-2 rounded-md text-sm font-semibold hover:text-primary transition-colors" id="filter-all">
         Alla
       </a>
@@ -39,6 +39,7 @@ import ProductCard from '../../components/ProductCard.astro';
     const cartItem = cart.find((item) => item.product_id === product.id);
     const initialQuantity = cartItem ? cartItem.quantity : 0;
     const isInCart = initialQuantity > 0;
+    const isCustomGel = product.id === 'custom-gel';
     
     return `
       <div class="product-card bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer" data-product-id="${product.id}" data-product-link>
@@ -48,17 +49,25 @@ import ProductCard from '../../components/ProductCard.astro';
           <p class="text-sm text-gray-600 mb-6 line-clamp-2 flex-grow">${product.description || ''}</p>
           <div class="flex flex-col gap-3">
             <span class="text-xl font-bold text-gray-900">${product.price.toFixed(2)} SEK</span>
-            <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
-              ${isInCart ? `
-                <div class="flex items-center gap-2 quantity-buttons justify-center">
-                  <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
-                  <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${product.id}">
-                  <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
-                </div>
-              ` : `
-                <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
-              `}
-            </div>
+            ${isCustomGel ? `
+              <div class="w-full flex justify-center">
+                <button class="to-product-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">
+                  TILL PRODUKT
+                </button>
+              </div>
+            ` : `
+              <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
+                ${isInCart ? `
+                  <div class="flex items-center gap-2 quantity-buttons justify-center">
+                    <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+                    <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${product.id}">
+                    <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+                  </div>
+                ` : `
+                  <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
+                `}
+              </div>
+            `}
           </div>
         </div>
       </div>
@@ -107,6 +116,14 @@ import ProductCard from '../../components/ProductCard.astro';
     container.addEventListener('click', (e) => {
       const target = e.target;
       const kopBtn = target.closest('.kop-btn');
+      const toProductBtn = target.closest('.to-product-btn');
+      
+      if (toProductBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/kqm-custom-energy-gel';
+        return;
+      }
       
       if (kopBtn) {
         e.preventDefault();

@@ -49,9 +49,11 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      // Fetch product data for all cart items
+      // Fetch product data for all cart items + prioritized upsell product
       const productDataPromises = cart.map((item: any) => fetchProductData(item.product_id));
+      const hydrapakProductPromise = fetchProductData('hydrapak-gel-soft-flask-250ml');
       const productDataArray = await Promise.all(productDataPromises);
+      const hydrapakProduct = await hydrapakProductPromise;
 
       // Discount state
       let discount: { code: string; type: 'percent' | 'free_shipping' | 'fixed_amount'; value: number } | null = null;
@@ -91,6 +93,75 @@ import Layout from '../layouts/Layout.astro';
       }
 
       const totals = calcTotals();
+      const hydrapakUpsell = hydrapakProduct ?? {
+        id: 'hydrapak-gel-soft-flask-250ml',
+        name: 'HydraPak Gel Soft Flask 250ml',
+        price: 129,
+        image_url: '/images/products/hydrapak-gel-soft-flask-250ml/primary.jpg',
+      };
+
+      const doubleUpCandidate = cart.reduce((best: any, item: any, index: number) => {
+        const productData = productDataArray[index];
+        const price = productData?.price ?? item.price ?? 0;
+        if (!best || price > (best.price ?? 0)) {
+          return {
+            id: item.product_id,
+            name: productData?.name ?? item.product_name ?? 'Produkt',
+            price,
+            image_url: productData?.image_url ?? hydrapakUpsell.image_url,
+          };
+        }
+        return best;
+      }, null);
+
+      const upsellItems = !totals.qualifiesForFreeShipping ? [
+        {
+          ...hydrapakUpsell,
+          badge: 'Prova den!',
+        },
+        ...(doubleUpCandidate ? [{
+          ...doubleUpCandidate,
+          badge: 'Double up!',
+          isDoubleUp: true,
+        }] : []),
+      ] : [];
+
+      const upsellSection = upsellItems.length ? `
+        <div id="upsell-wrapper" class="mb-4 ${totals.qualifiesForFreeShipping ? 'hidden' : ''}">
+          <div class="flex items-center justify-between !mb-1">
+            <p class="font-semibold text-lg">Lägg till detta för att få fri frakt</p>
+            <span class="text-sm text-gray-600" data-remaining-label>${totals.remainingForFreeShipping.toFixed(0)} SEK kvar</span>
+          </div>
+          <div class="!space-y-2 !mb-3">
+            ${upsellItems.map((item: any) => `
+              <div class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg hover:border-accent transition">
+                <div class="relative w-20 h-20 flex-shrink-0">
+                  <img src="${item.image_url}" alt="${item.name}" class="w-20 h-20 object-cover ">
+                  <span class="absolute top-1 left-1 bg-indigo-950 text-white text-[11px] rounded-md !px-1">${item.badge}</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="font-semibold text-sm">${item.name}</div>
+                      <div class="text-sm text-gray-700">${(item.price ?? 0).toFixed(2)} SEK</div>
+                    </div>
+                    <button 
+                      type="button" 
+                      class="js-add-upsell bg-indigo-950 text-white text-xs font-semibold !px-2 !py-1 rounded-md !mt-5 !mr-2 hover:bg-indigo-900 transition"
+                      data-upsell-id="${item.id}"
+                      data-upsell-name="${item.name}"
+                      data-upsell-price="${item.price ?? 0}"
+                    >
+                      Lägg till
+                    </button>
+                  </div>
+                  ${item.isDoubleUp ? `<p class="text-xs text-gray-600 mt-1">Lägg till en till av din favorit.</p>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : '';
 
       container.innerHTML = `
         ${!isLoggedIn ? `
@@ -113,23 +184,23 @@ import Layout from '../layouts/Layout.astro';
               <form id="shipping-form" class="space-y-4">
                 <div>
                   <label for="email" class="block mb-2 font-semibold">Email</label>
-                  <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded px-4 py-2" value="${isLoggedIn && session?.user?.email ? session.user.email : ''}">
+                  <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded !px-2 !py-1" value="${isLoggedIn && session?.user?.email ? session.user.email : ''}">
                 </div>
                 <div>
                   <label for="name" class="block mb-2 font-semibold">Fullständigt namn</label>
-                  <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded px-4 py-2">
+                  <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded !px-2 !py-1">
                 </div>
                 <div>
                   <label for="street" class="block mb-2 font-semibold">Gatuadress</label>
-                  <input type="text" id="street" name="street" required class="w-full border border-gray-300 rounded px-4 py-2">
+                  <input type="text" id="street" name="street" required class="w-full border border-gray-300 rounded !px-2 !py-1">
                 </div>
                 <div>
                   <label for="zip" class="block mb-2 font-semibold">Postnummer</label>
-                  <input type="text" id="zip" name="zip" required class="w-full border border-gray-300 rounded px-4 py-2">
+                  <input type="text" id="zip" name="zip" required class="w-full border border-gray-300 rounded !px-2 !py-1">
                 </div>
                 <div>
                   <label for="city" class="block mb-2 font-semibold">Stad</label>
-                  <input type="text" id="city" name="city" required class="w-full border border-gray-300 rounded px-4 py-2">
+                  <input type="text" id="city" name="city" required class="w-full border border-gray-300 rounded !px-2 !py-1">
                 </div>
               </form>
             </div>
@@ -156,21 +227,19 @@ import Layout from '../layouts/Layout.astro';
           <div>
             <div class="bg-surface p-6 sticky top-4">
               <h2 class="text-2xl font-bold mb-4">Ordersammanfattning</h2>
-              ${!totals.qualifiesForFreeShipping ? `
-                <div class="!mb-4 !p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div class="flex items-center justify-between !mb-2">
-                    <span class="text-sm font-semibold text-blue-800">Fri frakt vid köp över ${freeShippingThreshold} SEK</span>
-                    <span class="text-sm font-bold text-blue-800" id="remaining-free-shipping">${totals.remainingForFreeShipping.toFixed(0)} SEK kvar</span>
-                  </div>
-                  <div class="w-full bg-blue-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="free-shipping-progress" style="width: ${Math.min(100, ((totals.subtotal / freeShippingThreshold) * 100))}%"></div>
-                  </div>
+              <div class="!mb-4 !p-2 bg-blue-50 border border-blue-200 rounded-lg ${totals.qualifiesForFreeShipping ? 'hidden' : ''}" id="free-shipping-cta">
+                <div class="flex items-center justify-between !mb-2">
+                  <span class="text-sm font-semibold text-blue-800">Fri frakt vid köp över ${freeShippingThreshold} SEK</span>
+                  <span class="text-sm font-bold text-blue-800" id="remaining-free-shipping">${totals.remainingForFreeShipping.toFixed(0)} SEK kvar</span>
                 </div>
-              ` : `
-                <div class="!mb-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p class="text-sm font-semibold text-green-800">🎉 Du kvalificerar för fri frakt!</p>
+                <div class="w-full bg-blue-200 rounded-full h-2">
+                  <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="free-shipping-progress" style="width: ${Math.min(100, ((totals.subtotal / freeShippingThreshold) * 100))}%"></div>
                 </div>
-              `}
+              </div>
+              <div class="!mb-4 bg-green-50 border border-green-200 rounded-lg ${totals.qualifiesForFreeShipping ? '' : 'hidden'}" id="free-shipping-success">
+                <p class="text-sm font-semibold text-green-800">🎉 Du kvalificerar för fri frakt!</p>
+              </div>
+              ${upsellSection}
               <div class="space-y-2 mb-4">
                 ${cart.map((item: any, index: number) => {
                   const productData = productDataArray[index];
@@ -225,7 +294,7 @@ import Layout from '../layouts/Layout.astro';
               </div>
               <button 
                 id="checkout-button"
-                class="w-full bg-indigo-950 hover:bg-indigo-900 text-white rounded-lg font-semibold shadow-lg transition-all text-lg"
+                class="w-full bg-indigo-950 hover:bg-indigo-900 text-white rounded-lg font-semibold shadow-lg transition-all text-lg !mb-5"
                 style="padding: 0.875rem 2rem !important;"
               >
                 Fortsätt till betalning
@@ -250,6 +319,22 @@ import Layout from '../layouts/Layout.astro';
       const discountInput = document.getElementById('discount-input') as HTMLInputElement | null;
       const discountMessage = document.getElementById('discount-message');
       const shippingPriceLabel = document.getElementById('shipping-price-label');
+      const freeShippingCta = document.getElementById('free-shipping-cta');
+      const freeShippingSuccess = document.getElementById('free-shipping-success');
+      const upsellWrapper = document.getElementById('upsell-wrapper');
+      const upsellRemainingLabel = upsellWrapper?.querySelector('[data-remaining-label]');
+      const upsellButtons = container.querySelectorAll('.js-add-upsell');
+
+      function addUpsellToCart(productId: string, name: string, price: number) {
+        const existingIndex = cart.findIndex((item: any) => item.product_id === productId);
+        if (existingIndex !== -1) {
+          cart[existingIndex].quantity += 1;
+        } else {
+          cart.push({ product_id: productId, product_name: name, quantity: 1, price });
+        }
+        localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+        renderCheckout();
+      }
 
       function refreshSummary() {
         if (!container) return;
@@ -260,6 +345,25 @@ import Layout from '../layouts/Layout.astro';
         if (remainingFreeShippingEl) remainingFreeShippingEl.textContent = `${next.remainingForFreeShipping.toFixed(0)} SEK kvar`;
         if (freeShippingProgress) {
           freeShippingProgress.style.width = `${Math.min(100, ((next.subtotal / freeShippingThreshold) * 100))}%`;
+        }
+        if (freeShippingCta && freeShippingSuccess) {
+          if (next.qualifiesForFreeShipping) {
+            freeShippingCta.classList.add('hidden');
+            freeShippingSuccess.classList.remove('hidden');
+          } else {
+            freeShippingCta.classList.remove('hidden');
+            freeShippingSuccess.classList.add('hidden');
+          }
+        }
+        if (upsellWrapper) {
+          if (next.qualifiesForFreeShipping) {
+            upsellWrapper.classList.add('hidden');
+          } else {
+            upsellWrapper.classList.remove('hidden');
+            if (upsellRemainingLabel) {
+              upsellRemainingLabel.textContent = `${next.remainingForFreeShipping.toFixed(0)} SEK kvar`;
+            }
+          }
         }
         if (discountRow && discountAmountEl && discountCodeLabel) {
           if (next.discountAmount > 0 && discount) {
@@ -286,6 +390,15 @@ import Layout from '../layouts/Layout.astro';
           checkoutButton.disabled = next.belowStripeMinimum;
         }
       }
+
+      upsellButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const { upsellId, upsellName, upsellPrice } = (btn as HTMLElement).dataset;
+          if (!upsellId || !upsellName || !upsellPrice) return;
+          const parsedPrice = parseFloat(upsellPrice);
+          addUpsellToCart(upsellId, upsellName, Number.isFinite(parsedPrice) ? parsedPrice : 0);
+        });
+      });
 
       toggleDiscountBtn?.addEventListener('click', () => {
         discountForm?.classList.toggle('hidden');

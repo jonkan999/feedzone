@@ -112,12 +112,12 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
 
-        <div class="bg-gray-50 border border-gray-200 p-5 space-y-4  !mt-5">
-          <div class="flex items-center justify-between !mx-1">
+        <div class="bg-indigo-50 space-y-4  !mt-5">
+          <div class="flex items-center !p-1 justify-between !mx-1">
             <h2 class="text-xl font-semibold text-gray-900">Svårt att välja?</h2>
             <span class="text-xs font-semibold text-primary uppercase tracking-wide">Bra val</span>
           </div>
-          <p class="text-sm text-gray-700 !mx-1">
+          <p class="text-sm text-gray-700  !p-1 !m-1">
             Vår standardformula fungerar riktigt bra för de flesta. Perfekt balans av kolhydrater och elektrolyter.
           </p>
           <div class="-mx-2 sm:mx-0">
@@ -132,12 +132,12 @@ import Layout from '../layouts/Layout.astro';
           Denna lösning är tänkt att användas med våra mjuka gel-flaskor. Fyll upp precis så mycket du behöver
           för ditt pass och återfyll efter behov.
         </p>
-        <div class="bg-gray-50 border border-gray-200 p-5 space-y-4 !mt-2">
-          <div class="flex items-center justify-between !mx-1">
+        <div class="bg-indigo-50 space-y-4 !mt-2">
+          <div class="flex items-center justify-between  !p-1 !mx-1">
             <h2 class="text-xl font-semibold text-gray-900">Komplettera ditt köp</h2>
             <span class="text-xs font-semibold text-primary uppercase tracking-wide">Rekommenderat</span>
           </div>
-          <p class="text-sm text-gray-700 !m-1">
+          <p class="text-sm text-gray-700 !p-1 !m-1  ">
             Lägg till gelflaskor som passar refill-gelen.
           </p>
           <div class="-mx-2 sm:mx-0">
@@ -391,7 +391,7 @@ import Layout from '../layouts/Layout.astro';
       const description = fixedDescription || product.description || '';
 
       return `
-        <div class="product-card relative flex-shrink-0 w-72 md:w-80 bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer" data-product-id="${product.id}" data-product-link>
+        <div class="product-card relative flex-shrink-0 w-72 md:w-80 bg-white hover:bg-gray-100 hover:border-gray-300 overflow-hidden transition-all duration-300 cursor-pointer" data-product-id="${product.id}" data-product-link>
           ${badge ? `<div class="absolute top-2 left-2 bg-primary text-white text-xs font-semibold px-2 py-1 rounded">${badge}</div>` : ''}
           <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}" class="w-full h-64 object-cover">
           <div style="padding: 1.25rem 1.5rem;" class="px-6 py-5 flex flex-col">

@@ -71,7 +71,7 @@ if (id) {
                   <label for="variant-select" class="block mb-2 font-semibold">Välj smak:</label>
                   <select 
                     id="variant-select" 
-                    class="w-full border border-gray-300 rounded px-4 py-2 mb-2"
+                    class="w-full border border-gray-300 rounded !px-2 !py-1 mb-2"
                   >
                     {product.variants.options.map((option: any) => (
                       <option value={option.id}>{option.name}</option>
@@ -278,7 +278,7 @@ if (id) {
                       ${hasVariants ? `
                         <div class="mb-6">
                           <label for="variant-select" class="block mb-2 font-semibold">Välj smak:</label>
-                          <select id="variant-select" class="w-full border border-gray-300 rounded px-4 py-2 mb-2">
+                          <select id="variant-select" class="w-full border border-gray-300 rounded !px-2 !py-1 mb-2">
                             ${variantOptions}
                           </select>
                         </div>

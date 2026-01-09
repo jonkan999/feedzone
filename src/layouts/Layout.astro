@@ -79,58 +79,8 @@ const { title = 'Feed Zone - Näringstillskott för uthållighetsidrottare', des
       </div>
     </footer>
     
-    <!-- Floating Cart Button -->
-    <div id="floating-cart-button" class="hidden fixed bottom-16 left-1/2 transform -translate-x-1/2 z-50">
-      <a href="/cart" class="bg-indigo-950 hover:bg-indigo-900 text-white rounded-lg font-semibold shadow-lg transition-all text-lg inline-block" style="padding: 0.875rem 2rem !important;">
-        <span id="floating-cart-text" class="text-white">Gå till varukorg</span>
-      </a>
-    </div>
   </body>
 </html>
-
-<script>
-  if (typeof window !== 'undefined') {
-    function updateFloatingCartButton() {
-      const pathname = window.location.pathname;
-      
-      // Hide floating button on non-shopping pages
-      const hideOnPages = [
-        '/cart',
-        '/checkout',
-        '/account/login',
-        '/account/signup',
-        '/zone-news'
-      ];
-      
-      // Check if current path starts with any of the hide pages
-      const shouldHide = hideOnPages.some(page => pathname === page || pathname.startsWith(page + '/'));
-      
-      if (shouldHide) {
-        const floatingButton = document.getElementById('floating-cart-button');
-        if (floatingButton) {
-          floatingButton.classList.add('hidden');
-        }
-        return;
-      }
-      
-      const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
-      const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
-      const floatingButton = document.getElementById('floating-cart-button');
-      
-      if (floatingButton) {
-        if (count > 0) {
-          floatingButton.classList.remove('hidden');
-        } else {
-          floatingButton.classList.add('hidden');
-        }
-      }
-    }
-
-    updateFloatingCartButton();
-    window.addEventListener('cart-updated', updateFloatingCartButton);
-    window.addEventListener('storage', updateFloatingCartButton);
-  }
-</script>
 
 <style>
   .container {

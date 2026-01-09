@@ -170,6 +170,252 @@ For development/testing, you can use Supabase's built-in email service, but be a
 - Emails come from `noreply@mail.app.supabase.io`
 - Not suitable for production
 
+## Styled Email Templates (HTML)
+
+Use these improved templates in **Supabase → Authentication → Emails → Templates**. Set the content type to **HTML** (Supabase keeps a plain-text fallback automatically). All links use `{{ .ConfirmationURL }}` so they keep tracking and redirect behavior intact.
+
+### Confirm sign up
+
+Subject: **Bekräfta din e-postadress för Feed Zone**
+
+```html
+<!DOCTYPE html>
+<html>
+  <body
+    style="background:#f7f7f7;padding:24px;font-family:Arial,sans-serif;color:#0f172a;"
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;"
+    >
+      <tr>
+        <td style="padding:24px;">
+          <p style="font-size:16px;margin:0 0 12px 0;">Hej!</p>
+          <p style="font-size:16px;margin:0 0 18px 0;">
+            Tack för att du registrerade dig på Feed Zone. Klicka på knappen
+            nedan för att bekräfta din e-postadress och aktivera ditt konto.
+          </p>
+          <p style="text-align:center;margin:0 0 18px 0;">
+            <a
+              href="{{ .ConfirmationURL }}"
+              style="display:inline-block;padding:12px 18px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;"
+              >Bekräfta e-post</a
+            >
+          </p>
+          <p style="font-size:14px;margin:0 0 8px 0;">
+            Eller kopiera länken om knappen inte fungerar:
+          </p>
+          <p style="font-size:14px;word-break:break-all;margin:0 0 18px 0;">
+            <a href="{{ .ConfirmationURL }}" style="color:#0f766e;"
+              >{{ .ConfirmationURL }}</a
+            >
+          </p>
+          <p style="font-size:14px;margin:0 0 16px 0;">
+            Om du inte registrerade dig på Feed Zone kan du ignorera detta
+            meddelande.
+          </p>
+          <p style="font-size:14px;margin:0;">
+            Med vänliga hälsningar,<br />Feed Zone Team
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+```
+
+### Reset password
+
+Subject: **Återställ ditt lösenord för Feed Zone**
+
+```html
+<!DOCTYPE html>
+<html>
+  <body
+    style="background:#f7f7f7;padding:24px;font-family:Arial,sans-serif;color:#0f172a;"
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;"
+    >
+      <tr>
+        <td style="padding:24px;">
+          <p style="font-size:16px;margin:0 0 12px 0;">Hej!</p>
+          <p style="font-size:16px;margin:0 0 18px 0;">
+            Vi fick en begäran om att återställa ditt lösenord för Feed Zone.
+            Klicka på knappen nedan för att skapa ett nytt lösenord.
+          </p>
+          <p style="text-align:center;margin:0 0 18px 0;">
+            <a
+              href="{{ .ConfirmationURL }}"
+              style="display:inline-block;padding:12px 18px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;"
+              >Återställ lösenord</a
+            >
+          </p>
+          <p style="font-size:14px;margin:0 0 8px 0;">
+            Om knappen inte fungerar, kopiera länken:
+          </p>
+          <p style="font-size:14px;word-break:break-all;margin:0 0 18px 0;">
+            <a href="{{ .ConfirmationURL }}" style="color:#0f766e;"
+              >{{ .ConfirmationURL }}</a
+            >
+          </p>
+          <p style="font-size:14px;margin:0 0 8px 0;">
+            Länken är giltig i 24 timmar.
+          </p>
+          <p style="font-size:14px;margin:0;">
+            Om du inte begärde detta kan du ignorera meddelandet. Ditt lösenord
+            kommer inte att ändras.
+          </p>
+          <p style="font-size:14px;margin:16px 0 0 0;">
+            Med vänliga hälsningar,<br />Feed Zone Team
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+```
+
+### Change email address
+
+Subject: **Bekräfta din nya e-postadress för Feed Zone**
+
+```html
+<!DOCTYPE html>
+<html>
+  <body
+    style="background:#f7f7f7;padding:24px;font-family:Arial,sans-serif;color:#0f172a;"
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;"
+    >
+      <tr>
+        <td style="padding:24px;">
+          <p style="font-size:16px;margin:0 0 12px 0;">Hej!</p>
+          <p style="font-size:16px;margin:0 0 18px 0;">
+            Du har begärt att ändra din e-postadress för Feed Zone till
+            <strong>{{ .NewEmail }}</strong>. Bekräfta ändringen med knappen
+            nedan.
+          </p>
+          <p style="text-align:center;margin:0 0 18px 0;">
+            <a
+              href="{{ .ConfirmationURL }}"
+              style="display:inline-block;padding:12px 18px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;"
+              >Bekräfta ny e-post</a
+            >
+          </p>
+          <p style="font-size:14px;margin:0 0 8px 0;">
+            Om knappen inte fungerar, kopiera länken:
+          </p>
+          <p style="font-size:14px;word-break:break-all;margin:0 0 18px 0;">
+            <a href="{{ .ConfirmationURL }}" style="color:#0f766e;"
+              >{{ .ConfirmationURL }}</a
+            >
+          </p>
+          <p style="font-size:14px;margin:0;">
+            Om du inte begärde detta kan du ignorera meddelandet. Din
+            e-postadress ändras inte utan din bekräftelse.
+          </p>
+          <p style="font-size:14px;margin:16px 0 0 0;">
+            Med vänliga hälsningar,<br />Feed Zone Team
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+```
+
+### Password changed notification
+
+Subject: **Ditt lösenord har ändrats**
+
+```html
+<!DOCTYPE html>
+<html>
+  <body
+    style="background:#f7f7f7;padding:24px;font-family:Arial,sans-serif;color:#0f172a;"
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;"
+    >
+      <tr>
+        <td style="padding:24px;">
+          <p style="font-size:16px;margin:0 0 12px 0;">Hej!</p>
+          <p style="font-size:16px;margin:0 0 12px 0;">
+            Ditt lösenord för Feed Zone har ändrats.
+          </p>
+          <p style="font-size:14px;margin:0 0 16px 0;">
+            Om det inte var du som gjorde ändringen, kontakta oss omedelbart på
+            <a href="mailto:support@feedzone.se" style="color:#0f766e;"
+              >support@feedzone.se</a
+            >.
+          </p>
+          <p style="font-size:14px;margin:0;">
+            Med vänliga hälsningar,<br />Feed Zone Team
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+```
+
+### Email address changed notification
+
+Subject: **Din e-postadress har ändrats**
+
+```html
+<!DOCTYPE html>
+<html>
+  <body
+    style="background:#f7f7f7;padding:24px;font-family:Arial,sans-serif;color:#0f172a;"
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;"
+    >
+      <tr>
+        <td style="padding:24px;">
+          <p style="font-size:16px;margin:0 0 12px 0;">Hej!</p>
+          <p style="font-size:16px;margin:0 0 12px 0;">
+            Din e-postadress för Feed Zone har ändrats till
+            <strong>{{ .NewEmail }}</strong>.
+          </p>
+          <p style="font-size:14px;margin:0 0 16px 0;">
+            Om det inte var du som gjorde ändringen, kontakta oss omedelbart på
+            <a href="mailto:support@feedzone.se" style="color:#0f766e;"
+              >support@feedzone.se</a
+            >.
+          </p>
+          <p style="font-size:14px;margin:0;">
+            Med vänliga hälsningar,<br />Feed Zone Team
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+```
+
 ## Testing Email Configuration
 
 1. **Test Signup:**
