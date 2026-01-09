@@ -166,7 +166,7 @@
     const userMenuTemplate = (variant: 'mobile' | 'desktop') => {
       const sizeClasses = variant === 'mobile' ? 'w-7 h-7' : 'w-6 h-6';
       const paddingClasses = 'p-2';
-      const containerClasses = variant === 'mobile' ? '!relative !ml-auto !mr-1' : 'relative';
+      const containerClasses = variant === 'mobile' ? 'relative !ml-auto !mr-1' : 'relative';
 
       return `
         <div class="${containerClasses}">
