@@ -166,10 +166,9 @@
     const userMenuTemplate = (variant: 'mobile' | 'desktop') => {
       const sizeClasses = variant === 'mobile' ? 'w-7 h-7' : 'w-6 h-6';
       const paddingClasses = 'p-2';
-      const containerClasses = variant === 'mobile' ? '!relative !ml-auto !mr-1' : '!relative';
 
       return `
-        <div class="${containerClasses}">
+        <div class="relative">
           <button
             type="button"
             class="user-menu-toggle ${paddingClasses} rounded-full text-accent-secondary hover:text-accent-secondary focus:outline-none leading-none flex items-center justify-center transition-colors"
@@ -183,7 +182,7 @@
               <path d="M5 19c1.35-2.5 4-3.9 7-3.9s5.65 1.4 7 3.9" />
             </svg>
           </button>
-          <div class="user-menu-dropdown absolute right-0 !mt-2 w-40 bg-white border border-gray-200 !py-2 hidden">
+          <div class="user-menu-dropdown absolute left-0 md:left-auto md:right-0 !mt-2 w-40 bg-white border border-gray-200 !py-2 hidden">
             <a href="/account" class="block px-4 py-2 text-sm font-semibold text-gray-800 !p-2 hover:bg-gray-50">Konto</a>
             <button class="sign-out-btn block w-full text-left px-4 py-2 text-sm font-semibold text-gray-800 !p-2 hover:bg-gray-50">Logga ut</button>
           </div>
