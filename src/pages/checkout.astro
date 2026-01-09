@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Checkout - Feed Zone">
   <div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold text-primary mb-8">Kassa</h1>
+    <h1 class="text-4xl font-bold text-primary !mb-5">Kassa</h1>
     
     <div id="checkout-container">
       <p class="text-text-muted">Laddar...</p>
@@ -165,7 +165,7 @@ import Layout from '../layouts/Layout.astro';
 
       container.innerHTML = `
         ${!isLoggedIn ? `
-          <div class="bg-blue-50 border border-blue-200 rounded-lg !p-2 !mt-2 !mb-6">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg !p-2 !mt-2 !!mb-4">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-blue-800 font-semibold mb-1">Logga in för en smidigare upplevelse</p>
@@ -179,7 +179,7 @@ import Layout from '../layouts/Layout.astro';
         ` : ''}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
-            <div class="bg-surface p-6 mb-6">
+            <div class="bg-surface p-6 !mb-4">
               <h2 class="text-2xl font-bold mb-4">Fraktinformation</h2>
               <form id="shipping-form" class="space-y-4">
                 <div>
@@ -204,7 +204,7 @@ import Layout from '../layouts/Layout.astro';
                 </div>
               </form>
             </div>
-            <div class="bg-surface p-6 mb-6">
+            <div class="bg-surface p-6 !mb-4">
               <h2 class="text-2xl font-bold mb-4">Fraktalternativ</h2>
               <div class="space-y-3">
                 <label class="flex items-start p-4 border-2 border-gray-300 cursor-pointer hover:border-accent transition-colors">

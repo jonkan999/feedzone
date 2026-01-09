@@ -50,12 +50,12 @@ export const prerender = false;
           : order.shipping_address;
 
         container.innerHTML = `
-          <div class="mb-6">
+          <div class="!mb-4">
             <a href="/account/orders" class="text-primary hover:text-accent">← Tillbaka till ordrar</a>
           </div>
           
-          <div class="bg-surface rounded-lg shadow-md p-6 mb-6">
-            <div class="flex justify-between items-start mb-6">
+          <div class="bg-surface rounded-lg shadow-md p-6 !mb-4">
+            <div class="flex justify-between items-start !mb-4">
               <div>
                 <h1 class="text-3xl font-bold mb-2">Order #${order.id.slice(0, 8)}</h1>
                 <p class="text-text-muted">Beställd ${new Date(order.created_at).toLocaleDateString()}</p>

@@ -67,7 +67,7 @@ if (id) {
             <div>
               {/* Variant Selection (for flavors, sizes, etc.) */}
               {product.variants && product.variants.type === 'flavor' && (
-                <div class="mb-6">
+                <div class="!mb-4">
                   <label for="variant-select" class="block mb-2 font-semibold">Välj smak:</label>
                   <select 
                     id="variant-select" 
@@ -276,7 +276,7 @@ if (id) {
                   ${product.in_stock ? `
                     <div>
                       ${hasVariants ? `
-                        <div class="mb-6">
+                        <div class="!mb-4">
                           <label for="variant-select" class="block mb-2 font-semibold">Välj smak:</label>
                           <select id="variant-select" class="w-full border border-gray-300 rounded !px-2 !py-1 mb-2">
                             ${variantOptions}

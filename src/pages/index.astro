@@ -43,7 +43,7 @@ import Layout from '../layouts/Layout.astro';
 
   <!-- Side Scrolling Inspirational Section -->
   <section class="container mx-auto px-4" style="margin-bottom: 4rem;">
-    <h2 class="text-3xl font-bold text-gray-900 mb-6">Inspiration & Nyheter</h2>
+    <h2 class="text-3xl font-bold text-gray-900 !mb-4">Inspiration & Nyheter</h2>
     <div id="inspiration-container" class="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-container">
       <div class="flex gap-6 min-w-max">
         <p class="text-gray-600 py-8">Laddar innehåll...</p>
@@ -53,7 +53,7 @@ import Layout from '../layouts/Layout.astro';
 
   <!-- All Products -->
   <section class="container mx-auto px-4" style="margin-bottom: 4rem;">
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between !mb-5">
       <h2 class="text-3xl font-bold text-gray-900">Produkter</h2>
       <a href="/products" class="text-sm font-semibold text-primary hover:text-accent transition-colors uppercase tracking-wide">
         Se alla →
@@ -79,7 +79,7 @@ import Layout from '../layouts/Layout.astro';
         <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}" class="w-full h-64 object-cover">
         <div style="padding: 1.25rem 1.5rem;" class="px-6 py-5 flex flex-col">
           <h3 class="font-bold text-base mb-3 text-gray-900 line-clamp-2">${product.name}</h3>
-          <p class="text-sm text-gray-600 mb-6 line-clamp-2 flex-grow">${product.description || ''}</p>
+          <p class="text-sm text-gray-600 !mb-4 line-clamp-2 flex-grow">${product.description || ''}</p>
           <div class="flex flex-col gap-3">
             <span class="text-xl font-bold text-gray-900">${product.price.toFixed(2)} SEK</span>
             <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
