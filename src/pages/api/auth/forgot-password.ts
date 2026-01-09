@@ -18,9 +18,9 @@ export const POST: APIRoute = async ({ request }) => {
     const supabase = createServerClient();
     
     // Get site URL from environment - use production URL in production, localhost in dev
-    // In production, this should be https://feedzone.se
-    const siteUrl = import.meta.env.PUBLIC_SITE_URL || 
-                    (import.meta.env.PROD ? "https://feedzone.se" : "http://localhost:4321");
+    // Trim spaces and remove trailing slashes to avoid malformed redirect URLs
+    const rawSiteUrl = import.meta.env.PUBLIC_SITE_URL || (import.meta.env.PROD ? "https://feedzone.se" : "http://localhost:4321");
+    const siteUrl = rawSiteUrl.trim().replace(/\/+$/, "");
     const redirectTo = `${siteUrl}/account/reset-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
