@@ -166,9 +166,10 @@
     const userMenuTemplate = (variant: 'mobile' | 'desktop') => {
       const sizeClasses = variant === 'mobile' ? 'w-7 h-7' : 'w-6 h-6';
       const paddingClasses = 'p-2';
+      const containerClasses = variant === 'mobile' ? 'relative ml-auto mr-1' : 'relative';
 
       return `
-        <div class="relative">
+        <div class="${containerClasses}">
           <button
             type="button"
             class="user-menu-toggle ${paddingClasses} rounded-full text-accent-secondary hover:text-accent-secondary focus:outline-none leading-none flex items-center justify-center transition-colors"
