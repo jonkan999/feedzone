@@ -3,6 +3,14 @@ import { createServerClient } from '../../../lib/supabase';
 
 export const prerender = false;
 
+const selectionLabelFallback = (variantType?: string | null) => {
+  if (!variantType) return null;
+  if (variantType === 'flavor') return 'Välj smak';
+  if (variantType === 'size') return 'Välj storlek';
+  if (variantType === 'quantity') return 'Välj mängd';
+  return 'Välj alternativ';
+};
+
 export const GET: APIRoute = async ({ params }) => {
   try {
     const supabase = createServerClient();
@@ -15,20 +23,52 @@ export const GET: APIRoute = async ({ params }) => {
       });
     }
 
-    const { data, error } = await supabase
+    const { data: product, error } = await supabase
       .from('products')
-      .select('*')
+      .select('*, product_groups(selection_label,name)')
       .eq('id', id)
       .single();
 
-    if (error || !data) {
+    if (error || !product) {
       return new Response(JSON.stringify({ error: 'Product not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    return new Response(JSON.stringify(data), {
+    let siblings: Array<{
+      id: string;
+      name: string;
+      price: number;
+      image_url: string | null;
+      variant_value: string | null;
+      variant_type: string | null;
+      variant_sort: number | null;
+    }> = [];
+
+    if (product.group_id) {
+      const { data: siblingData } = await supabase
+        .from('products')
+        .select('id,name,price,image_url,variant_value,variant_type,variant_sort')
+        .eq('group_id', product.group_id)
+        .order('variant_sort', { ascending: true, nullsFirst: true });
+
+      siblings = (siblingData || []).map((s) => ({
+        ...s,
+      }));
+    }
+
+    const selection_label =
+      product.product_groups?.selection_label || selectionLabelFallback(product.variant_type);
+
+    const responseBody = {
+      ...product,
+      selection_label,
+      siblings,
+      product_groups: undefined,
+    };
+
+    return new Response(JSON.stringify(responseBody), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

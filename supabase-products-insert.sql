@@ -1,11 +1,18 @@
 -- Insert all products for Feed Zone
 -- Run this after running the migration to add image support
 
--- Clear existing placeholder products
+-- Clear existing placeholder products and groups
 DELETE FROM products;
+DELETE FROM product_groups;
+
+-- Product groups (variant families)
+INSERT INTO product_groups (id, name, selection_label) VALUES
+  ('tailwind-drink-mix', 'Tailwind Drink Mix', 'Välj smak'),
+  ('maurten-gel-100', 'Maurten Gel 100', 'Välj mängd'),
+  ('hydrapak-gel-soft-flask', 'HydraPak Gel Soft Flask', 'Välj storlek');
 
 -- Product 1: KQM Energy Gel (Refill, 1000ml)
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'kqm-energy-gel-refill-1000ml',
   'KQM Energy Gel Refill 1000ml',
@@ -17,83 +24,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   1,
   '/images/products/kqm-energy-gel-refill-1000ml/primary.jpg',
-  '["/images/products/kqm-energy-gel-refill-1000ml/secondary-1.jpg"]'::jsonb
-)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  description = EXCLUDED.description,
-  price = EXCLUDED.price,
-  category = EXCLUDED.category,
-  in_stock = EXCLUDED.in_stock,
-  featured = EXCLUDED.featured,
-  inspiration_featured = EXCLUDED.inspiration_featured,
-  image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
-
--- Product 2: Maurten Gel 100
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
-(
-  'maurten-gel-100',
-  'Maurten Gel 100',
-  'Energigel med Maurten:s patenterade Hydrogel Technology. Varje gel innehåller 25g kolhydrater och är gjord med bara sex ingredienser utan tillsatser av färgämnen, konserveringsmedel eller smakämnen. Den unika strukturen gör den lätt att konsumera under högintensiv träning och tävling. Perfekt för ultralöpning, cykling och andra uthållighetsgrenar.',
-  39.00,
-  'carbs',
-  true,
-  true,
+  '["/images/products/kqm-energy-gel-refill-1000ml/secondary-1.jpg"]'::jsonb,
   NULL,
-  '/images/products/maurten-gel-100/primary.jpg',
-  '["/images/products/maurten-gel-100/secondary-1.jpg"]'::jsonb
-)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  description = EXCLUDED.description,
-  price = EXCLUDED.price,
-  category = EXCLUDED.category,
-  in_stock = EXCLUDED.in_stock,
-  featured = EXCLUDED.featured,
-  inspiration_featured = EXCLUDED.inspiration_featured,
-  image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
-
--- Product 3: Maurten Drink Mix 320
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
-(
-  'maurten-drink-mix-320',
-  'Maurten Drink Mix 320',
-  'Komplett dryckesmix för uthållighetsidrottare med Maurten:s patenterade Hydrogel Technology. Maurten Drink Mix 320 innehåller en balanserad mix av kolhydrater, elektrolyter och näringsämnen för att hålla dig hydrerad och energifylld under långa träningspass. Formulerad för optimal absorption och smak.',
-  39.00,
-  'carbs',
-  true,
-  true,
   NULL,
-  '/images/products/maurten-drink-mix-320/primary.jpg',
-  '["/images/products/maurten-drink-mix-320/secondary-1.jpg"]'::jsonb
-)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  description = EXCLUDED.description,
-  price = EXCLUDED.price,
-  category = EXCLUDED.category,
-  in_stock = EXCLUDED.in_stock,
-  featured = EXCLUDED.featured,
-  inspiration_featured = EXCLUDED.inspiration_featured,
-  image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
-
--- Product 4: Tailwind Drink Mix (with flavors)
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, variants) VALUES
-(
-  'tailwind-drink-mix',
-  'Tailwind Drink Mix',
-  'Tailwinds klassiska dryckesmix för uthållighet. Enkel formel med kolhydrater och elektrolyter utan onödiga tillsatser. Perfekt för långa löpningar, cykling och ultralöpning. Välj din favoritsmak nedan.',
-  349.00,
-  'carbs',
-  true,
-  true,
   NULL,
-  '/images/products/tailwind-drink-mix/primary.jpg',
-  '["/images/products/tailwind-drink-mix/secondary-1.jpg", "/images/products/tailwind-drink-mix/secondary-2.jpg", "/images/products/tailwind-drink-mix/secondary-3.jpg"]'::jsonb,
-  '{"type": "flavor", "options": [{"id": "lemon", "name": "Citron"}, {"id": "berry", "name": "Bär"}, {"id": "naked", "name": "Naked (osmakad)"}, {"id": "dawalter-watermelon", "name": "DaWalter Vattenmelon"}]}'::jsonb
+  0,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -105,10 +41,259 @@ ON CONFLICT (id) DO UPDATE SET
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
   additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
   variants = EXCLUDED.variants;
 
--- Product 5: HydraPak Gel Soft Flask 250ml
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+-- Product 2: Maurten Gel 100 (1 st)
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'maurten-gel-100',
+  'Maurten Gel 100 (1 st)',
+  'Energigel med Maurten:s patenterade Hydrogel Technology. Varje gel innehåller 25g kolhydrater och är gjord med bara sex ingredienser utan tillsatser av färgämnen, konserveringsmedel eller smakämnen. Den unika strukturen gör den lätt att konsumera under högintensiv träning och tävling. Perfekt för ultralöpning, cykling och andra uthållighetsgrenar.',
+  39.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/maurten-gel-100/primary.jpg',
+  '["/images/products/maurten-gel-100/secondary-1.jpg"]'::jsonb,
+  'maurten-gel-100',
+  'quantity',
+  '1 st',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 3: Maurten Gel 100 (12-pack)
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'maurten-gel-100-12-pack',
+  'Maurten Gel 100 (12-pack)',
+  'Energigel med Maurten:s patenterade Hydrogel Technology. 12-pack för dig som vill ladda upp inför race eller ha lager hemma. Varje gel innehåller 25g kolhydrater med samma rena ingredienslista som singel-förpackningen.',
+  449.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/maurten-gel-100/primary.jpg',
+  '["/images/products/maurten-gel-100/secondary-1.jpg"]'::jsonb,
+  'maurten-gel-100',
+  'quantity',
+  '12-pack',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 4: Maurten Drink Mix 320
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'maurten-drink-mix-320',
+  'Maurten Drink Mix 320',
+  'Komplett dryckesmix för uthållighetsidrottare med Maurten:s patenterade Hydrogel Technology. Maurten Drink Mix 320 innehåller en balanserad mix av kolhydrater, elektrolyter och näringsämnen för att hålla dig hydrerad och energifylld under långa träningspass. Formulerad för optimal absorption och smak.',
+  39.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/maurten-drink-mix-320/primary.jpg',
+  '["/images/products/maurten-drink-mix-320/secondary-1.jpg"]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 5: Tailwind Drink Mix - Citron
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'tailwind-drink-mix-lemon',
+  'Tailwind Drink Mix - Citron',
+  'Tailwinds klassiska dryckesmix för uthållighet. Enkel formel med kolhydrater och elektrolyter utan onödiga tillsatser. Perfekt för långa löpningar, cykling och ultralöpning. Välj din favoritsmak nedan.',
+  349.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/tailwind-drink-mix/primary.jpg',
+  '["/images/products/tailwind-drink-mix/secondary-1.jpg", "/images/products/tailwind-drink-mix/secondary-2.jpg", "/images/products/tailwind-drink-mix/secondary-3.jpg"]'::jsonb,
+  'tailwind-drink-mix',
+  'flavor',
+  'Citron',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 6: Tailwind Drink Mix - Bär
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'tailwind-drink-mix-berry',
+  'Tailwind Drink Mix - Bär',
+  'Tailwinds klassiska dryckesmix för uthållighet. Enkel formel med kolhydrater och elektrolyter utan onödiga tillsatser. Perfekt för långa löpningar, cykling och ultralöpning. Välj din favoritsmak nedan.',
+  349.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/tailwind-drink-mix/primary.jpg',
+  '["/images/products/tailwind-drink-mix/secondary-1.jpg", "/images/products/tailwind-drink-mix/secondary-2.jpg", "/images/products/tailwind-drink-mix/secondary-3.jpg"]'::jsonb,
+  'tailwind-drink-mix',
+  'flavor',
+  'Bär',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 7: Tailwind Drink Mix - Naked (osmakad)
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'tailwind-drink-mix-naked',
+  'Tailwind Drink Mix - Naked (osmakad)',
+  'Tailwinds klassiska dryckesmix för uthållighet. Enkel formel med kolhydrater och elektrolyter utan onödiga tillsatser. Perfekt för långa löpningar, cykling och ultralöpning. Välj din favoritsmak nedan.',
+  349.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/tailwind-drink-mix/primary.jpg',
+  '["/images/products/tailwind-drink-mix/secondary-1.jpg", "/images/products/tailwind-drink-mix/secondary-2.jpg", "/images/products/tailwind-drink-mix/secondary-3.jpg"]'::jsonb,
+  'tailwind-drink-mix',
+  'flavor',
+  'Naked (osmakad)',
+  3,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 8: Tailwind Drink Mix - DaWalter Vattenmelon
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'tailwind-drink-mix-dawalter-watermelon',
+  'Tailwind Drink Mix - DaWalter Vattenmelon',
+  'Tailwinds klassiska dryckesmix för uthållighet. Enkel formel med kolhydrater och elektrolyter utan onödiga tillsatser. Perfekt för långa löpningar, cykling och ultralöpning. Välj din favoritsmak nedan.',
+  349.00,
+  'carbs',
+  true,
+  true,
+  NULL,
+  '/images/products/tailwind-drink-mix/primary.jpg',
+  '["/images/products/tailwind-drink-mix/secondary-1.jpg", "/images/products/tailwind-drink-mix/secondary-2.jpg", "/images/products/tailwind-drink-mix/secondary-3.jpg"]'::jsonb,
+  'tailwind-drink-mix',
+  'flavor',
+  'DaWalter Vattenmelon',
+  4,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 9: HydraPak Gel Soft Flask 250ml
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'hydrapak-gel-soft-flask-250ml',
   'HydraPak Gel Soft Flask 250ml',
@@ -119,7 +304,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   2,
   '/images/products/hydrapak-gel-soft-flask-250ml/primary.jpg',
-  '["/images/products/hydrapak-gel-soft-flask-250ml/secondary-1.jpg"]'::jsonb
+  '["/images/products/hydrapak-gel-soft-flask-250ml/secondary-1.jpg"]'::jsonb,
+  'hydrapak-gel-soft-flask',
+  'size',
+  '250 ml',
+  2,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -130,10 +320,15 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
 
--- Product 6: HydraPak Gel Soft Flask 150ml
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+-- Product 10: HydraPak Gel Soft Flask 150ml
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'hydrapak-gel-soft-flask-150ml',
   'HydraPak Gel Soft Flask 150ml',
@@ -144,7 +339,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   NULL,
   '/images/products/hydrapak-gel-soft-flask-150ml/primary.jpg',
-  '["/images/products/hydrapak-gel-soft-flask-150ml/secondary-1.jpg"]'::jsonb
+  '["/images/products/hydrapak-gel-soft-flask-150ml/secondary-1.jpg"]'::jsonb,
+  'hydrapak-gel-soft-flask',
+  'size',
+  '150 ml',
+  1,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -155,10 +355,15 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
 
--- Product 7: Nomio ITC Shot
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+-- Product 11: Nomio ITC Shot
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'nomio-itc-shot',
   'Nomio ITC Shot',
@@ -169,7 +374,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   3,
   '/images/products/nomio-itc-shot/primary.jpg',
-  '["/images/products/nomio-itc-shot/secondary-1.jpg", "/images/products/nomio-itc-shot/secondary-2.jpg"]'::jsonb
+  '["/images/products/nomio-itc-shot/secondary-1.jpg", "/images/products/nomio-itc-shot/secondary-2.jpg"]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -180,10 +390,15 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
 
--- Product 8: Tailwind Recovery Mix
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+-- Product 12: Tailwind Recovery Mix
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'tailwind-recovery-mix',
   'Tailwind Recovery Mix',
@@ -194,7 +409,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   NULL,
   '/images/products/tailwind-recovery-mix/primary.jpg',
-  '[]'::jsonb
+  '[]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -205,10 +425,15 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
 
--- Product 9: KQM Recovery Mix
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+-- Product 13: KQM Recovery Mix
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'kqm-recovery-mix',
   'KQM Recovery Mix',
@@ -219,7 +444,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   NULL,
   '/images/products/kqm-recovery-mix/primary.jpg',
-  '[]'::jsonb
+  '[]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -230,10 +460,15 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
 
--- Product 10: KQM Custom Energy Gel
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
+-- Product 14: KQM Custom Energy Gel
+INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
 (
   'custom-gel',
   'KQM Custom Energy Gel',
@@ -244,33 +479,12 @@ INSERT INTO products (id, name, description, price, category, in_stock, featured
   true,
   NULL,
   '/images/products/custom-gel/primary.jpg',
-  '[]'::jsonb
-)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  description = EXCLUDED.description,
-  price = EXCLUDED.price,
-  category = EXCLUDED.category,
-  in_stock = EXCLUDED.in_stock,
-  featured = EXCLUDED.featured,
-  inspiration_featured = EXCLUDED.inspiration_featured,
-  image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
-
--- Test Product: Hidden 3 SEK product for Stripe testing
--- Accessible at /test-checkout (not shown in product listings)
-INSERT INTO products (id, name, description, price, category, in_stock, featured, inspiration_featured, image_url, additional_images) VALUES
-(
-  'test-product-1sek',
-  'Test Product - 3 SEK',
-  'This is a test product for Stripe integration testing. Free shipping included.',
-  3.00,
-  'test',
-  true,
-  false,
+  '[]'::jsonb,
   NULL,
-  '/images/products/custom-gel/primary.jpg',
-  '[]'::jsonb
+  NULL,
+  NULL,
+  0,
+  NULL
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -281,18 +495,11 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   inspiration_featured = EXCLUDED.inspiration_featured,
   image_url = EXCLUDED.image_url,
-  additional_images = EXCLUDED.additional_images;
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
 
--- Discount codes seed
-INSERT INTO discount_codes (code, type, value, active)
-VALUES
-  ('TEST10', 'percent', 10, true),
-  ('TEST20', 'percent', 20, true),
-  ('TEST30', 'percent', 30, true),
-  ('FREESHIP', 'free_shipping', 0, true),
-  ('TESTF100', 'fixed_amount', 100, true)
-ON CONFLICT (code) DO UPDATE SET
-  type = EXCLUDED.type,
-  value = EXCLUDED.value,
-  active = EXCLUDED.active;
 

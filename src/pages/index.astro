@@ -73,6 +73,23 @@ import Layout from '../layouts/Layout.astro';
     const cartItem = cart.find((item) => item.product_id === product.id);
     const initialQuantity = cartItem ? cartItem.quantity : 0;
     const isInCart = initialQuantity > 0;
+    const isCustomGel = product.id === 'custom-gel';
+    const hasVariants = Array.isArray(product.siblings) && product.siblings.length > 1;
+    const selectionLabel = product.selection_label || (product.variant_type ? 'Välj alternativ' : null);
+    const variantOptions = hasVariants
+      ? product.siblings.map((sib) => `
+          <option 
+            value="${sib.id}" 
+            data-name="${sib.name}" 
+            data-price="${sib.price}" 
+            data-image="${sib.image_url || product.image_url || '/images/placeholder.jpg'}"
+            data-variant-value="${sib.variant_value || ''}"
+            ${sib.id === product.id ? 'selected' : ''}
+          >
+            ${sib.variant_value || sib.name}
+          </option>
+        `).join('')
+      : '';
     
     return `
       <div class="product-card bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer" data-product-id="${product.id}" data-product-link>
@@ -80,19 +97,35 @@ import Layout from '../layouts/Layout.astro';
         <div style="padding: 1.25rem 1.5rem;" class="px-6 py-5 flex flex-col">
           <h3 class="font-bold text-base mb-3 text-gray-900 line-clamp-2">${product.name}</h3>
           <p class="text-sm text-gray-600 !mb-4 line-clamp-2 flex-grow">${product.description || ''}</p>
-          <div class="flex flex-col gap-3">
-            <span class="text-xl font-bold text-gray-900">${product.price.toFixed(2)} SEK</span>
-            <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}">
-              ${isInCart ? `
-                <div class="flex items-center gap-2 quantity-buttons justify-center">
-                  <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
-                  <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${product.id}">
-                  <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
-                </div>
-              ` : `
-                <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
-              `}
+          ${hasVariants ? `
+            <div class="mb-3">
+              <label class="block text-xs font-semibold text-gray-700 mb-1">${selectionLabel || 'Välj alternativ'}</label>
+              <select class="variant-select w-full border border-gray-300 rounded px-2 py-2 text-sm">
+                ${variantOptions}
+              </select>
             </div>
+          ` : ''}
+          <div class="flex flex-col gap-3">
+            <span class="text-xl font-bold text-gray-900 product-price">${product.price.toFixed(2)} SEK</span>
+            ${isCustomGel ? `
+              <div class="w-full flex justify-center">
+                <button class="to-product-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer" type="button">
+                  TILL PRODUKT
+                </button>
+              </div>
+            ` : `
+              <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}" data-variant-value="${product.variant_value || ''}" data-selection-label="${selectionLabel || ''}">
+                ${isInCart ? `
+                  <div class="flex items-center gap-2 quantity-buttons justify-center">
+                    <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+                    <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${product.id}">
+                    <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+                  </div>
+                ` : `
+                  <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
+                `}
+              </div>
+            `}
           </div>
         </div>
       </div>
@@ -140,6 +173,13 @@ import Layout from '../layouts/Layout.astro';
   function setupProductCardListeners(container) {
     container.addEventListener('click', (e) => {
       const target = e.target;
+      const toProductBtn = target.closest('.to-product-btn');
+      if (toProductBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/kqm-custom-energy-gel';
+        return;
+      }
       const kopBtn = target.closest('.kop-btn');
       
       if (kopBtn) {
@@ -149,6 +189,8 @@ import Layout from '../layouts/Layout.astro';
         const productId = controlsDiv.getAttribute('data-product-id');
         const productName = controlsDiv.getAttribute('data-product-name');
         const productPrice = parseFloat(controlsDiv.getAttribute('data-product-price') || '0');
+        const selectionLabel = controlsDiv.getAttribute('data-selection-label') || '';
+        const variantValue = controlsDiv.getAttribute('data-variant-value') || '';
         
         const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
         cart.push({
@@ -156,6 +198,8 @@ import Layout from '../layouts/Layout.astro';
           product_name: productName,
           price: productPrice,
           quantity: 1,
+          selection_label: selectionLabel,
+          variant_value: variantValue,
         });
         localStorage.setItem('feedzone-cart', JSON.stringify(cart));
         window.dispatchEvent(new Event('cart-updated'));
@@ -209,7 +253,7 @@ import Layout from '../layouts/Layout.astro';
       const productCard = target.closest('[data-product-link]');
       if (productCard) {
         // Don't navigate if clicking on quantity controls or buttons
-        if (target.closest('.quantity-controls') || target.closest('button') || target.closest('input')) {
+        if (target.closest('.quantity-controls') || target.closest('button') || target.closest('input') || target.closest('.variant-select')) {
           return;
         }
         const productId = productCard.getAttribute('data-product-id');
@@ -226,6 +270,50 @@ import Layout from '../layouts/Layout.astro';
     
     container.addEventListener('change', (e) => {
       const target = e.target;
+      if (target.classList.contains('variant-select')) {
+        const select = target;
+        const card = select.closest('.product-card');
+        if (!card) return;
+
+        const selectedOption = select.selectedOptions[0];
+        const selectedId = selectedOption.value;
+        const selectedName = selectedOption.dataset.name || selectedOption.textContent || '';
+        const selectedPrice = parseFloat(selectedOption.dataset.price || '0');
+        const selectedImage = selectedOption.dataset.image || '/images/placeholder.jpg';
+        const variantValue = selectedOption.dataset.variantValue || '';
+
+        const controlsDiv = card.querySelector('.quantity-controls');
+        const priceEl = card.querySelector('.product-price');
+        const imageEl = card.querySelector('img');
+        const titleEl = card.querySelector('h3');
+
+        card.setAttribute('data-product-id', selectedId);
+        if (controlsDiv) {
+          controlsDiv.setAttribute('data-product-id', selectedId);
+          controlsDiv.setAttribute('data-product-name', selectedName);
+          controlsDiv.setAttribute('data-product-price', String(selectedPrice));
+          controlsDiv.setAttribute('data-variant-value', variantValue);
+
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          const cartItem = cart.find((item) => item.product_id === selectedId);
+          const inCart = cartItem && cartItem.quantity > 0;
+
+          controlsDiv.innerHTML = inCart ? `
+            <div class="flex items-center gap-2 quantity-buttons justify-center">
+              <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+              <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${cartItem.quantity}" min="0" data-product-id="${selectedId}">
+              <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+            </div>
+          ` : `
+            <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer" type="button">KÖP</button>
+          `;
+        }
+
+        if (priceEl) priceEl.textContent = `${selectedPrice.toFixed(2)} SEK`;
+        if (imageEl) imageEl.setAttribute('src', selectedImage);
+        if (titleEl) titleEl.textContent = selectedName;
+        return;
+      }
       if (target.classList.contains('quantity-input')) {
         const productId = target.getAttribute('data-product-id');
         const quantity = parseInt(target.value) || 0;

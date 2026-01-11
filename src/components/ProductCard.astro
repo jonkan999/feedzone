@@ -17,15 +17,36 @@ const { productId, productName, productDescription = '', productPrice, productIm
     <p class="text-xs text-gray-600 mb-3 line-clamp-2">{productDescription}</p>
     <div class="flex items-center justify-between">
       <span class="text-lg font-bold text-gray-900">{productPrice.toFixed(2)} SEK</span>
-      <div class="quantity-controls" data-product-id={productId} data-product-name={productName} data-product-price={productPrice}>
-        <button class="kop-btn bg-primary text-white px-6 py-2 rounded font-semibold hover:bg-opacity-90 transition-all uppercase cursor-pointer">KÖP</button>
-      </div>
+      {
+        productId === 'custom-gel'
+          ? (
+            <button class="to-product-btn bg-primary text-white px-6 py-2 rounded font-semibold hover:bg-opacity-90 transition-all uppercase cursor-pointer" type="button">
+              TILL PRODUKT
+            </button>
+          )
+          : (
+            <div class="quantity-controls" data-product-id={productId} data-product-name={productName} data-product-price={productPrice}>
+              <button class="kop-btn bg-primary text-white px-6 py-2 rounded font-semibold hover:bg-opacity-90 transition-all uppercase cursor-pointer">KÖP</button>
+            </div>
+          )
+      }
     </div>
   </div>
 </div>
 
 <script>
   if (typeof window !== 'undefined') {
+    // Handle "TILL PRODUKT" button for custom gel
+    document.addEventListener('click', (e) => {
+      const toProductBtn = (e.target as HTMLElement).closest('.to-product-btn');
+      if (toProductBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/kqm-custom-energy-gel';
+        return;
+      }
+    });
+
     // Add click handler to product cards
     document.addEventListener('click', (e) => {
       const card = (e.target as HTMLElement).closest('[data-product-link]');

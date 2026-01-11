@@ -118,6 +118,33 @@ import Layout from '../layouts/Layout.astro';
                 const formulaText = formatCustomFormula(item);
                 // Use product price if available, otherwise use cart item price
                 const displayPrice = productData?.price ?? item.price;
+                const selectionLabel = productData?.selection_label || item.selection_label || '';
+                const siblings = Array.isArray(productData?.siblings) ? productData.siblings : [];
+                const hasVariants = siblings.length > 1;
+                const variantValue = item.variant_value || productData?.variant_value || '';
+                const variantSelect = hasVariants ? `
+                  <div class="mt-2">
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">${selectionLabel || 'Välj alternativ'}</label>
+                    <select 
+                      class="cart-variant-select w-full border border-gray-300 rounded px-2 py-2 text-sm" 
+                      data-index="${index}"
+                      data-selection-label="${selectionLabel || ''}"
+                    >
+                      ${siblings.map((sib: any) => `
+                        <option 
+                          value="${sib.id}" 
+                          data-name="${sib.name}"
+                          data-price="${sib.price}"
+                          data-image="${sib.image_url || productImage}"
+                          data-variant-value="${sib.variant_value || ''}"
+                          ${sib.id === item.product_id ? 'selected' : ''}
+                        >
+                          ${sib.variant_value || sib.name}
+                        </option>
+                      `).join('')}
+                    </select>
+                  </div>
+                ` : '';
                 return `
                   <div class="flex items-start gap-3 bg-gray-50 hover:border-accent transition !p-2 sm:p-4" data-index="${index}">
                     <div class="relative w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0">
@@ -131,6 +158,7 @@ import Layout from '../layouts/Layout.astro';
                           ${isCustomGel ? '' : `<a href="/products/${item.product_id}" class="block">`}
                             <h3 class="font-bold text-base text-gray-900 line-clamp-2">${item.product_name}</h3>
                           ${isCustomGel ? '' : '</a>'}
+                          ${variantValue ? `<p class="text-xs text-gray-700 mt-1">${selectionLabel || 'Variant'}: ${variantValue}</p>` : ''}
                           ${formulaText ? `
                             <div class="mt-1 p-2 bg-white border border-gray-200 rounded-md">
                               <p class="text-[11px] font-semibold text-gray-700 uppercase tracking-wide mb-0.5">Din formel</p>
@@ -138,6 +166,7 @@ import Layout from '../layouts/Layout.astro';
                             </div>
                           ` : ''}
                           ${productDescription ? `<p class="text-sm text-gray-600 !mt-1 line-clamp-2">${productDescription}</p>` : ''}
+                          ${variantSelect}
                         </div>
                         <div class="text-right flex-shrink-0 !mr-2">
                           <div class="text-sm font-semibold text-gray-900">${displayPrice.toFixed(2)} SEK</div>
@@ -260,7 +289,7 @@ import Layout from '../layouts/Layout.astro';
 
       document.querySelectorAll('.remove-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          const target = e.target as HTMLElement;
+          const target = e.currentTarget as HTMLElement;
           const index = parseInt(target.getAttribute('data-index') || '0');
           
           const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
@@ -269,6 +298,31 @@ import Layout from '../layouts/Layout.astro';
           localStorage.setItem('feedzone-cart', JSON.stringify(cart));
           window.dispatchEvent(new Event('cart-updated'));
           renderCart();
+        });
+      });
+
+      document.querySelectorAll('.cart-variant-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const target = e.target as HTMLSelectElement;
+          const index = parseInt(target.getAttribute('data-index') || '0');
+          const selectionLabel = target.getAttribute('data-selection-label') || '';
+          const selectedOption = target.selectedOptions[0];
+          const selectedId = selectedOption.value;
+          const selectedName = selectedOption.dataset.name || selectedOption.textContent || '';
+          const selectedPrice = parseFloat(selectedOption.dataset.price || '0');
+          const selectedVariantValue = selectedOption.dataset.variantValue || '';
+
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          if (cart[index]) {
+            cart[index].product_id = selectedId;
+            cart[index].product_name = selectedName;
+            cart[index].price = selectedPrice;
+            cart[index].variant_value = selectedVariantValue;
+            cart[index].selection_label = selectionLabel;
+            localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+            window.dispatchEvent(new Event('cart-updated'));
+            renderCart();
+          }
         });
       });
     }
