@@ -19,6 +19,7 @@ CREATE TABLE products (
   description TEXT,
   price DECIMAL(10, 2) NOT NULL,
   category TEXT,
+  categories TEXT[],
   image_url TEXT,
   additional_images JSONB DEFAULT '[]'::jsonb,
   variants JSONB DEFAULT NULL,
@@ -36,6 +37,7 @@ CREATE TABLE products (
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_categories_gin ON products USING GIN (categories);
 CREATE INDEX IF NOT EXISTS idx_products_in_stock ON products(in_stock);
 CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured) WHERE featured = true;
 CREATE INDEX IF NOT EXISTS idx_products_inspiration_featured ON products(inspiration_featured);
@@ -52,6 +54,7 @@ COMMENT ON COLUMN products.image_url IS 'Primary product image (used in product 
 COMMENT ON COLUMN products.additional_images IS 'Array of additional image URLs for product detail page';
 COMMENT ON COLUMN products.featured IS 'Whether product should appear on homepage featured products';
 COMMENT ON COLUMN products.inspiration_featured IS 'Numeric order for Inspiration & Nyheter carousel (lower number = earlier)';
+COMMENT ON COLUMN products.categories IS 'Array of categories to allow multi-category placement (supersedes single category)';
 COMMENT ON COLUMN products.variants IS 'Product variants (legacy JSON payload; prefer group-based variants)';
 COMMENT ON TABLE product_groups IS 'Shared metadata for grouped products (flavor/size/quantity)';
 COMMENT ON COLUMN products.group_id IS 'Foreign key to product_groups when product is part of a variant family';

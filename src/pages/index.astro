@@ -3,42 +3,65 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-  <!-- KQM Custom Energy Gel Hero Section -->
-  <section class="w-full py-12 md:py-16" style="background-color: #fafafc; margin-bottom: 3rem !important;">
-    <a href="/kqm-custom-energy-gel" class="w-full block hover:opacity-95 transition-opacity">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div class="text-left">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 !mb-4" style="margin-top: 1.5rem !important;">KQM Custom Energy Gel</h2>
-            <p class="text-lg md:text-xl text-gray-700 leading-relaxed" style="margin-bottom: 1.5rem !important;">
-              Skapa din perfekta energigel med rätt salthalt, fruktosförhållande, elektrolytbalans och valfritt koffein. 
-              Vår anpassningsbara lösning ger dig full kontroll över din näring under träning och tävling.
-            </p>
-            <button
-              class="hidden md:block bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer"
-              style="margin-bottom: 1.5rem !important;"
-              type="button"
-              onclick="window.location.href='/kqm-custom-energy-gel';"
-            >
-              Skapa din egen formula
-            </button>
-          </div>
-          <div class="flex flex-col">
-            <div class="w-full">
-              <img src="/images/products/custom-gel/primary.jpg" alt="KQM Custom Energy Gel" class="w-full h-auto object-contain rounded-lg">
+  <!-- Compact hero tiles as horizontal scroller -->
+  <section class="!py-4 md:!py-5 !mb-5 mx-auto">
+    <div class="hero-scroll overflow-x-auto px-4 md:px-8 lg:px-10 snap-x snap-mandatory scroll-smooth">
+      <div class="flex gap-4 md:gap-6">
+        <!-- KQM Custom Energy Gel -->
+        <a href="/kqm-custom-energy-gel"
+          class="group relative block overflow-hidden  snap-start
+            min-w-[86vw] md:min-w-[34vw] lg:min-w-[29vw]
+            h-[50vh] md:h-[45vh] lg:h-[42vh]
+            max-h-[520px]
+            lg:max-w-[calc(42vh-10px)] md:max-w-[calc(45vh-10px)]"
+        >
+          <img src="/images/products/custom-gel/primary.jpg" alt="KQM Custom Energy Gel" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]">
+          <div class="absolute inset-0 "></div>
+          <div class="absolute bottom-3 left-3 right-4">
+            <div class="!p-2 md:!p-5 rounded-lg" style="background: color-mix(in srgb, var(--color-primary) 15%, white 85%);">
+              <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">KQM Custom Energy Gel</h2>
+              <p class="text-base md:text-lg text-gray-700 leading-relaxed !mb-2">
+                Anpassa salthalt, fruktosförhållande, elektrolyter och koffein. Full kontroll.
+              </p>
+              <button
+                class="bg-indigo-950 text-white !px-6 !h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-fit cursor-pointer"
+                type="button"
+                onclick="window.location.href='/kqm-custom-energy-gel';"
+              >
+                Skapa din formel
+              </button>
             </div>
-            <button
-              class="md:hidden bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer mx-auto mt-6"
-              style="margin-top: 1.5rem !important; margin-bottom: 1.5rem !important; margin-left: auto !important; margin-right: auto !important;"
-              type="button"
-              onclick="window.location.href='/kqm-custom-energy-gel';"
-            >
-              Skapa din egen formula
-            </button>
           </div>
-        </div>
+        </a>
+
+        <!-- Nomio ITC Shot -->
+        <a href="/products/nomio-itc-shot"
+          class="group relative block overflow-hidden  snap-start
+            min-w-[86vw] md:min-w-[34vw] lg:min-w-[29vw]
+            h-[50vh] md:h-[45vh] lg:h-[42vh]
+            max-h-[520px]
+            lg:max-w-[calc(42vh-10px)] md:max-w-[calc(45vh-10px)]"
+        >
+          <img src="/images/hero/secondary-1.jpg" alt="Nomio ITC Shot" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]">
+          <div class="absolute inset-0"></div>
+          <div class="absolute bottom-3 left-3 right-4">
+            <div class="!p-2 md:!p-5 rounded-lg" style="background: color-mix(in srgb, var(--color-accent-secondary) 15%, white 85%);">
+              <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Nomio ITC Shot</h2>
+              <p class="text-base md:text-lg text-gray-700 leading-relaxed !mb-2">
+                Svenskutvecklad ITC-shot för lägre laktat och bättre återhämtning. Testa du med!
+              </p>
+              <button
+                class="bg-indigo-950 text-white !px-6 !h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-fit cursor-pointer"
+                type="button"
+                onclick="window.location.href='/products/nomio-itc-shot';"
+              >
+                Läs mer
+              </button>
+            </div>
+          </div>
+        </a>
       </div>
-    </a>
+    </div>
   </section>
 
   <!-- Side Scrolling Inspirational Section -->
@@ -65,6 +88,15 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
 </Layout>
+
+<style>
+  .hero-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .hero-scroll {
+    scrollbar-width: none;
+  }
+</style>
 
 <script>
   // Shared product card functions

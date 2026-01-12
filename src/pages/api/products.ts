@@ -9,6 +9,7 @@ type ProductRow = {
   description: string | null;
   price: number;
   category: string | null;
+  categories: string[] | null;
   image_url: string | null;
   additional_images: string[] | null;
   group_id: string | null;
@@ -55,7 +56,7 @@ export const GET: APIRoute = async ({ request }) => {
       .eq('in_stock', true);
 
     if (category) {
-      query = query.eq('category', category);
+    query = query.or(`category.eq.${category},categories.cs.{${category}}`);
     }
 
     if (featured) {
@@ -123,6 +124,12 @@ export const GET: APIRoute = async ({ request }) => {
     const result: ListedProduct[] = Array.from(groupedMap.values()).map(
       ({ canonical, siblings, selection_label }) => ({
         ...canonical,
+        categories:
+          (canonical.categories && canonical.categories.length > 0
+            ? canonical.categories
+            : canonical.category
+            ? [canonical.category]
+            : null),
         selection_label,
         siblings: (siblings || []).sort(
           (a, b) => (a.variant_sort ?? 0) - (b.variant_sort ?? 0)

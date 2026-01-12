@@ -1,0 +1,91 @@
+---
+const categories = [
+  { id: 'all', label: 'Alla produkter', href: '/products' },
+  { id: 'carbs', label: 'Carbs', href: '/products?category=carbs' },
+  { id: 'gels', label: 'Gels', href: '/products?category=gels' },
+  { id: 'protein', label: 'Protein', href: '/products?category=protein' },
+  { id: 'kosttillskott', label: 'Kosttillskott', href: '/products?category=kosttillskott' },
+  { id: 'recovery', label: 'Återhämtning', href: '/products?category=recovery' },
+  { id: 'pre-workout', label: 'Pre-Workout', href: '/products?category=pre-workout' },
+  { id: 'gear', label: 'Utrustning', href: '/products?category=gear' },
+];
+---
+
+<div class="category-rail-wrapper">
+  <div class="category-rail container">
+    {categories.map((cat) => (
+      <a href={cat.href} class="category-chip" data-category={cat.id}>
+        {cat.label}
+      </a>
+    ))}
+  </div>
+  <div class="category-fade category-fade-left" aria-hidden="true"></div>
+  <div class="category-fade category-fade-right" aria-hidden="true"></div>
+</div>
+
+<script is:inline>
+  if (typeof window !== 'undefined') {
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get('category') || 'all';
+    const chips = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-category]'));
+    chips.forEach((chip) => {
+      const match = chip.getAttribute('data-category');
+      chip.classList.toggle('active', match === current);
+    });
+  }
+</script>
+
+<style>
+  .category-rail-wrapper {
+    position: relative;
+    background: var(--color-white);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .category-rail {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .category-chip {
+    flex-shrink: 0;
+    padding: 0.5rem 0.95rem 0.7rem 0.95rem;
+    background: white;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    scroll-snap-align: start;
+    transition: all 0.2s ease;
+  }
+
+  .category-chip:hover {
+    border-color: color-mix(in srgb, var(--color-primary, #2c5f2d) 60%, #d6dde6 40%);
+    color: var(--color-primary, #2c5f2d);
+  }
+
+  .category-chip.active {
+    background: var(--color-primary, #2c5f2d);
+    color: #fff;
+    border-color: var(--color-primary, #2c5f2d);
+    box-shadow: 0 6px 12px rgba(44, 95, 45, 0.18);
+  }
+
+  .category-rail::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .category-rail::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+  }
+
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>
+

@@ -609,7 +609,7 @@ import Layout from '../layouts/Layout.astro';
             terms.every((term) => (p.name || '').toLowerCase().includes(term))
           );
 
-        const refill = findProduct(['refill', '1000']) || findProduct(['refill']) || null;
+        const refill = findProduct(['energy', 'gel', '1000']) || findProduct(['refill']) || null;
 
         if (refill) {
           standardRecommendationContainer.innerHTML = renderProductCard(

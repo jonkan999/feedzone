@@ -4,27 +4,8 @@ import ProductCard from '../../components/ProductCard.astro';
 ---
 
 <Layout title="Products - Feed Zone">
-  <div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold text-gray-900" style="margin-bottom: 0.5rem;">Produkter</h1>
-    
-    <!-- Category Filter -->
-    <div class="flex flex-wrap gap-5 !mb-2">
-      <a href="/products" class="px-4 py-2 rounded-md text-sm font-semibold hover:text-primary transition-colors" id="filter-all">
-        Alla
-      </a>
-      <a href="/products?category=carbs" class="px-4 py-2 rounded-md text-sm font-semibold hover:text-primary transition-colors" id="filter-carbs">
-        Carbs
-      </a>
-      <a href="/products?category=recovery" class="px-4 py-2 rounded-md text-sm font-semibold hover:text-primary transition-colors" id="filter-recovery">
-        Återhämtning
-      </a>
-      <a href="/products?category=pre-workout" class="px-4 py-2 rounded-md text-sm font-semibold hover:text-primary transition-colors" id="filter-pre-workout">
-        Pre-Workout
-      </a>
-      <a href="/products?category=gear" class="px-4 py-2 rounded-md text-sm font-semibold hover:text-primary transition-colors" id="filter-gear">
-        Utrustning
-      </a>
-    </div>
+  <div class="container mx-auto !px-2 !py-4">
+
     
     <div id="products-container" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <p class="text-text-muted col-span-full text-center py-8" id="loading-message">Laddar produkter...</p>
