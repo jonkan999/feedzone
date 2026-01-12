@@ -49,14 +49,19 @@ export const GET: APIRoute = async ({ request }) => {
     const url = new URL(request.url);
     const featured = url.searchParams.get('featured') === 'true';
     const category = url.searchParams.get('category');
+    const brand = url.searchParams.get('brand');
 
     let query = supabase
       .from('products')
       .select('*, product_groups(selection_label,name)')
       .eq('in_stock', true);
 
+    if (brand) {
+      query = query.eq('brand', brand);
+    }
+
     if (category) {
-    query = query.or(`category.eq.${category},categories.cs.{${category}}`);
+      query = query.or(`category.eq.${category},categories.cs.{${category}}`);
     }
 
     if (featured) {

@@ -1,0 +1,481 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { brands, findBrandBySlug } from '../../lib/brands';
+
+export async function getStaticPaths() {
+  return brands.map((brand) => ({
+    params: { slug: brand.slug },
+  }));
+}
+
+const brand = findBrandBySlug(Astro.params.slug);
+
+if (!brand) {
+  return Astro.redirect('/brands');
+}
+
+const heroImage = brand.hero || '/images/hero/secondary-1.jpg';
+const pageTitle = `${brand.name} - Feed Zone`;
+const pageDescription = `Handla ${brand.name} hos Feed Zone. Läs mer om varumärket och se alla produkter.`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section
+    class="brand-hero"
+    style={`background-image: linear-gradient(120deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.32)), url(${heroImage});`}
+  >
+    <div class="container hero-content">
+      <div class="brand-logo">
+        <img src={brand.logo} alt={`${brand.name} logotyp`} loading="lazy" />
+      </div>
+      <div class="hero-copy">
+        <p class="text-sm uppercase tracking-[0.08em] text-white/70 font-semibold mb-2">Brand</p>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">{brand.name}</h1>
+        <p class="text-lg text-white/90 leading-relaxed max-w-2xl !mb-4">
+          {brand.description}
+        </p>
+        <a class="hero-cta" href="#brand-products">Se produkter</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container mx-auto px-4 py-10 !pl-3 !pr-3">
+    <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+      <div>
+        <p class="text-sm uppercase tracking-[0.08em] text-primary font-semibold">Produkter</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">{brand.name} i Feed Zone</h2>
+      </div>
+      <a href="/brands" class="text-sm font-semibold text-primary hover:text-indigo-900 transition-colors uppercase tracking-wide !mb-2">
+        Tillbaka till brands →
+      </a>
+    </div>
+
+    <div id="brand-products" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6" data-brand-key={brand.brandKey}>
+      <p class="text-text-muted col-span-full text-center py-8" id="loading-message">Laddar {brand.name}...</p>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  function renderProductCard(product) {
+    const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+    const cartItem = cart.find((item) => item.product_id === product.id);
+    const initialQuantity = cartItem ? cartItem.quantity : 0;
+    const isInCart = initialQuantity > 0;
+    const isCustomGel = product.id === 'custom-gel';
+    const hasVariants = Array.isArray(product.siblings) && product.siblings.length > 1;
+    const selectionLabel = product.selection_label || (product.variant_type ? 'Välj alternativ' : null);
+    const variantOptions = hasVariants
+      ? product.siblings.map((sib) => `
+          <option 
+            value="${sib.id}" 
+            data-name="${sib.name}" 
+            data-price="${sib.price}" 
+            data-image="${sib.image_url || product.image_url || '/images/placeholder.jpg'}"
+            data-variant-value="${sib.variant_value || ''}"
+            ${sib.id === product.id ? 'selected' : ''}
+          >
+            ${sib.variant_value || sib.name}
+          </option>
+        `).join('')
+      : '';
+    
+    return `
+      <div class="product-card bg-white hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer" data-product-id="${product.id}" data-product-link>
+        <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}" class="w-full h-64 object-cover">
+        <div style="padding: 1.25rem 1.5rem;" class="px-6 py-5 flex flex-col">
+          <h3 class="font-bold text-base mb-3 text-gray-900 line-clamp-2">${product.name}</h3>
+          <p class="text-sm text-gray-600 !mb-4 line-clamp-2 flex-grow">${product.description || ''}</p>
+          ${hasVariants ? `
+            <div class="mb-3">
+              <label class="block text-xs font-semibold text-gray-700 mb-1">${selectionLabel || 'Välj alternativ'}</label>
+              <select class="variant-select w-full border border-gray-300 rounded px-2 py-2 text-sm">
+                ${variantOptions}
+              </select>
+            </div>
+          ` : ''}
+          <div class="flex flex-col gap-3">
+            <span class="text-xl font-bold text-gray-900 product-price">${product.price.toFixed(2)} SEK</span>
+            ${isCustomGel ? `
+              <div class="w-full flex justify-center">
+                <button class="to-product-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">
+                  TILL PRODUKT
+                </button>
+              </div>
+            ` : `
+              <div class="quantity-controls w-full flex justify-center" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${product.price}" data-variant-value="${product.variant_value || ''}" data-selection-label="${selectionLabel || ''}">
+                ${isInCart ? `
+                  <div class="flex items-center gap-2 quantity-buttons justify-center">
+                    <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+                    <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${initialQuantity}" min="0" data-product-id="${product.id}">
+                    <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+                  </div>
+                ` : `
+                  <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
+                `}
+              </div>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function updateCartQuantity(productId, quantity) {
+    const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+    const itemIndex = cart.findIndex((item) => item.product_id === productId);
+    
+    if (itemIndex >= 0) {
+      if (quantity <= 0) {
+        cart.splice(itemIndex, 1);
+        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+        if (productCard) {
+          const controlsDiv = productCard.querySelector('.quantity-controls');
+          if (controlsDiv) {
+            const quantityButtons = controlsDiv.querySelector('.quantity-buttons');
+            if (quantityButtons) {
+              quantityButtons.style.opacity = '0';
+              
+              setTimeout(() => {
+                controlsDiv.innerHTML = `<button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>`;
+                
+                const newKopBtn = controlsDiv.querySelector('.kop-btn');
+                if (newKopBtn) {
+                  newKopBtn.style.opacity = '0';
+                  setTimeout(() => {
+                    newKopBtn.style.transition = 'opacity 0.3s ease';
+                    newKopBtn.style.opacity = '1';
+                  }, 10);
+                }
+              }, 150);
+            }
+          }
+        }
+      } else {
+        cart[itemIndex].quantity = quantity;
+      }
+      localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
+    }
+  }
+
+  function setupProductCardListeners(container) {
+    container.addEventListener('click', (e) => {
+      const target = e.target;
+      const kopBtn = target.closest('.kop-btn');
+      const toProductBtn = target.closest('.to-product-btn');
+      
+      if (toProductBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/kqm-custom-energy-gel';
+        return;
+      }
+      
+      if (kopBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const controlsDiv = kopBtn.closest('.quantity-controls');
+        const productId = controlsDiv.getAttribute('data-product-id');
+        const productName = controlsDiv.getAttribute('data-product-name');
+        const productPrice = parseFloat(controlsDiv.getAttribute('data-product-price') || '0');
+        const selectionLabel = controlsDiv.getAttribute('data-selection-label') || '';
+        const variantValue = controlsDiv.getAttribute('data-variant-value') || '';
+        
+        const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+        cart.push({
+          product_id: productId,
+          product_name: productName,
+          price: productPrice,
+          quantity: 1,
+          selection_label: selectionLabel,
+          variant_value: variantValue,
+        });
+        localStorage.setItem('feedzone-cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+        
+        kopBtn.style.opacity = '0';
+        
+        setTimeout(() => {
+          controlsDiv.innerHTML = `
+            <div class="flex items-center gap-2 quantity-buttons justify-center">
+              <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+              <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="1" min="0" data-product-id="${productId}">
+              <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+            </div>
+          `;
+          
+          const quantityButtons = controlsDiv.querySelector('.quantity-buttons');
+          if (quantityButtons) {
+            quantityButtons.style.opacity = '0';
+            setTimeout(() => {
+              quantityButtons.style.transition = 'opacity 0.3s ease';
+              quantityButtons.style.opacity = '1';
+            }, 10);
+          }
+        }, 150);
+        return;
+      }
+      
+      const quantityBtn = target.closest('.quantity-btn');
+      if (quantityBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const action = quantityBtn.getAttribute('data-action');
+        const controlsDiv = quantityBtn.closest('.quantity-controls');
+        const productId = controlsDiv.getAttribute('data-product-id');
+        const input = controlsDiv.querySelector('.quantity-input');
+        
+        if (input && productId) {
+          let quantity = parseInt(input.value) || 0;
+          if (action === 'increase') {
+            quantity += 1;
+          } else if (action === 'decrease' && quantity > 0) {
+            quantity -= 1;
+          }
+          input.value = quantity.toString();
+          updateCartQuantity(productId, quantity);
+        }
+        return;
+      }
+      
+      const productCard = target.closest('[data-product-link]');
+      if (productCard) {
+        if (target.closest('.quantity-controls') || target.closest('button') || target.closest('input') || target.closest('.variant-select')) {
+          return;
+        }
+        const productId = productCard.getAttribute('data-product-id');
+        if (productId) {
+          if (productId === 'custom-gel') {
+            window.location.href = '/kqm-custom-energy-gel';
+          } else {
+            window.location.href = `/products/${productId}`;
+          }
+        }
+      }
+    });
+    
+    container.addEventListener('change', (e) => {
+      const target = e.target;
+      if (target.classList.contains('variant-select')) {
+        const select = target;
+        const card = select.closest('.product-card');
+        if (!card) return;
+
+        const selectedOption = select.selectedOptions[0];
+        const selectedId = selectedOption.value;
+        const selectedName = selectedOption.dataset.name || selectedOption.textContent || '';
+        const selectedPrice = parseFloat(selectedOption.dataset.price || '0');
+        const selectedImage = selectedOption.dataset.image || '/images/placeholder.jpg';
+        const variantValue = selectedOption.dataset.variantValue || '';
+
+        const controlsDiv = card.querySelector('.quantity-controls');
+        const priceEl = card.querySelector('.product-price');
+        const imageEl = card.querySelector('img');
+        const titleEl = card.querySelector('h3');
+
+        if (card) {
+          card.setAttribute('data-product-id', selectedId);
+        }
+        if (controlsDiv) {
+          controlsDiv.setAttribute('data-product-id', selectedId);
+          controlsDiv.setAttribute('data-product-name', selectedName);
+          controlsDiv.setAttribute('data-product-price', String(selectedPrice));
+          controlsDiv.setAttribute('data-variant-value', variantValue);
+
+          const cart = JSON.parse(localStorage.getItem('feedzone-cart') || '[]');
+          const cartItem = cart.find((item) => item.product_id === selectedId);
+          const inCart = cartItem && cartItem.quantity > 0;
+
+          controlsDiv.innerHTML = inCart ? `
+            <div class="flex items-center gap-2 quantity-buttons justify-center">
+              <button class="quantity-btn minus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="decrease">−</button>
+              <input type="number" class="quantity-input w-14 h-10 text-center border border-gray-300 rounded font-semibold text-base" value="${cartItem.quantity}" min="0" data-product-id="${selectedId}">
+              <button class="quantity-btn plus bg-gray-200 hover:bg-gray-300 text-gray-700 w-10 h-10 rounded flex items-center justify-center font-semibold transition-colors text-lg" data-action="increase">+</button>
+            </div>
+          ` : `
+            <button class="kop-btn bg-indigo-950 text-white px-8 h-10 rounded font-semibold hover:bg-indigo-900 transition-all uppercase text-sm w-full max-w-[200px] cursor-pointer">KÖP</button>
+          `;
+        }
+
+        if (priceEl) {
+          priceEl.textContent = `${selectedPrice.toFixed(2)} SEK`;
+        }
+        if (imageEl) {
+          imageEl.setAttribute('src', selectedImage);
+        }
+        if (titleEl) {
+          titleEl.textContent = selectedName;
+        }
+        return;
+      }
+
+      if (target.classList.contains('quantity-input')) {
+        const productId = target.getAttribute('data-product-id');
+        const quantity = parseInt(target.value) || 0;
+        if (productId) {
+          updateCartQuantity(productId, Math.max(0, quantity));
+        }
+      }
+    });
+  }
+  
+  async function loadBrandProducts() {
+    try {
+      const container = document.getElementById('brand-products');
+      if (!container) {
+        console.error('Brand products container not found');
+        return;
+      }
+      
+      const brandKey = container.getAttribute('data-brand-key');
+      if (!brandKey) {
+        console.error('Brand key not found in data attribute');
+        container.innerHTML = '<p class="text-red-500 col-span-full text-center py-12">Fel: Kunde inte hitta brand information.</p>';
+        return;
+      }
+      
+      console.log('Loading products for brand:', brandKey);
+      const response = await fetch(`/api/products?brand=${encodeURIComponent(brandKey)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const products = await response.json();
+      console.log('Loaded products:', products);
+      
+      if (products.length === 0) {
+        container.innerHTML = `<p class="text-text-muted col-span-full text-center py-12">Inga produkter för ${brandKey} ännu.</p>`;
+      } else {
+        container.innerHTML = products.map((product) => renderProductCard(product)).join('');
+        setupProductCardListeners(container);
+      }
+    } catch (error) {
+      console.error('Error loading products:', error);
+      const container = document.getElementById('brand-products');
+      if (container) {
+        container.innerHTML = '<p class="text-red-500 col-span-full text-center py-12">Fel vid laddning av produkter. Försök igen senare.</p>';
+      }
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        loadBrandProducts();
+      });
+    } else {
+      setTimeout(loadBrandProducts, 10);
+    }
+  }
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .brand-hero {
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    padding: 2.5rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .brand-hero {
+      padding: 3.5rem 2rem;
+      min-height: 320px;
+    }
+  }
+
+  .hero-content {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem;
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .hero-content {
+      grid-template-columns: auto 1fr;
+      gap: 1.75rem;
+    }
+  }
+
+  .brand-logo {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .brand-logo img {
+    max-width: 180px;
+    max-height: 90px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .hero-copy {
+    color: white;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.3rem;
+    border-radius: 999px;
+    background: #0f172a;
+    color: white;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-cta:hover {
+    transform: translateY(-1px);
+    background: #111827;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .product-card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .product-card:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+  }
+  
+  .quantity-input {
+    -moz-appearance: textfield;
+  }
+  
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  .kop-btn {
+    transition: all 0.3s ease;
+  }
+  
+  .quantity-buttons {
+    transition: all 0.3s ease;
+  }
+</style>
+

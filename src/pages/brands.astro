@@ -1,35 +1,23 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { brands } from '../lib/brands';
 ---
 
 <Layout title="Brands - Feed Zone">
   <div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold text-gray-900 mb-4 text-center">Våra brands</h1>
-    <p class="text-lg text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-      Vi samarbetar med de bästa varumärkena inom uthållighetsidrottsnutrition för att ge dig premiumprodukter.
-    </p>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-5xl mx-auto">
-      <div class="bg-white border border-gray-200 p-8 rounded-lg text-center hover:shadow-md transition-all">
-        <h3 class="font-bold text-xl text-gray-900 mb-2">KQM</h3>
-        <p class="text-sm text-gray-600">Kings & Queens of Mountains</p>
-      </div>
-      <div class="bg-white border border-gray-200 p-8 rounded-lg text-center hover:shadow-md transition-all">
-        <h3 class="font-bold text-xl text-gray-900 mb-2">Morten</h3>
-        <p class="text-sm text-gray-600">Prestationsnutrition</p>
-      </div>
-      <div class="bg-white border border-gray-200 p-8 rounded-lg text-center hover:shadow-md transition-all">
-        <h3 class="font-bold text-xl text-gray-900 mb-2">Hydra Pak</h3>
-        <p class="text-sm text-gray-600">Hydratationslösningar</p>
-      </div>
-      <div class="bg-white border border-gray-200 p-8 rounded-lg text-center hover:shadow-md transition-all">
-        <h3 class="font-bold text-xl text-gray-900 mb-2">Tailwind</h3>
-        <p class="text-sm text-gray-600">Uthållighetsbränsle</p>
-      </div>
-      <div class="bg-white border border-gray-200 p-8 rounded-lg text-center hover:shadow-md transition-all">
-        <h3 class="font-bold text-xl text-gray-900 mb-2">Nuun</h3>
-        <p class="text-sm text-gray-600">Hydratationstabletter</p>
-      </div>
+    <div class="text-center max-w-2xl mx-auto mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 !mb-3 !pt-4">Handla av våra noga utvalda brands</h2>
+
+    </div>
+
+    <div class="top-brands-grid">
+      {brands.map((brand) => (
+        <div class="brand-card-wrapper" aria-label={`Gå till ${brand.name}`}>
+          <a class="brand-card" href={`/brands/${brand.slug}`}>
+            <img alt={brand.name} src={brand.logo} loading="lazy" />
+          </a>
+        </div>
+      ))}
     </div>
   </div>
 </Layout>
@@ -38,6 +26,54 @@ import Layout from '../layouts/Layout.astro';
   .container {
     max-width: 1200px;
     margin: 0 auto;
+  }
+
+  .top-brands-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--color-primary) 15%, white 85%);
+  }
+
+  @media (min-width: 1024px) {
+    .top-brands-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    }
+  }
+
+  .brand-card-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+  .brand-card {
+    display: inline-flex;
+    width: 100%;
+    min-height: 110px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .brand-card:hover {
+
+    border-color: #d1d5db;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
+  }
+
+  .brand-card img {
+    max-width: 120px;
+    max-height: 60px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
   }
 </style>
 

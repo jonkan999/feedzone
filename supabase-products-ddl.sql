@@ -18,6 +18,7 @@ CREATE TABLE products (
   name TEXT NOT NULL,
   description TEXT,
   price DECIMAL(10, 2) NOT NULL,
+  brand TEXT,
   category TEXT,
   categories TEXT[],
   image_url TEXT,
@@ -37,6 +38,7 @@ CREATE TABLE products (
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand);
 CREATE INDEX IF NOT EXISTS idx_products_categories_gin ON products USING GIN (categories);
 CREATE INDEX IF NOT EXISTS idx_products_in_stock ON products(in_stock);
 CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured) WHERE featured = true;
