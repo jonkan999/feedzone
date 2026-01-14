@@ -4,8 +4,8 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout>
   <!-- Compact hero tiles as horizontal scroller -->
-  <section class="!py-4 md:!py-5 !mb-5 mx-auto">
-    <div class="hero-scroll overflow-x-auto px-4 md:px-8 lg:px-10 snap-x snap-mandatory scroll-smooth">
+  <section class="!py-4 md:!py-5 !mb-5 !-mx-3 !pl-3 !pr-0">
+    <div class="hero-scroll side-scroll-px overflow-x-auto snap-x snap-mandatory scroll-smooth">
       <div class="flex gap-4 md:gap-6">
         <!-- KQM Custom Energy Gel -->
         <a href="/kqm-custom-energy-gel"
@@ -67,7 +67,7 @@ import Layout from '../layouts/Layout.astro';
   <!-- Side Scrolling Inspirational Section -->
   <section class="container mx-auto px-4" style="margin-bottom: 4rem;">
     <h2 class="text-3xl font-bold text-gray-900 !mb-4">Inspiration & Nyheter</h2>
-    <div id="inspiration-container" class="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-container">
+    <div id="inspiration-container" class="overflow-x-auto scrollbar-container !-mx-3 !pl-3 !pr-0">
       <div class="flex gap-6 min-w-max">
         <p class="text-gray-600 py-8">Laddar innehåll...</p>
       </div>
@@ -479,7 +479,7 @@ import Layout from '../layouts/Layout.astro';
                       <span class="badge-text" style="background: white !important; padding: 0.2rem 0.4rem !important; display: inline-block !important; font-size: 0.75rem !important; font-weight: 700 !important; text-transform: uppercase !important;">${escapedBadge}</span>
                     </div>
                   </div>
-                  <div class="p-6 flex flex-col flex-grow">
+                  <div class="!p-2 flex flex-col flex-grow">
                     <div class="text-xs font-semibold text-accent mb-2 uppercase tracking-wide">${escapedCategory}</div>
                     <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${escapedTitle}</h3>
                     <p class="text-sm text-gray-600 line-clamp-3 flex-grow">${cleanExcerpt}</p>

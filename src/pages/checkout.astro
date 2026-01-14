@@ -165,10 +165,10 @@ import Layout from '../layouts/Layout.astro';
 
       container.innerHTML = `
         ${!isLoggedIn ? `
-          <div class="bg-blue-50 border border-blue-200 rounded-lg !p-2 !mt-2 !!mb-4">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg !p-2 !mt-2 !mb-2">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-blue-800 font-semibold mb-1">Logga in för en smidigare upplevelse</p>
+                <p class="text-blue-800 font-semibold !mb-1">Logga in för en smidigare upplevelse</p>
                 <p class="text-blue-600 text-sm">Spara din orderhistorik och få snabbare checkout nästa gång</p>
               </div>
               <a href="/account/login?redirect=/checkout" class="text-blue-600 hover:text-blue-800 font-semibold underline whitespace-nowrap ml-4">
