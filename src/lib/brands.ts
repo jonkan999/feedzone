@@ -53,6 +53,15 @@ export const brands: BrandInfo[] = [
     description:
       'Svenskutvecklad ITC-shot från broccoligroddar, framtagen för att sänka laktat och förbättra återhämtning före hårda träningspass.',
   },
+  {
+    slug: 'vitargo',
+    name: 'Vitargo',
+    brandKey: 'Vitargo',
+    logo: '/images/brands/vitargo/logo.jpg',
+    hero: '/images/brands/vitargo/hero.jpg',
+    description:
+      'Patenterad kolhydratmolekyl som levererar snabb energi och snabbare glykogenåterställning – används av elitatleter för att maximera prestation och återhämtning.',
+  },
 ];
 
 export const findBrandBySlug = (slug?: string | null) =>

@@ -39,6 +39,69 @@ const pageDescription = `Handla ${brand.name} hos Feed Zone. Läs mer om varumä
     </div>
   </section>
 
+  {brand.slug === 'vitargo' && (
+    <section class="container mx-auto px-4 py-12 !pl-3 !pr-3 !mb-10">
+      <div class="max-w-4xl mx-auto prose prose-lg">
+        <div class="mb-8">
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            Vitargo är en unik patenterad kolhydratmolekyl som används av elitatleter och idrottare över olika sporter. Det som gör Vitargo särskilt är dess stora molekylstruktur och naturligt låga osmolalitet – två faktorer som gör att det rör sig snabbt genom magen och absorberas effektivt.
+          </p>
+          
+          <div class="my-8">
+            <img 
+              src="/images/brands/vitargo/secondary-1.jpg" 
+              alt="Vitargo produkter" 
+              class="w-full rounded-lg shadow-md"
+              loading="lazy"
+            />
+          </div>
+
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Detta stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning. För uthållighetsidrottare som långdistanslöpare, cyklister, triathleter och maratonlöpare som behöver hållbar energi under långa perioder av aktivitet, kan detta vara skillnaden mellan att "överleva" och att prestera starkt hela vägen in.
+          </p>
+
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            Dessutom kan idrottare i sporter som kräver högintensiva ansträngningar över korta perioder – som sprint, crossfit, styrkelyft och lagsport som basket eller fotboll – använda Vitargo för att återställa glykogenlager och upprätthålla energinivåer under träning eller tävling.
+          </p>
+
+          <div class="my-8">
+            <img 
+              src="/images/brands/vitargo/secondary-2.jpg" 
+              alt="Vitargo i träning" 
+              class="w-full rounded-lg shadow-md"
+              loading="lazy"
+            />
+          </div>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Carboloader: Maximera glykogenlager före tävling</h2>
+          
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            <a href="/products/vitargo-carboloader-1500g" class="text-indigo-950 font-semibold hover:text-indigo-900 underline">Vitargo Carboloader</a> är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.
+          </p>
+
+          <blockquote class="border-l-4 border-indigo-950 !pl-2 py-4 my-8 bg-gray-50 rounded-r-lg italic text-gray-700">
+            <p class="mb-2">"Jag kommer som vanligt att köra Vitargo Carboloader de 3 sista dagarna för att säkra upp med lite extra kolhydrater."</p>
+            <cite class="text-sm not-italic text-gray-600">— Jonas Buud, ultralöpare och Comrades Marathon-deltagare</cite>
+          </blockquote>
+
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            För praktisk användning finns <a href="/products/vitargo-carboloader-15-pack" class="text-indigo-950 font-semibold hover:text-indigo-900 underline">Vitargo Carboloader 15-pack</a> med portionsförpackningar på 75g, perfekt för att ta med på resor eller för tävlingshelger. För regelbunden träning och längre perioder av kolhydratladdning är <a href="/products/vitargo-carboloader-750g" class="text-indigo-950 font-semibold hover:text-indigo-900 underline">750g</a> eller <a href="/products/vitargo-carboloader-1500g" class="text-indigo-950 font-semibold hover:text-indigo-900 underline">1500g</a> ekonomiska alternativ.
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Performance Bar: Snabb energi på vägen</h2>
+          
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            <a href="/products/vitargo-performance-bar" class="text-indigo-950 font-semibold hover:text-indigo-900 underline">Vitargo Performance Bar</a> kombinerar Vitargos snabba kolhydrater med praktisk portabilitet. Perfekt när du behöver snabb energi under träning eller tävling utan att behöva blanda drycker eller hantera flaskor. Barerna är designade för att vara lätta för magen och ge dig den energi du behöver när intensiteten ökar.
+          </p>
+
+          <p class="text-base leading-relaxed text-gray-700 mb-6">
+            Vi är ett vetenskapsbaserat företag, och varje påstående på våra etiketter stöds av publicerad vetenskaplig forskning. Din topprestation förtjänar vårt seriösa engagemang för kvalitet, renhet och integritet.
+          </p>
+        </div>
+      </div>
+    </section>
+  )}
+
   <section class="container mx-auto px-4 py-10 !pl-3 !pr-3">
     <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
       <div>
@@ -476,6 +539,32 @@ const pageDescription = `Handla ${brand.name} hos Feed Zone. Läs mer om varumä
   
   .quantity-buttons {
     transition: all 0.3s ease;
+  }
+
+  .prose {
+    color: #374151;
+  }
+
+  .prose a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .prose a:hover {
+    text-decoration: underline;
+  }
+
+  .prose blockquote {
+    margin: 1.5rem 0;
+  }
+
+  .prose img {
+    margin: 2rem 0;
+  }
+
+  .prose h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
   }
 </style>
 

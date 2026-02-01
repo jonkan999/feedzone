@@ -183,7 +183,7 @@ INSERT INTO news (id, title, excerpt, body, badge_text, category, image_url, art
   '<p>Du har säkert sett dem: små gröna flaskor i stories från WorldTour-åkare. Snacket är att de hjälper dig ta i lite mer med samma ansträgning – och att laktatackumuleringen blir lägre vid samma belastning. I det här avsnittet går man rakt på sak med fysiologen bakom Nomio, Dr. Philip Larsen, för att reda ut vad som faktiskt är påståendet och hur det ska testas i verkligheten.</p>
 
   <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;margin:18px 0;">
-    <iframe src="https://www.youtube.com/embed/cycvd-h2oi4" title="Nomio – science & test protocol" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe src="https://www.youtube.com/watch?v=23mNmpt4Ero" title="Nomio – science & test protocol" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
   </div>
 
   <p><strong>Vad är Nomio?</strong> En stabiliserad shot baserad på extrakt från broccoligroddar (isotiocyanater), blandat med citrus och lite socker. Larsen beskriver att isotiocyanater är kopplade till en signalväg i kroppen som kallas <strong>Nrf2</strong> – ofta beskriven som en “master regulator” för kroppens antioxidativa försvar och stressrespons. Enkelt uttryckt: när Nrf2 “slås på” triggas en rad processer som hjälper kroppen hantera belastning och oxidativ stress. I podden är poängen inte att vi kan allt om mekanismen, utan att effekten i deras studier dykt upp som en praktisk prestationssignal: <em>lägre laktat vid samma arbete</em> och en känsla hos många deltagare att hårda block varit lättare att “absorbera”.</p>
@@ -209,7 +209,7 @@ INSERT INTO news (id, title, excerpt, body, badge_text, category, image_url, art
   <p>Vill du prova på riktigt: kör <a href="/products/nomio-itc-shot">Nomio ITC Shot</a> enligt protokollet ovan och gör det du redan vet är skillnaden mellan “snack” och resultat: testa i träning, inte på tävlingsdagen.</p>',
   'Testprotokoll',
   'Nyhet',
-  '/images/news/nomio-protokoll-nrf2-laktat/primary.jpg',
+  'https://www.youtube.com/watch?v=23mNmpt4Ero',
   '/zone-news/nomio-protokoll-nrf2-laktat',
   true,
   '2026-01-22T00:00:00Z',
@@ -295,3 +295,68 @@ ON CONFLICT (id) DO UPDATE SET
   featured = EXCLUDED.featured,
   published_at = EXCLUDED.published_at,
   grayscale = EXCLUDED.grayscale;
+
+-- News Article: Vitargo välkomnas till Feed Zone
+INSERT INTO news (id, title, excerpt, body, badge_text, category, image_url, article_url, featured, published_at, grayscale, related_products) VALUES
+(
+  'vitargo-valkomnas-feedzone',
+  'Vitargo välkomnas till Feed Zone: världens snabbaste kolhydrat',
+  'Vi är glada att presentera Vitargo i vårt sortiment – en patenterad kolhydratmolekyl som används av elitatleter världen över. Här är varför deras Carboloader och Performance Bar kan vara just det du behöver.',
+  '<p>Vi är glada att kunna presentera Vitargo i Feed Zone-sortimentet. Det här är ett varumärke som många av er redan känner igen – inte minst genom ultralöpare som Jonas Buud, som använt <a href="/products/vitargo-carboloader-1500g">Vitargo Carboloader</a> inför stora lopp som Comrades Marathon.</p>
+
+<div style="margin: 2rem 0;">
+  <img src="/images/brands/vitargo/hero.jpg" alt="Vitargo produkter" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" loading="lazy" />
+</div>
+
+<p>Vad gör Vitargo särskilt? Det handlar om två saker: <strong>snabb absorption</strong> och <strong>snabbare glykogenåterställning</strong>. Forskning visar att Vitargo töms från magen upp till 80% snabbare än maltodextrin – det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet gör att det rör sig snabbt genom magen och absorberas effektivt, vilket stödjer en 70% snabbare glykogenåterställning under de kritiska första två timmarna efter träning.</p>
+
+<p>För uthållighetsidrottare som långdistanslöpare, cyklister, triathleter och maratonlöpare som behöver hållbar energi under långa perioder av aktivitet, kan detta vara skillnaden mellan att "överleva" och att prestera starkt hela vägen in. Men även idrottare i sporter som kräver högintensiva ansträngningar över korta perioder – som sprint, crossfit, styrkelyft och lagsport – kan använda Vitargo för att återställa glykogenlager och upprätthålla energinivåer.</p>
+
+<div style="margin: 2rem 0;">
+  <img src="/images/brands/vitargo/secondary-1.jpg" alt="Vitargo Carboloader" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" loading="lazy" />
+</div>
+
+<h2 style="font-size: 1.5rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1rem; color: #111827;">Carboloader: flaggskeppet för kolhydratladdning</h2>
+
+<p><a href="/products/vitargo-carboloader-1500g">Vitargo Carboloader</a> är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.</p>
+
+<p>Som Jonas Buud beskrev inför Comrades Marathon: "Jag kommer som vanligt att köra Vitargo Carboloader de 3 sista dagarna för att säkra upp med lite extra kolhydrater." Det här är exakt den typ av praktisk, beprövad strategi som elitatleter använder när det verkligen räknas.</p>
+
+<p>För praktisk användning finns <a href="/products/vitargo-carboloader-15-pack">Vitargo Carboloader 15-pack</a> med portionsförpackningar på 75g, perfekt för att ta med på resor eller för tävlingshelger. För regelbunden träning och längre perioder av kolhydratladdning är <a href="/products/vitargo-carboloader-750g">750g</a> eller <a href="/products/vitargo-carboloader-1500g">1500g</a> ekonomiska alternativ.</p>
+
+<div style="margin: 2rem 0;">
+  <img src="/images/brands/vitargo/secondary-2.jpg" alt="Vitargo Performance Bar" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" loading="lazy" />
+</div>
+
+<h2 style="font-size: 1.5rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1rem; color: #111827;">Performance Bar: när du behöver "hård mat"</h2>
+
+<p>För långa ultralopp och pass där flytande kolhydrater blir monotona, är <a href="/products/vitargo-performance-bar">Vitargo Performance Bar</a> ett utmärkt alternativ. Barerna kombinerar Vitargos snabba kolhydrater med praktisk portabilitet och ger dig något att "tugga på" – vilket kan vara precis vad du behöver för att bryta monotoni och hålla motivationen uppe under långa pass.</p>
+
+<p>När du springer i 6, 8 eller 12 timmar kan det vara svårt att bara dricka gels och drycker. Performance Bar ger dig samma snabba kolhydrater som Vitargos drycker, men i en form som känns mer som "riktig mat". Det kan göra skillnaden mellan att orka äta och att hoppa över intag när magen känns trött på flytande kolhydrater.</p>
+
+<p>Barerna är designade för att vara lätta för magen och ge dig den energi du behöver när intensiteten ökar. Perfekt när du behöver snabb energi under träning eller tävling utan att behöva blanda drycker eller hantera flaskor – men också för att ge dig något att titta fram emot när passet blir långt.</p>
+
+<p>Vi är glada att kunna erbjuda Vitargo i Feed Zone. Det här är ett vetenskapsbaserat varumärke där varje påstående på etiketterna stöds av publicerad vetenskaplig forskning. Din topprestation förtjänar seriöst engagemang för kvalitet, renhet och integritet – och det är precis vad Vitargo levererar.</p>
+
+<p>Källor: <a href="https://vitargo.se/pages/about" target="_blank" rel="noopener noreferrer">Vitargo.se – About</a> · <a href="https://vitargo.se/pages/benefits-of-vitargo" target="_blank" rel="noopener noreferrer">Vitargo.se – Benefits</a> · <a href="https://www.marathon.se/bloggar/jonas-buud/vaskan-packad" target="_blank" rel="noopener noreferrer">Marathon.se – Jonas Buud</a>.</p>',
+  'Nytt varumärke',
+  'Nyhet',
+  '/images/brands/vitargo/hero.jpg',
+  '/zone-news/vitargo-valkomnas-feedzone',
+  true,
+  '2026-02-05T00:00:00Z',
+  false,
+  '["vitargo-carboloader-1500g", "vitargo-performance-bar", "vitargo-carboloader-15-pack"]'::jsonb
+)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  excerpt = EXCLUDED.excerpt,
+  body = EXCLUDED.body,
+  badge_text = EXCLUDED.badge_text,
+  category = EXCLUDED.category,
+  image_url = EXCLUDED.image_url,
+  article_url = EXCLUDED.article_url,
+  featured = EXCLUDED.featured,
+  published_at = EXCLUDED.published_at,
+  grayscale = EXCLUDED.grayscale,
+  related_products = EXCLUDED.related_products;

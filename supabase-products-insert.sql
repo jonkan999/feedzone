@@ -9,7 +9,13 @@ DELETE FROM product_groups;
 INSERT INTO product_groups (id, name, selection_label) VALUES
   ('tailwind-drink-mix', 'Tailwind Drink Mix', 'Välj smak'),
   ('maurten-gel-100', 'Maurten Gel 100', 'Välj mängd'),
-  ('hydrapak-gel-soft-flask', 'HydraPak Gel Soft Flask', 'Välj storlek');
+  ('hydrapak-gel-soft-flask', 'HydraPak Gel Soft Flask', 'Välj storlek'),
+  ('vitargo-carboloader-1500g', 'Vitargo Carboloader 1500g', 'Välj smak'),
+  ('vitargo-carboloader-750g', 'Vitargo Carboloader 750g', 'Välj smak'),
+  ('vitargo-carboloader-15-pack', 'Vitargo Carboloader 15-pack', 'Välj smak'),
+  ('vitargo-carboloader-75g', 'Vitargo Carboloader 75g', 'Välj smak'),
+  ('vitargo-high-protein-bar', 'Vitargo High Protein Bar', 'Välj mängd'),
+  ('vitargo-performance-bar', 'Vitargo Performance Bar', 'Välj mängd');
 
 -- Product 1: KQM Energy Gel (Refill, 1000ml)
 INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
@@ -521,6 +527,576 @@ INSERT INTO products (id, name, description, price, brand, category, categories,
   NULL,
   '/images/products/custom-gel/primary.jpg',
   '[]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 15: Vitargo Carboloader 1500g - Orange
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-1500g-orange',
+  'Vitargo Carboloader 1500g',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  499.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-1500g/primary.jpg',
+  '["/images/products/vitargo-carboloader-1500g/secondary-1.jpg"]'::jsonb,
+  'vitargo-carboloader-1500g',
+  'flavor',
+  'Orange',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 16: Vitargo Carboloader 1500g - Summer Fruits
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-1500g-summer-fruits',
+  'Vitargo Carboloader 1500g',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  499.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-1500g/primary.jpg',
+  '["/images/products/vitargo-carboloader-1500g/secondary-1.jpg"]'::jsonb,
+  'vitargo-carboloader-1500g',
+  'flavor',
+  'Summer Fruits',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 17: Vitargo Carboloader 750g - Orange
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-750g-orange',
+  'Vitargo Carboloader 750g',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  299.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-750g/primary.jpg',
+  '["/images/products/vitargo-carboloader-750g/secondary-1.webp"]'::jsonb,
+  'vitargo-carboloader-750g',
+  'flavor',
+  'Orange',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 18: Vitargo Carboloader 750g - Summer Fruits
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-750g-summer-fruits',
+  'Vitargo Carboloader 750g',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  299.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-750g/primary.jpg',
+  '["/images/products/vitargo-carboloader-750g/secondary-1.webp"]'::jsonb,
+  'vitargo-carboloader-750g',
+  'flavor',
+  'Summer Fruits',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 19: Vitargo Carboloader 15-pack (75g) - Orange
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-15-pack-orange',
+  'Vitargo Carboloader 15-pack (75g)',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  499.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-15-pack/primary.jpg',
+  '["/images/products/vitargo-carboloader-15-pack/secondary-1.jpg", "/images/products/vitargo-carboloader-15-pack/secondary-2.jpg", "/images/products/vitargo-carboloader-15-pack/secondary-3.jpg"]'::jsonb,
+  'vitargo-carboloader-15-pack',
+  'flavor',
+  'Orange',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 20: Vitargo Carboloader 15-pack (75g) - Summer Fruits
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-15-pack-summer-fruits',
+  'Vitargo Carboloader 15-pack (75g)',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  499.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-15-pack/primary.jpg',
+  '["/images/products/vitargo-carboloader-15-pack/secondary-1.jpg", "/images/products/vitargo-carboloader-15-pack/secondary-2.jpg", "/images/products/vitargo-carboloader-15-pack/secondary-3.jpg"]'::jsonb,
+  'vitargo-carboloader-15-pack',
+  'flavor',
+  'Summer Fruits',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 21: Vitargo Carboloader 75g (single serve) - Orange
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-75g-orange',
+  'Vitargo Carboloader 75g',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  37.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-75g/primary.jpg',
+  '["/images/products/vitargo-carboloader-75g/secondary-1.jpg", "/images/products/vitargo-carboloader-75g/secondary-2.jpg", "/images/products/vitargo-carboloader-75g/secondary-3.jpg"]'::jsonb,
+  'vitargo-carboloader-75g',
+  'flavor',
+  'Orange',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 22: Vitargo Carboloader 75g (single serve) - Summer Fruits
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-carboloader-75g-summer-fruits',
+  'Vitargo Carboloader 75g',
+  'Vitargo® Carboloader är det främsta valet för idrottare som vill maximera muskelglykogenlager före tävling. Med Vitargo blir effektiv kolhydratladdning enkelt – vilket ger dig en mätbar fördel över konkurrenter som startar loppet utan fullt uppfyllda energireserver. Ju mer glykogen du lagrar, desto mer kraft kan du komma åt när det verkligen räknas.<br><br>Forskning visar att Vitargo töms från magen <strong>upp till 80% snabbare</strong> än maltodextrin, det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet stödjer också en <strong>70% snabbare glykogenåterställning</strong> under de kritiska första två timmarna efter träning.<br><br>Vitargo erkänns som en av de mest effektiva kolhydratkällorna för idrottare och är konstruerad för att röra sig snabbt genom magen och absorberas snabbt – vilket ger snabb, kraftfull och långvarig energi för att hjälpa dig att prestera på topp.',
+  37.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-carboloader-75g/primary.jpg',
+  '["/images/products/vitargo-carboloader-75g/secondary-1.jpg", "/images/products/vitargo-carboloader-75g/secondary-2.jpg", "/images/products/vitargo-carboloader-75g/secondary-3.jpg"]'::jsonb,
+  'vitargo-carboloader-75g',
+  'flavor',
+  'Summer Fruits',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 23: Vitargo High Protein Bar (single)
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-high-protein-bar-single',
+  'Vitargo High Protein Bar',
+  'Vitargo High Protein Bar kombinerar premium mjölkchoklad med perfekt balans av proteiner och smak för optimalt muskelstöd. Varje bar innehåller 15g högkvalitativt protein i ett bekvämt 55g format.<br><br><strong>Varför idrottare väljer Vitargo High Protein Bar:</strong><br>✓ 15g högkvalitativt protein per bar<br>✓ Premium mjölkchoklad<br>✓ Protein crispies för perfekt textur<br>✓ Lätt att tugga<br>✓ Delikat chokladsmak<br><br><strong>Näringsvärden (per 55g bar):</strong><br>• Energi: 224 kcal<br>• Protein: 15g<br>• Kolhydrater: 24g<br>• Fett: 7.5g<br>• Fiber: 0.3g<br><br><strong>När att använda:</strong><br>• Efter träning för återhämtning<br>• För muskelunderhåll<br><br><strong>ALLERGIINFO:</strong><br>Innehåller mjölk & havre. Kan innehålla spår av ägg & soja.',
+  29.00,
+  'Vitargo',
+  'recovery',
+  ARRAY['recovery', 'protein'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-high-protein-bar/primary.jpg',
+  '["/images/products/vitargo-high-protein-bar/secondary-2.jpg", "/images/products/vitargo-high-protein-bar/secondary-4.jpg"]'::jsonb,
+  'vitargo-high-protein-bar',
+  'quantity',
+  '1 st',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 24: Vitargo High Protein Bar (12-pack)
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-high-protein-bar-12-pack',
+  'Vitargo High Protein Bar 12-pack',
+  'Vitargo High Protein Bar kombinerar premium mjölkchoklad med perfekt balans av proteiner och smak för optimalt muskelstöd. Varje bar innehåller 15g högkvalitativt protein i ett bekvämt 55g format. Denna 12-pack är perfekt för dig som vill ha lager hemma eller förbereda inför tävlingar.<br><br><strong>Varför idrottare väljer Vitargo High Protein Bar:</strong><br>✓ 15g högkvalitativt protein per bar<br>✓ Premium mjölkchoklad<br>✓ Protein crispies för perfekt textur<br>✓ Lätt att tugga<br>✓ Delikat chokladsmak<br><br><strong>Näringsvärden (per 55g bar):</strong><br>• Energi: 224 kcal<br>• Protein: 15g<br>• Kolhydrater: 24g<br>• Fett: 7.5g<br>• Fiber: 0.3g<br><br><strong>När att använda:</strong><br>• Efter träning för återhämtning<br>• För muskelunderhåll<br><br><strong>ALLERGIINFO:</strong><br>Innehåller mjölk & havre. Kan innehålla spår av ägg & soja.',
+  399.00,
+  'Vitargo',
+  'recovery',
+  ARRAY['recovery', 'protein'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-high-protein-bar/primary.jpg',
+  '["/images/products/vitargo-high-protein-bar/secondary-2.jpg", "/images/products/vitargo-high-protein-bar/secondary-4.jpg"]'::jsonb,
+  'vitargo-high-protein-bar',
+  'quantity',
+  '12-pack',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 25: Vitargo Performance Bar (single)
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-performance-bar-single',
+  'Vitargo Performance Bar',
+  'Vitargo Performance Bar är designad för att ge dig optimal energileverans när det verkligen räknas. Med Vitargo som huvudingrediens får du snabb, långvarig energi perfekt för uthållighetsidrott och intensiva träningspass.<br><br><strong>PERFEKT FÖR:</strong><br>• Energiboost före träning<br>• Under uthållighetsaktiviteter<br>• Återhämtning efter träning<br>• Snabb energi för aktiva livsstilar<br><br><strong>När att använda:</strong><br>• Före träning: 30-60 minuter innan<br>• Under: Långdistansaktiviteter<br>• Efter träning: Omedelbar återhämtning<br>• När som helst: Snabb energiboost<br><br><strong>ALLERGIINFO:</strong><br>Innehåller mjölk & havre. Kan innehålla spår av ägg & soja.',
+  25.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-performance-bar/primary.jpg',
+  '["/images/products/vitargo-performance-bar/secondary-1.jpg", "/images/products/vitargo-performance-bar/secondary-2.jpg"]'::jsonb,
+  'vitargo-performance-bar',
+  'quantity',
+  '1 st',
+  1,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 26: Vitargo Performance Bar (12-pack)
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-performance-bar-12-pack',
+  'Vitargo Performance Bar 12-pack',
+  'Vitargo Performance Bar är designad för att ge dig optimal energileverans när det verkligen räknas. Med Vitargo som huvudingrediens får du snabb, långvarig energi perfekt för uthållighetsidrott och intensiva träningspass. Denna 12-pack är perfekt för dig som vill ha lager hemma eller förbereda inför tävlingar.<br><br><strong>PERFEKT FÖR:</strong><br>• Energiboost före träning<br>• Under uthållighetsaktiviteter<br>• Återhämtning efter träning<br>• Snabb energi för aktiva livsstilar<br><br><strong>När att använda:</strong><br>• Före träning: 30-60 minuter innan<br>• Under: Långdistansaktiviteter<br>• Efter träning: Omedelbar återhämtning<br>• När som helst: Snabb energiboost<br><br><strong>ALLERGIINFO:</strong><br>Innehåller mjölk & havre. Kan innehålla spår av ägg & soja.',
+  329.00,
+  'Vitargo',
+  'carbs',
+  ARRAY['carbs'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-performance-bar/primary.jpg',
+  '["/images/products/vitargo-performance-bar/secondary-1.jpg", "/images/products/vitargo-performance-bar/secondary-2.jpg"]'::jsonb,
+  'vitargo-performance-bar',
+  'quantity',
+  '12-pack',
+  2,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 27: Vitargo Post + Protein 1kg
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-post-protein-1kg',
+  'Vitargo Post + Protein 1kg',
+  'Vitargo Post + Protein är designad för optimal återhämtning efter träning med en perfekt balans av snabba kolhydrater och premium wheyprotein. Med ett 2:1 kolhydrat-till-protein-förhållande ger denna mix dig allt du behöver för snabb muskelåterhämtning och glykogenåterställning.<br><br><strong>Nyckelfördelar:</strong><br>• 2:1 kolhydrat-till-protein-förhållande<br>• 57g snabbt absorberande kolhydrater per 100g portion<br>• 28g premium wheyprotein per 100g portion<br>• Komplett aminosyraprofil för återhämtning<br>• Chokladsmak<br><br><strong>När att använda:</strong><br>• Omedelbart efter träning för optimal återhämtning<br>• För muskelåterställning och glykogenåterställning<br>• Som del av din återhämtningsrutin',
+  399.00,
+  'Vitargo',
+  'recovery',
+  ARRAY['recovery', 'protein'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-post-protein-1kg/primary.jpg',
+  '[]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 28: Vitargo Post + Protein 15-pack (100g)
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-post-protein-15-pack',
+  'Vitargo Post + Protein 15-pack (100g)',
+  'Vitargo Post + Protein är designad för optimal återhämtning efter träning med en perfekt balans av snabba kolhydrater och premium wheyprotein. Med ett 2:1 kolhydrat-till-protein-förhållande ger denna mix dig allt du behöver för snabb muskelåterhämtning och glykogenåterställning. Denna 15-pack med 100g portioner är perfekt för dig som vill ha praktiska enkeldoser.<br><br><strong>Nyckelfördelar:</strong><br>• 2:1 kolhydrat-till-protein-förhållande<br>• 57g snabbt absorberande kolhydrater per 100g portion<br>• 28g premium wheyprotein per 100g portion<br>• Komplett aminosyraprofil för återhämtning<br>• Chokladsmak<br><br><strong>När att använda:</strong><br>• Omedelbart efter träning för optimal återhämtning<br>• För muskelåterställning och glykogenåterställning<br>• Som del av din återhämtningsrutin',
+  499.00,
+  'Vitargo',
+  'recovery',
+  ARRAY['recovery', 'protein'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-post-protein-15-pack/primary.jpg',
+  '["/images/products/vitargo-post-protein-15-pack/secondary-1.jpg"]'::jsonb,
+  NULL,
+  NULL,
+  NULL,
+  0,
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price = EXCLUDED.price,
+  category = EXCLUDED.category,
+  categories = EXCLUDED.categories,
+  in_stock = EXCLUDED.in_stock,
+  featured = EXCLUDED.featured,
+  inspiration_featured = EXCLUDED.inspiration_featured,
+  image_url = EXCLUDED.image_url,
+  additional_images = EXCLUDED.additional_images,
+  group_id = EXCLUDED.group_id,
+  variant_type = EXCLUDED.variant_type,
+  variant_value = EXCLUDED.variant_value,
+  variant_sort = EXCLUDED.variant_sort,
+  variants = EXCLUDED.variants;
+
+-- Product 29: Vitargo Post + Protein 100g (single serve)
+INSERT INTO products (id, name, description, price, brand, category, categories, in_stock, featured, inspiration_featured, image_url, additional_images, group_id, variant_type, variant_value, variant_sort, variants) VALUES
+(
+  'vitargo-post-protein-100g',
+  'Vitargo Post + Protein 100g',
+  'Vitargo Post + Protein är designad för optimal återhämtning efter träning med en perfekt balans av snabba kolhydrater och premium wheyprotein. Med ett 2:1 kolhydrat-till-protein-förhållande ger denna mix dig allt du behöver för snabb muskelåterhämtning och glykogenåterställning. Denna praktiska 100g enkeldos är perfekt för återhämtning på språng.<br><br><strong>Nyckelfördelar:</strong><br>• 2:1 kolhydrat-till-protein-förhållande<br>• 57g snabbt absorberande kolhydrater per 100g portion<br>• 28g premium wheyprotein per 100g portion<br>• Komplett aminosyraprofil för återhämtning<br>• Chokladsmak<br><br><strong>När att använda:</strong><br>• Omedelbart efter träning för optimal återhämtning<br>• För muskelåterställning och glykogenåterställning<br>• Som del av din återhämtningsrutin',
+  37.00,
+  'Vitargo',
+  'recovery',
+  ARRAY['recovery', 'protein'],
+  true,
+  false,
+  NULL,
+  '/images/products/vitargo-post-protein-100g/primary.jpg',
+  '["/images/products/vitargo-post-protein-100g/secondary-1.jpg"]'::jsonb,
   NULL,
   NULL,
   NULL,
