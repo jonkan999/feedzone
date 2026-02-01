@@ -304,10 +304,6 @@ INSERT INTO news (id, title, excerpt, body, badge_text, category, image_url, art
   'Vi är glada att presentera Vitargo i vårt sortiment – en patenterad kolhydratmolekyl som används av elitatleter världen över. Här är varför deras Carboloader och Performance Bar kan vara just det du behöver.',
   '<p>Vi är glada att kunna presentera Vitargo i Feed Zone-sortimentet. Det här är ett varumärke som många av er redan känner igen – inte minst genom ultralöpare som Jonas Buud, som använt <a href="/products/vitargo-carboloader-1500g">Vitargo Carboloader</a> inför stora lopp som Comrades Marathon.</p>
 
-<div style="margin: 2rem 0;">
-  <img src="/images/brands/vitargo/hero.jpg" alt="Vitargo produkter" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" loading="lazy" />
-</div>
-
 <p>Vad gör Vitargo särskilt? Det handlar om två saker: <strong>snabb absorption</strong> och <strong>snabbare glykogenåterställning</strong>. Forskning visar att Vitargo töms från magen upp till 80% snabbare än maltodextrin – det vanliga kolhydratet i de flesta sportdrycker. Dess unikt stora molekylstruktur och naturligt låga osmolalitet gör att det rör sig snabbt genom magen och absorberas effektivt, vilket stödjer en 70% snabbare glykogenåterställning under de kritiska första två timmarna efter träning.</p>
 
 <p>För uthållighetsidrottare som långdistanslöpare, cyklister, triathleter och maratonlöpare som behöver hållbar energi under långa perioder av aktivitet, kan detta vara skillnaden mellan att "överleva" och att prestera starkt hela vägen in. Men även idrottare i sporter som kräver högintensiva ansträngningar över korta perioder – som sprint, crossfit, styrkelyft och lagsport – kan använda Vitargo för att återställa glykogenlager och upprätthålla energinivåer.</p>
